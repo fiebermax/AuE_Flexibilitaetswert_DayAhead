@@ -37,7 +37,7 @@ Alle Annahmen (Last, Zeiträume, Kosten, Seed) stehen in `config/params.yaml`. F
 | `tests/` | Automatisierte Prüfungen der Datenannahmen |
 | `notebooks/` | Nur Exploration, nichts Ergebnisrelevantes |
 | `results/` | Grafiken und Tabellen (werden erzeugt) |
-| `docs/` | Projekttagebuch, Belegmatrix, KI-Nutzung, Datenkatalog, Schnittstellen |
+| `docs/` | Kickoff, Projektanweisung (KI-Coach), Projekttagebuch, Belegmatrix, KI-Nutzung, Datenkatalog, Schnittstellen |
 
 ## Daten und Lizenzen
 
