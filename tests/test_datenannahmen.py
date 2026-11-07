@@ -244,3 +244,15 @@ def test_last_und_preise_gleiche_werktage(preise):
     last = pd.read_parquet(LAST).set_index(pd.to_datetime(pd.read_parquet(LAST)["datum"]).dt.date)
     wt_preise = preise.groupby(preise["zeit"].dt.date)["werktag"].first()
     assert ((last["mwh"] > 0) == wt_preise.reindex(last.index)).all()
+
+
+@pytest.mark.skipif(not (LAST.exists() and PREISE.exists()), reason="Pipeline noch nicht gelaufen")
+def test_zeitumstellung_nur_an_lastfreien_tagen(preise):
+    # Tagebuch E-018: Zeitumstellungstage (23 Stunden bzw. gemittelte 02:00) sind Sonntage ohne Last.
+    # Solange das gilt, beeinflusst die Behandlung der Zeitumstellung die Kosten nicht.
+    zu = pd.read_csv(ROOT / PARAMS["daten"]["pfade"]["processed"] / "zeitumstellung.csv")
+    tage = pd.to_datetime(zu["datum"].unique())
+    assert len(tage) > 0 and (tage.weekday == 6).all()
+    last = pd.read_parquet(LAST)
+    last_an_tagen = last[pd.to_datetime(last["datum"]).isin(tage)]["mwh"]
+    assert (last_an_tagen == 0).all(), "Last an einem Zeitumstellungstag: Varianten V1/V2 der Sensitivität aktivieren"

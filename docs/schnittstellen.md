@@ -26,3 +26,20 @@ Jede Übergabe ist eine Datei mit festen Spalten und Einheiten. Ändert sich ein
 - Ein Eintrag je Kalendertag im Preiszeitraum; an Nicht-Werktagen `mwh = 0` (keine Zeile fehlt).
 - Nur die Tagesmenge. Wann sie verbraucht wird, entscheidet die Strategie; Leistung = `mwh` / `last.blocklaenge_h`, konstant im Block.
 - Platzhalterwerte bis zum Praxisgespräch (synthetisch, siehe `docs/datenkatalog.md`).
+
+## Vorschlag R2 → R3: Backtest als Funktion (Tagebuch A-003, Antwort R3 offen)
+
+Damit die Sensitivitätsrechnung (`src/06_sensitivitaet.py`) Varianten einspeisen kann, ohne Dateien zu überschreiben:
+
+```python
+def backtest(preise_h: pd.DataFrame, last: pd.DataFrame, params: dict) -> pd.DataFrame:
+    """Reine Rechenfunktion: liest und schreibt keine Dateien, Zufall nur mit params["seed"].
+    Rückgabe: eine Zeile je Woche mit den Spalten von backtest_wochen.csv
+    (woche, periode, kosten_A ... kosten_T, oracle; Kosten in EUR)."""
+
+def main():
+    # nur Ein- und Ausgabe: Dateien laut Schnittstelle lesen, backtest() aufrufen, CSV schreiben
+```
+
+- Blockkosten nur für Werktage (`werktag == True`, `mwh > 0`). Zeitumstellungstage sind Sonntage und damit nie betroffen (Test).
+- Neuer Schalter `strategien.blockstart_raster_min` (60 Basis, 15 Variante V5): bei 15 mit `preise_15min.parquet`, nur Testperiode 2.

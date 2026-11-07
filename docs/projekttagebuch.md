@@ -8,6 +8,126 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 07.11.2026
 
+### K-002 · KI-Einsatz bei Download, Aufbereitung und synthetischem Lastgang
+- **Werkzeug:** Claude
+- **Zweck:** Code für `src/01_download.py`, `src/02_aufbereitung.py`, `src/02_synthetisch.py`, `src/gemeinsam.py`, erklärende Kommentare, Erweiterung von `tests/test_datenannahmen.py` (jetzt 24 Tests); Vorschläge zur Zeitumstellung mit Alternativen; Entwurf `docs/sensitivitaet_plan.md`; Formulierung und Eintragen der Tagebucheinträge E-008 bis E-018, A-002, A-003, P-002, P-003 und K-002 im Auftrag von Max, inklusive Belege (Commits `b68dfdb`, `9ce870e`, `38765e1`, `38e0516`).
+- **Wie geprüft:** (1) `pytest tests/`: 24 Tests grün. (2) Gegenprobe: eine Rohdatei von Hand geändert → Download bricht mit Meldung ab, Integritätstest rot; in `preise_h` einen Preis gelöscht und Samstage als Werktag markiert → drei Tests rot. (3) Nachgerechnet: 26.10.2025 02:00 Uhr = (3,19 + 2,015) / 2 = 2,6025 €/MWh; 29.03.2026 ohne 02:00 Uhr; Stundenzahl 1 765 Tage × 24 − 5 = 42 355. (4) Zweiter Lauf ohne Internet: 0 Dateien geladen. (4b) Kommentare nachträglich ergänzt und Werktagsregel verschoben: Ausgabedateien per SHA256 vorher/nachher bit-gleich. (4c) Last: Feiertagsvariante nur für die Last umgestellt → Abgleichstest rot. (5) Erklären des Codes durch Max: **offen**, vor dem Zwischenreview Fr 13.11. nachholen (Sperrkriterium Erklärbarkeit). Kommentare im Code dafür ergänzt (Commit `9ce870e`).
+- **Was wir geändert haben:** Nach Rückmeldung von Max: Kommentare auf Englisch und pro Abschnitt statt Zeile für Zeile; ENTSO-E-Abgleich gestrichen (E-015); Firmenname des Praxispartners im öffentlichen Repo anonymisiert. Die Einträge wurden von Claude formuliert und von Max zur Prüfung freigegeben; Abweichung von der Regel „jeder committet seine Einträge selbst“ hiermit offengelegt.
+
+### P-003 · PR #3 ohne Review gemergt
+- **Problem:** Laut Kickoff prüfen sich die Review-Paare per Pull Request. PR #3 (Download, Aufbereitung, Lastgang) wurde am 07.11.2026 gemergt, bevor R3 ihn gesehen hat; R3 war noch kein Collaborator im Repo, deshalb konnte niemand als Reviewer eingetragen werden.
+- **Angesprochen von:** Max (R2), 07.11.2026
+- **Lösungsvorschlag:** R3 reviewt nachträglich und kommentiert auf GitHub; Fehler werden in einem neuen PR behoben. Ab jetzt: kein Merge nach `main` ohne Review des Paarpartners.
+- **Entscheidung:** angenommen (Max); Zustimmung des Teams über A-003 angefragt
+- **Ergebnis:** offen
+
+### P-002 · Sensitivitätsschwelle vor dem Rechnen festlegen
+- **Problem:** Ohne vorab festgelegte Schwelle könnte man im Nachhinein jede Änderung als „klein“ deklarieren.
+- **Angesprochen von:** Max (R2), 07.11.2026
+- **Lösungsvorschlag:** Relevant, wenn sich die mittlere Netto-Ersparnis um mehr als 5 % ändert oder sich eine Entscheidung zu H0a/H0b/H0c umkehrt. Beschluss, bevor R3 den ersten Testlauf sieht.
+- **Entscheidung:** offen; Vorschlag an R3 über A-003, Teambeschluss bis Fr 13.11.2026
+- **Ergebnis:** offen
+
+### E-018 · Zeitumstellung ist im Basisszenario kostenneutral
+- **Person:** Max (R2)
+- **Entscheidung:** Die Varianten V1 (Oktober: erste/zweite statt Mittel) und V2 (März: Stunde füllen) werden im Basisszenario nicht durchgerechnet. Grund: Die Zeitumstellung ist immer am letzten Sonntag im März bzw. Oktober; Sonntage sind keine Werktage, die Last ist dort 0 MWh. Geprüft für alle 10 Umstellungstage 2022–2026. Ein Test stellt sicher, dass das so bleibt.
+- **Verworfen:** V1 und V2 voll durch den Backtest schicken: Das Ergebnis wäre zwangsläufig 0 % und damit eine Scheinprüfung, die nur Rechenzeit und Seiten kostet.
+- **Begründung:** Analytisch und per Test belegt statt gerechnet. Relevant wird die Frage erst bei Wochenendproduktion (anderes Lastszenario); dann werden V1/V2 aktiviert. Wirkt weiterhin auf beschreibende Statistiken (Preisprofile, Boxplots), dort ist sie vernachlässigbar (1 von 8 760 Stunden pro Jahr).
+- **Beleg:** Test `test_zeitumstellung_nur_an_lastfreien_tagen`, `docs/sensitivitaet_plan.md`
+
+### A-003 · Übergabe R2 → R3: Preise und Last bereit, Vorschläge zum Backtest
+- **Von → an:** R2 (Max) → R3; Review-Paar R2 ↔ R3 laut Kickoff
+- **Kanal und Datum:** WhatsApp, Nachricht am 07.11.2026 formuliert (Text: Commit dieses Eintrags), Versand durch Max. Laut Kickoff ist der Chat kein Beleg, deshalb dieser Eintrag.
+- **Was (Datei, Spalten, Einheit):**
+  - `data/processed/preise_h.parquet`: `zeit` (Europe/Berlin, Stundenbeginn), `preis_eur_mwh` (EUR/MWh), `regime` (stunde/viertel), `werktag` (bool); 2022-01-01 bis 2026-10-31, 42 355 Stunden, 0 Lücken.
+  - `data/processed/last_synth.parquet`: `datum`, `mwh` (MWh pro Tag); 2,0 an Werktagen, sonst 0 (Platzhalter).
+  - `data/processed/preise_15min.parquet`: wie `preise_h`, 15 min ab 01.10.2025.
+  - Stolperfallen in `docs/schnittstellen.md`.
+- **Fünf Punkte mit Vorschlag von R2:**
+  1. *23-Stunden-Tag im März:* keine Änderung nötig. Alle Umstellungstage sind Sonntage, die Last ist dort 0 (E-018, Test). Blockkosten nur für Werktage bilden.
+  2. *Backtest als Funktion:* `backtest(preise_h, last, params) -> DataFrame` mit den Spalten von `backtest_wochen.csv`; liest und schreibt keine Dateien, Seed aus `params`; `main()` macht nur Einlesen, Aufruf, Speichern. Skizze in `docs/schnittstellen.md`.
+  3. *15-min-Blockstart (V5, H0c):* neuer Schalter `strategien.blockstart_raster_min` (60 = Basis, 15 = Variante), nur Testperiode 2, mit `preise_15min.parquet`; ein Block = `blocklaenge_h` × 4 Viertelstunden; Oracle C und T im selben Raster. Kontrolle: Raster 60 auf 15-min-Preisen muss exakt das Basisergebnis liefern.
+  4. *Review:* R3 schickt den GitHub-Namen, Max lädt als Collaborator ein und füllt `CODEOWNERS`; R3 kommentiert PR #3 nachträglich; ab jetzt wird jeder PR nach `main` erst nach Review des Paarpartners gemergt.
+  5. *Relevanzschwelle Sensitivität:* relevant, wenn sich die mittlere Netto-Ersparnis um mehr als 5 % ändert oder eine Entscheidung zu H0a/H0b/H0c kippt; Beschluss mit Datum, bevor R3 den ersten Testlauf sieht (P-002).
+- **Bis:** Antwort R3 bis Mo 09.11.2026; Backtest-Funktion vor dem Zwischenreview Fr 13.11.2026.
+- **Antwort R3:** offen
+- **Änderung, nachgezogen von:** offen
+
+### E-017 · Eine Werktagsregel für Preise und Last
+- **Person:** Max (R2)
+- **Entscheidung:** Die Funktion `werktage()` liegt in `src/gemeinsam.py` und wird von `02_aufbereitung` (Spalte `werktag`) und `02_synthetisch` (Last) benutzt. Ein Test prüft, dass beide an denselben Tagen Werktag sagen.
+- **Verworfen:** Die Regel in beiden Skripten getrennt (könnte auseinanderlaufen; dann verbrauchte R3 an einem Feiertag Strom, für den kein Werktagspreis vorgesehen ist).
+- **Begründung:** Gegenprobe: Feiertagsvariante nur für die Last umgestellt → Test rot.
+- **Beleg:** Test `test_last_und_preise_gleiche_werktage`, Commit `38765e1`
+
+### E-016 · Synthetischer Lastgang deterministisch
+- **Person:** Max (R2)
+- **Entscheidung:** `src/02_synthetisch.py` schreibt `last_synth.parquet` (`datum`, `mwh`): an jedem Werktag `last.mwh_pro_werktag` (Platzhalter 2,0 MWh), sonst 0 MWh; ein Eintrag je Kalendertag im Preiszeitraum, rund 500 MWh pro Jahr. Ohne Zufall. Alle Werte sind Platzhalter, vom Praxiskontakt zu plausibilisieren.
+- **Verworfen:** (a) Zufällige Schwankung der Tagesmenge mit festem Seed: Sie träfe jede Strategie in derselben Woche gleich (gepaarter Vergleich), änderte also nicht, welche Strategie günstiger ist, brächte aber einen Parameter (Schwankungsbreite), den niemand gegen die Realität prüfen kann. (b) Nur Werktage als Zeilen: Ein fehlender Tag wäre nicht von einer echten Lücke zu unterscheiden; mit 0 MWh ist „keine Produktion“ ausdrücklich.
+- **Begründung:** Einfach, reproduzierbar, erklärbar. Die Unsicherheit über die Menge wird über die Sensitivität (V6 Menge, V7 Blocklänge) gezeigt statt über künstliches Rauschen. Der Text in `last.werktage` wird geprüft; ändert ihn jemand, bricht das Skript ab, statt still Mo–Fr weiterzurechnen.
+- **Beleg:** `src/02_synthetisch.py`, `docs/datenkatalog.md`, Tests `test_last_*`, Commit `38765e1`
+
+### E-015 · Kein Abgleich mit ENTSO-E; K2 Stufe 5 über die Sensitivitätsrechnung
+- **Person:** Max (R2)
+- **Entscheidung:** Wir gleichen die SMARD-Preise nicht mit der ENTSO-E Transparency Platform ab. K2 Stufe 5 („Datenqualität aktiv geprüft“) belegen wir mit einer Sensitivitätsrechnung: Wie stark ändert sich die Ersparnis, wenn wir Zeitumstellung, Feiertagskalender, Zeitauflösung und die synthetischen Parameter anders wählen?
+- **Verworfen:** Abgleich SMARD gegen ENTSO-E (so im Kickoff noch vorgesehen). SMARD bezieht die Day-Ahead-Preise von ENTSO-E, beide sind also keine unabhängigen Quellen; ein Abgleich fände höchstens Übertragungsfehler. Diese Prüfung haben wir innerhalb von SMARD schon (eigenes Stundenmittel gegen SMARD-Stundenwert, max. 0,005 €/MWh). Der Aufwand (Konto, API-Schlüssel) brächte für K2 nichts dazu.
+- **Begründung:** Die Katalogformulierung nennt die Sensitivitätsrechnung ausdrücklich als Weg zu Stufe 5; sie prüft zudem die synthetischen Daten, die sich gegen keine Quelle prüfen lassen.
+- **Beleg:** `docs/sensitivitaet_plan.md`, später `results/tables/sensitivitaet.csv`; Commit `38e0516`
+
+### A-002 · Neue Parameter und Dateien von R2
+- **Von → an:** R2 → R1 (Owner `config/`), R3
+- **Was:** `params.yaml`: neue Einträge `markt.regimewechsel`, `markt.zeitzone`, Block `daten` (URL, Download-Zeiträume, Pfade, Retry). Neue Dateien `preise_15min.parquet`, `zeitumstellung.csv`, `datenqualitaet.csv` in `docs/schnittstellen.md` eingetragen. `preise_h.parquet` unverändert laut Schnittstelle.
+- **Bis:** 07.11.2026, Review durch R1 und R3 per Pull Request
+- **Änderung, nachgezogen von:** Review durch R1 (`params.yaml`) und R3 offen, angefragt über A-003; PR #3 wurde vorher gemergt (P-003).
+
+### E-014 · Werktage: gesetzliche Feiertage Bayern, Mariä Himmelfahrt als Variante
+- **Person:** Max (R2)
+- **Entscheidung:** Werktag = Montag bis Freitag und kein gesetzlicher Feiertag in Bayern (Paket `holidays`, `subdiv="BY"`). Mariä Himmelfahrt (15.08.) gilt nur in überwiegend katholischen Gemeinden; Schalter `feiertagsvariante_mariae_himmelfahrt` in `params.yaml` (Standard: false).
+- **Verworfen:** Feiertagsliste von Hand (fehleranfällig); 24./31.12. als arbeitsfrei (keine gesetzlichen Feiertage; Betriebsruhe ist eine offene Frage an den Praxiskontakt, ggf. Variante V4).
+- **Beleg:** Test `test_werktage_bayern_und_variante`
+
+### E-013 · Echte Lücken sichtbar lassen; negative Preise behalten
+- **Person:** Max (R2)
+- **Entscheidung:** Liefert SMARD für eine Stunde keinen Wert, bleibt die Zeile mit leerem Preis stehen und der Test `test_keine_luecken` schlägt an. Negative Preise und Nullpreise bleiben unverändert drin. Stand 07.11.2026: 0 Lücken, 0 doppelte Zeitstempel, 1 877 Stunden mit negativem Preis (2022–10/2026).
+- **Verworfen:** Lückenzeilen löschen (Lücke unsichtbar, Wochen hätten weniger Stunden); negative Preise auf 0 setzen oder entfernen (sind echte Auktionsergebnisse, genau dort liegt Flexibilitätswert; K3 S5 „Ausreißer als Information“).
+- **Beleg:** `results/tables/datenqualitaet.csv`, Test `test_preisbereich`
+
+### E-012 · Viertelstunden zu Stundenmitteln; 15-min-Daten separat
+- **Person:** Max (R2)
+- **Entscheidung:** Ab 01.10.2025 ist der Stundenpreis das arithmetische Mittel der vier Viertelstunden, nur wenn alle vier vorhanden sind. Die 15-min-Werte liegen zusätzlich in `preise_15min.parquet`.
+- **Verworfen:** (a) Die Stundenwerte von SMARD direkt übernehmen: SMARD rechnet sie selbst und rundet auf zwei Nachkommastellen; wir nutzen sie stattdessen als Prüfung (max. Abweichung 0,005 €/MWh bei 9 505 Stunden). (b) Median oder letzter Wert: entspricht nicht den Kosten. (c) Mittel auch bei fehlenden Viertelstunden: würde eine Lücke still füllen.
+- **Begründung:** Bei gleichmäßiger Leistung innerhalb der Stunde gilt exakt: Kosten = Mittelpreis × Energie. Das Mitteln glättet Spitzen (Maximum 2026: 697 €/MWh Stunde gegen 747 €/MWh Viertelstunde); wie viel Ersparnis das kostet, zeigt die Sensitivität 15 statt 60 min (K2, K3).
+- **Einschränkung:** Der Abgleich mit dem SMARD-Stundenwert prüft nur auf Rechen- und Übertragungsfehler, er ist keine unabhängige Quelle (siehe E-015).
+- **Beleg:** `results/tables/datenqualitaet.csv` (Spalten `abw_smard_stunde_*`), Test `test_stundenmittel_passt_zu_viertelstunden`, Commit `b68dfdb`
+
+### E-011 · Zeitumstellung März: fehlende Stunde markieren, nicht füllen
+- **Person:** Max (R2)
+- **Entscheidung:** Am letzten Sonntag im März gibt es 02:00 Uhr nicht. Der Tag hat 23 Zeilen; die Tage stehen in `zeitumstellung.csv` und in `datenqualitaet.csv`.
+- **Verworfen:** Interpolieren oder Vorwärtsfüllen: erfindet einen Preis für eine Stunde, in der niemand Strom verbraucht; ein Block über 02:00 Uhr bekäme Kosten für eine nicht existierende Stunde.
+- **Begründung:** Keine stillen Annahmen in den Daten; R3 ist über `docs/schnittstellen.md` informiert. Kostenwirkung im Basisszenario null, weil Sonntag (E-018).
+- **Beleg:** Test `test_maerz_fehlende_stunde_wird_nicht_aufgefuellt`, `test_stunden_pro_tag`
+
+### E-010 · Zeitumstellung Oktober: doppelte Stunde mitteln
+- **Person:** Max (R2)
+- **Entscheidung:** Am letzten Sonntag im Oktober gibt es 02:00–03:00 Uhr zweimal (25 Stunden). Beide Preise werden gemittelt und als eine Zeile 02:00 Uhr abgelegt, der Tag hat 24 Zeilen. Fehlt einer der beiden Werte, bleibt das Ergebnis leer.
+- **Verworfen:** (a) Beide Stunden behalten (25 Zeilen): ohne Informationsverlust, aber die Blockkosten-Matrix Tag × Startstunde (R3) braucht genau einen Wert je Uhrzeit. (b) Nur die erste oder zweite Stunde nehmen: willkürlich, wirft einen echten Preis weg. (c) Durchgehend in UTC rechnen: Schichten richten sich nach der Uhr im Werk; in UTC verschöbe sich der Block halbjährlich um eine Stunde.
+- **Begründung:** Betrifft 1 Nachtstunde pro Jahr (5 im ganzen Zeitraum); Tagesblöcke wie 08–14 Uhr nie. Mittel = Kosten bei gleichmäßigem Verbrauch über beide Stunden, halbiert auf eine Stunde. Die Umstellungstage sind immer Sonntage, also keine Werktage; im Basisszenario fällt dort keine Last an, die Wahl ändert die Kosten nicht (E-018).
+- **Beleg:** `src/02_aufbereitung.py::zu_ortszeit`, `data/processed/zeitumstellung.csv`, Test `test_oktober_doppelte_stunde_wird_gemittelt`
+
+### E-009 · Integrität der Rohdaten über SHA256
+- **Person:** Max (R2)
+- **Entscheidung:** Je Datei URL, Abrufzeitpunkt, SMARD-Erstellzeitpunkt, Größe und SHA256 in `manifest.csv`. Jeder Lauf und ein Test prüfen, dass sich keine Rohdatei geändert hat. Wurde eine Woche geladen, bevor sie vorbei war, und fehlen deshalb Werte, wird sie neu geladen; die alte Datei bleibt als `*.veraltet-<datum>.json` liegen.
+- **Verworfen:** Nur ein Abrufdatum in `SOURCES.md` (eine veränderte Datei fiele nicht auf); unvollständige Dateien überschreiben (verletzt „Rohdaten nie überschreiben“).
+- **Begründung:** Prüfbare Herkunft (Sperrkriterium Datenherkunft); Gegenprobe: eine von Hand geänderte Zahl wird sofort gemeldet.
+- **Beleg:** `tests/test_datenannahmen.py::test_rohdaten_unveraendert`, Commit `b68dfdb`
+
+### E-008 · Rohdaten: SMARD-JSON wochenweise, unverändert, im Repo versioniert
+- **Person:** Max (R2)
+- **Entscheidung:** `src/01_download.py` lädt die SMARD-Wochendateien (Filter 4169, DE-LU, `hour` ab 2022-01-01, `quarterhour` ab 2025-10-01, bis Datenstand) als Original-Bytes nach `data/raw/smard/4169/<auflösung>/`. Vorhandene Dateien werden nicht neu geladen; der Schritt läuft dann offline. Die Rohdaten (ca. 2 MB, 310 Dateien) liegen im Repo.
+- **Verworfen:** (a) CSV-Export von smard.de per Hand: nicht reproduzierbar, kein Skript. (b) Bei jedem Lauf neu laden: SMARD korrigiert nachträglich, Ergebnisse würden sich ohne unser Zutun ändern; ohne Internet läuft nichts. (c) Rohdaten nicht ins Repo: Dritte müssten neu laden und bekämen eventuell andere Werte. CC BY 4.0 erlaubt die Weitergabe mit Namensnennung.
+- **Begründung:** Sperrkriterium Reproduzierbarkeit, K5 Stufe 5 (neue Daten: nur `datenstand` ändern), K2 (Herkunft je Datei belegbar).
+- **Beleg:** `src/01_download.py`, `data/raw/smard/manifest.csv`, `data/raw/SOURCES.md`, Commit `b68dfdb` (PR #3, Merge `e56aeb1`)
+
 ### E-007 · Abgrenzung auf Day-Ahead, kein Intraday
 - **Person:** Max
 - **Entscheidung:** Analyse nur mit Day-Ahead-Preisen DE-LU.
