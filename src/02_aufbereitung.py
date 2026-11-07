@@ -27,12 +27,11 @@ import json
 import sys
 from pathlib import Path
 
-import holidays
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from gemeinsam import lade_params, pfad  # noqa: E402
+from gemeinsam import lade_params, pfad, werktage  # noqa: E402  (werktage is shared with 02_synthetisch)
 
 # Column names and order of the hand-over file. Must match docs/schnittstellen.md exactly,
 # otherwise R3's code breaks. A test checks this.
@@ -142,22 +141,6 @@ def erwartetes_raster(beginn: pd.Timestamp, ende: pd.Timestamp, freq: str, tz: s
     utc = pd.date_range(beginn.tz_convert("UTC"), ende.tz_convert("UTC"), freq=freq, inclusive="left")
     wanduhr = utc.tz_convert(tz).tz_localize(None).unique()
     return wanduhr.tz_localize(tz, ambiguous=np.ones(len(wanduhr), dtype=bool), nonexistent="raise")
-
-
-def werktage(daten: pd.DatetimeIndex, mariae_himmelfahrt: bool) -> np.ndarray:
-    """True = Monday to Friday and no public holiday in Bavaria.
-
-    Holidays come from the package `holidays` (subdiv="BY" = Bavaria), not from a hand-written list.
-    Mariä Himmelfahrt (15.08.) is a holiday only in mainly catholic municipalities; the package files
-    it under the category "catholic", so we add that category only if the switch in params.yaml is on.
-    The result is a True/False array with one entry per timestamp.
-    """
-    kategorien = ("public", "catholic") if mariae_himmelfahrt else ("public",)
-    jahre = range(daten.min().year, daten.max().year + 1)
-    feiertage = holidays.Germany(subdiv="BY", years=jahre, categories=kategorien)
-    tage = daten.tz_localize(None).normalize()
-    ist_feiertag = np.array([t.date() in feiertage for t in tage])
-    return (tage.weekday < 5) & ~ist_feiertag      # weekday < 5 = Mon..Fri; "&" = and; "~" = not
 
 
 def baue_tabelle(s_ort: pd.Series, raster: pd.DatetimeIndex, wechsel: pd.Timestamp, mariae: bool) -> pd.DataFrame:

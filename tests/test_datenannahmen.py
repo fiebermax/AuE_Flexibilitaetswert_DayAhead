@@ -31,6 +31,8 @@ def _lade_modul(name):
 
 
 auf = _lade_modul("02_aufbereitung")
+syn = _lade_modul("02_synthetisch")
+LAST = ROOT / PARAMS["daten"]["pfade"]["processed"] / "last_synth.parquet"
 dl = _lade_modul("01_download")
 
 
@@ -91,6 +93,32 @@ def test_werktage_bayern_und_variante():
     # Hl. Drei Könige, Fronleichnam: Feiertag; Samstag: kein Werktag; Montag: Werktag
     assert list(ohne) == [False, False, True, False, True]
     assert list(mit) == [False, False, False, False, True]
+
+
+def test_last_beispielwoche():
+    # Mo 02.06. bis So 08.06.2025; Pfingstmontag 09.06. liegt außerhalb, Do 05.06. normaler Werktag
+    df = syn.erzeuge_last("2025-06-02", "2025-06-08", 2.0, mariae=False)
+    assert list(df.columns) == ["datum", "mwh"]
+    assert list(df["mwh"]) == [2.0, 2.0, 2.0, 2.0, 2.0, 0.0, 0.0]
+
+
+def test_last_feiertag_und_variante():
+    # Fr 15.08.2025 (Mariä Himmelfahrt) zählt nur in der Variante als Feiertag
+    assert syn.erzeuge_last("2025-08-15", "2025-08-15", 2.0, mariae=False)["mwh"].iloc[0] == 2.0
+    assert syn.erzeuge_last("2025-08-15", "2025-08-15", 2.0, mariae=True)["mwh"].iloc[0] == 0.0
+
+
+def test_last_deterministisch():
+    a = syn.erzeuge_last("2024-01-01", "2024-12-31", 2.0, mariae=False)
+    b = syn.erzeuge_last("2024-01-01", "2024-12-31", 2.0, mariae=False)
+    assert a.equals(b)
+
+
+def test_last_unsinnige_parameter_werden_abgelehnt():
+    gut = dict(PARAMS["last"])
+    for feld, wert in [("mwh_pro_werktag", 0), ("blocklaenge_h", 25), ("werktage", "Mo-Sa")]:
+        with pytest.raises(syn.LastFehler):
+            syn.pruefe_parameter({**gut, feld: wert})
 
 
 def test_wochenanfaenge_bleiben_montag_mitternacht():
@@ -194,3 +222,25 @@ def test_rohdaten_unveraendert():
     for z in zeilen:
         datei = MANIFEST.parent.parent / z["datei"]
         assert hashlib.sha256(datei.read_bytes()).hexdigest() == z["sha256"], f"verändert: {datei}"
+
+
+@pytest.mark.skipif(not LAST.exists(), reason="02_synthetisch noch nicht gelaufen")
+def test_last_synth_laut_schnittstelle_und_params():
+    last = pd.read_parquet(LAST)
+    assert list(last.columns) == ["datum", "mwh"]
+    tage = pd.to_datetime(last["datum"])
+    # lückenlos ein Eintrag je Kalendertag, gleicher Zeitraum wie die Preise
+    assert tage.is_monotonic_increasing and not tage.duplicated().any()
+    assert len(tage) == (tage.max() - tage.min()).days + 1
+    assert tage.min() == pd.Timestamp(PARAMS["daten"]["aufloesungen"]["hour"])
+    assert tage.max() == pd.Timestamp(PARAMS["zeitraeume"]["datenstand"])
+    # nur zwei Werte: mwh_pro_werktag oder 0
+    assert set(last["mwh"]) <= {PARAMS["last"]["mwh_pro_werktag"], 0.0}
+
+
+@pytest.mark.skipif(not (LAST.exists() and PREISE.exists()), reason="Pipeline noch nicht gelaufen")
+def test_last_und_preise_gleiche_werktage(preise):
+    # Last und Preise müssen dieselbe Werktagsregel benutzen, sonst verbraucht R3 an Feiertagen Strom
+    last = pd.read_parquet(LAST).set_index(pd.to_datetime(pd.read_parquet(LAST)["datum"]).dt.date)
+    wt_preise = preise.groupby(preise["zeit"].dt.date)["werktag"].first()
+    assert ((last["mwh"] > 0) == wt_preise.reindex(last.index)).all()
