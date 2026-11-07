@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+data/interim/*
+data/processed/*
+results/figures/*
+results/tables/*
+!**/.gitkeep
+# Partnerdaten nie ins Repo
+partner/

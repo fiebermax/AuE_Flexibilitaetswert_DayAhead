@@ -1,0 +1,42 @@
+# Alle Annahmen an einer Stelle. Jede Änderung mit Begründung ins Projekttagebuch.
+
+seed: 42
+
+zeitraeume:
+  training:      ["2023-01-01", "2024-12-31"]
+  test_1_stunde: ["2025-01-01", "2025-09-30"]   # Stundenregime
+  test_2_viertel: ["2025-10-01", "2026-09-30"]  # Viertelstundenregime ab 01.10.2025
+  stresstest:    ["2022-01-01", "2022-12-31"]   # Gaspreiskrise, nie im Training
+  datenstand:    "2026-10-31"
+
+markt:
+  gebotszone: "DE-LU"
+  produkt: "day_ahead"          # kein Intraday (Abgrenzung, siehe Tagebuch)
+  smard_filter_preis: 4169
+
+last:                            # synthetisch, vom Praxiskontakt zu plausibilisieren
+  mwh_pro_werktag: 2.0
+  blocklaenge_h: 6
+  status_quo_start_h: 8          # Strategie A: fest 08-14 Uhr
+  werktage: "Mo-Fr ohne Feiertage Bayern"
+  feiertagsvariante_mariae_himmelfahrt: false   # Sensitivität: true
+
+kosten:
+  mitarbeiter: 3
+  stundenlohn_eur: 30.0
+  nachtzuschlag: 0.25            # Sensitivität 0.00-0.30
+  nachtstunden: [23, 0, 1, 2, 3, 4, 5]
+  umstellungskosten_eur_pro_jahr: null   # aus Recherche bzw. Kontakt, dann als Kurve
+  festpreis_eur_mwh: null        # null = Mittel Training + Aufschlag
+  festpreis_aufschlag: 0.10
+
+strategien:
+  historie_wochen: 4             # B: Median der letzten 4 gleichen Werktage
+  saisonaler_block: true         # D je Saison (K3-Kandidat)
+  tagessteuerung: true           # T: Kontrastfall, Day-Ahead am Vortag bekannt
+
+statistik:
+  alpha_gesamt: 0.05
+  anzahl_hypothesen: 3           # Bonferroni
+  bootstrap_n: 5000
+  bootstrap_block_wochen: 4

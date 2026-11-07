@@ -1,0 +1,17 @@
+# KI-Nutzung
+
+Der Einsatz von KI-Werkzeugen ist erlaubt und kennzeichnungspflichtig (Katalog 6.5). Bewertet wird, ob wir die Ausgabe fachlich beurteilen können.
+
+## Regeln
+- Jede Datei mit KI-Anteil bekommt diesen Kopf:
+  ```python
+  # KI: Claude, Zweck: <wofür>, geprüft von <Name> durch <Test/Review/Nachrechnen>
+  ```
+- Commits mit KI-Anteil enden mit `AI-Assisted: Claude`.
+- Wer KI-Code committet, muss ihn in der Verteidigung Zeile für Zeile erklären können.
+
+## Einsätze
+
+| Datum | Person | Werkzeug | Zweck | Wie geprüft | Datei/Commit |
+| --- | --- | --- | --- | --- | --- |
+| 06.–07.11.2026 | Max | Claude | Prototyp-Notebook, Kickoff-Dokument, Kriterienabgleich, Fragestellung, Repo-Gerüst | Abgleich mit Kriterienkatalog und Kursmaterial; Prototyp-Zahlen nur als Hypothesen | Tagebuch K-001 |
