@@ -29,7 +29,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ### E-004 · Praxisfall Großmolkerei
 - **Person:** Max
-- **Entscheidung:** Szenario angelehnt an ein bayerisches Werk der Unternehmensgruppe Theo Müller; im Bericht „Großmolkerei in Bayern“, Name nur mit schriftlicher Freigabe.
+- **Entscheidung:** Szenario angelehnt an ein bayerisches Werk eines realen Praxispartners; im Bericht „Großmolkerei in Bayern“, Name nur mit schriftlicher Freigabe.
 - **Verworfen:** fiktive Galvanik (keine Rückkopplung möglich); Siemens Energy (kaum flexible Last, Vertraulichkeit).
 - **Begründung:** Max hat einen Kontakt im Werk (Elektriker) für die Rückkopplung (K1 Stufe 5).
 
