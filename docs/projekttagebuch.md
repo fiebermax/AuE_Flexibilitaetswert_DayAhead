@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 07.11.2026
 
+### A-004 · Regel: Kommunikation immer im Tagebuch dokumentieren
+- **Von → an:** Max (R2) → Claude (KI-Assistenz); gilt für alle Absprachen von R2
+- **Was:** Jede Kommunikation zwischen Rollen (Nachrichten, Fragen, Antworten, Absprachen) wird sofort mit Datum als A-, P-, K- oder M-Eintrag festgehalten, Antworten werden im bestehenden Eintrag nachgetragen. Festgeschrieben in `CLAUDE.md`, damit jede künftige KI-Sitzung die Regel befolgt.
+- **Bis:** ab sofort
+- **Änderung, nachgezogen von:** Claude, 07.11.2026 (`CLAUDE.md`, dieser Eintrag)
+
 ### K-002 · KI-Einsatz bei Download, Aufbereitung und synthetischem Lastgang
 - **Werkzeug:** Claude
 - **Zweck:** Code für `src/01_download.py`, `src/02_aufbereitung.py`, `src/02_synthetisch.py`, `src/gemeinsam.py`, erklärende Kommentare, Erweiterung von `tests/test_datenannahmen.py` (jetzt 24 Tests); Vorschläge zur Zeitumstellung mit Alternativen; Entwurf `docs/sensitivitaet_plan.md`; Formulierung und Eintragen der Tagebucheinträge E-008 bis E-018, A-002, A-003, P-002, P-003 und K-002 im Auftrag von Max, inklusive Belege (Commits `b68dfdb`, `9ce870e`, `38765e1`, `38e0516`).
