@@ -37,7 +37,7 @@ Intraday kommt als Grenze und Ausblick in die Diskussion (K6, K7). Falls Zeit bl
 | Thema | Umgang | Begründung |
 | --- | --- | --- |
 | Ausgleichsenergie | Nichtziel | Wir nehmen an, dass der geplante Verbrauch eingehalten wird; Abweichungskosten fallen für alle Strategien gleich an |
-| Viertelstunden innerhalb der Stunde | Bewusste Entscheidung: Stundenmittel als Basis, Viertelstunden als Sensitivität | Ab 10/2025 verschenkt das Mitteln Potenzial; die Sensitivitätsrechnung beziffert, wie viel (K2, K3) |
+| Viertelstunden innerhalb der Stunde | Bewusste Entscheidung: Stundenmittel als Basis, Viertelstunden als Sensitivität | Bei konstanter Leistung und Blöcken zur vollen Stunde sind die Kosten mit 15-min-Preisen und mit dem Stundenmittel mathematisch identisch. Potenzial entsteht nur, wenn Blöcke in 15-min-Schritten starten dürfen; das prüft eine eigene Variante (K2, K3, H0c) |
 | CO₂-Wirkung | Nicht gerechnet, als Ausblick genannt | Billige Stunden sind meist Stunden mit viel Erneuerbaren; ein Zusatznutzen fürs Nachhaltigkeitsreporting (K7) |
 | Übertragbarkeit | Ausblick | Ein international tätiger Konzern könnte die Methode auf Werke in anderen Gebotszonen übertragen (K7) |
 | Netzentgelte, Leistungspreis, Steuern | Nichtziel | Für alle Strategien gleich bzw. nicht zeitvariabel |
@@ -87,7 +87,7 @@ Vier fachliche Rollen nach dem Muster der Rheinlack-Fallstudie. Jede Rolle führ
 | Rolle | Person | Führt (zusammengelegte Teilpakete) | Wirkt mit | Kriterien | Vertretung |
 | --- | --- | --- | --- | --- | --- |
 | R1 Projektleitung & Controlling | offen | Fachlicher Rahmen (Frage, Hypothesen, Problem Statement); Aufbereitung & Übergabe (Bericht, Präsentation, Grafikstandard); Spot gegen Festpreis | Ergebnis & Verwertung | K1, K8, K9, K10 | R4 |
-| R2 Datenanalyse & IT | offen | Datenquellen & Qualität; Pipeline, Repo, Tests; Aggregation 15 → 60 min; Sensitivitätsrechnung; Empfehlung zur künftigen Datenerhebung; Repo-Onboarding fürs Team | Datenaufbereitung | K2, K5, Aggregation in K3 | R3 |
+| R2 Datenanalyse & IT | Max | Datenquellen & Qualität; Pipeline, Repo, Tests; Aggregation 15 → 60 min; Sensitivitätsrechnung; Empfehlung zur künftigen Datenerhebung; Repo-Onboarding fürs Team | Datenaufbereitung | K2, K5, Aggregation in K3 | R3 |
 | R3 Energieeinkauf | offen&#32; | Merkmale inklusive saisonalem Block; Strategien A bis D im Backtest; Regression, gepaarter Test, Bootstrap; Methodenfrage „braucht es eine Prognose?“ | Datenquellen | K3, K4 | R2 |
 | R4 Produktion & Schichtplanung | offen | Ergebnis & Verwertung: Umstellungskosten, Stresstests, Kipppunkte, Break-even, Empfehlung mit Kennzahl und Rücknahmeregel | Fachlicher Rahmen | K6, K7 | R1 |
 
@@ -250,7 +250,7 @@ Jede Zeile mit S3, S4 oder S5 ist eine Katalog-Anforderung, übersetzt in unsere
 - [ ] **S4** Genauigkeit beurteilt: Preise sind Auktionsergebnisse, Last und Erzeugung sind Hochrechnungen; Scheingenauigkeit benannt
 - [ ] **S4** Auflösung und Kompression: 15-Minuten-Werte zu Stundenmitteln glättet Spitzen; Effekt beziffert
 - [ ] **S4** Bekannte Fallstricke benannt: Zeitumstellung, Zonenwechsel DE-AT-LU 2018, 15-min-Umstellung 10/2025, Anzeigeprobleme bis 09.10.2025, nachträgliche Korrekturen
-- [ ] **S5** Sensitivitätsrechnung: Ersparnis mit Varianten (Zeitumstellung anders behandelt, Feiertagskalender anders, 15-min statt Stundenmittel); Ergebnis als „ändert sich um weniger als x %“
+- [ ] **S5** Sensitivitätsrechnung: Ersparnis mit Varianten (Zeitumstellung anders behandelt, Feiertagskalender anders, Blockstart in 15-min-Schritten; Relevanzschwelle, z. B. 5 % Änderung oder Umkehr einer H0-Entscheidung, vor dem Rechnen mit Datum festgelegt); Ergebnis als „ändert sich um weniger als x %“
 - [ ] **S5** Transferabgleich SMARD gegen ENTSO-E, ausdrücklich als Prüfung auf Übertragungsfehler deklariert, nicht als unabhängige Quelle
 - [ ] **S5** Synthetische Daten: Sensitivität über deren Parameter (Lastmenge, Blocklänge), weil man sie nicht gegen die Wirklichkeit prüfen kann
 
@@ -445,6 +445,36 @@ Acht Abgabeteile laut Katalog, vier vom Team und vier von jeder Person. Fehlt ei
 | 15 bis 20 | R4 | Ergebnis, Gegenbelege, Kipppunkte, Empfehlung mit Rücknahmeregel |
 
 Jede Übergabe nennt die Schnittstelle („Ich übergebe den geprüften Datensatz an R3“). Das ist sichtbares Material für K9 Stufe 5.
+
+### Verbindung von Code, Bericht und Folien
+
+Bericht (Word) und Folien (PowerPoint) erstellen wir mit Claude, ausschließlich aus Repo, `results/` und Projekttagebuch (KI ist laut Katalog 6.5 erlaubt und erwünscht). Bedingungen: keine Zahl ohne Quelle in `results/kennzahlen.json`; KI-Erstellung in `docs/ki-nutzung.md` und im Berichtsanhang gekennzeichnet; jede Person prüft ihre Abschnitte, ist als verantwortliche Autorin bzw. verantwortlicher Autor genannt und kann jede Aussage in der Verteidigung erklären. Vor der Verteidigung erstellt Claude Verteidigungsfragen pro Rolle mit Musterantworten aus dem Tagebuch.
+
+- **Grafiken** als PNG nach `results/figures/`, einheitlicher Stil: Einheit an den Achsen, Kernaussage im Titel (K8).
+- **Tabellen** als CSV nach `results/tables/`.
+- **`results/kennzahlen.json`** enthält jede Zahl, die im Bericht steht. Jede Zahl ist damit auf eine Datei zurückführbar (K5, Evidenzprinzip).
+- **Zahlen-Freeze:** Vor dem Schreiben Git-Tag `v1.0`; der Bericht nennt im Anhang diesen Commit. Sonst passen Zahlen nach einem neuen Lauf nicht mehr zum Text.
+- **Einheitlicher Stil: R1 legt Vorlage und Folienmaster fest, die Claude für Bericht und Folien nutz**t (K8).
+
+**Bericht zusätzlich zur Kapitelgliederung:** Titelblatt; Inhalts-, Abbildungs- und Tabellenverzeichnis; Literaturverzeichnis (Zitierstil laut HM-Vorgabe klären); Anhang mit Repo-Link und Commit-Hash, KI-Nutzung, Tagebuch-Auszug, Datenkatalog.
+
+**Endpräsentation, etwa 12 Folien**
+
+| # | Folie | Wer |
+| --- | --- | --- |
+| 1 | Titel und Empfehlung in einem Satz | R1 |
+| 2 | Ausgangslage: Werk, Problem, Kosten des Nichtstuns | R1 |
+| 3 | Fragestellung, H0a bis H0c | R1 |
+| 4 | Daten: echt und synthetisch, Lizenz | R2 |
+| 5 | Datenqualität: negative Preise, Zeitumstellung, Sensitivität | R2 |
+| 6 | Testdesign und Strategien | R3 |
+| 7 | Ersparnis je Strategie mit Konfidenzintervall, Anteil am Oracle | R3 |
+| 8 | Braucht es eine Prognose? Tagessteuerung als Kontrast | R3 |
+| 9 | Viertelstundenhandel (H0c), Stresstest, Kipppunkte | R4 |
+| 10 | Wirtschaftlichkeit, Break-even, Spot gegen Festpreis | R4 |
+| 11 | Empfehlung mit Prozess, Kennzahl, Rücknahmeregel | R4 |
+| 12 | Grenzen und verworfene Wege | alle |
+| Backup | Folien für erwartete Nachfragen in der Verteidigung | alle |
 
 ## Praxispartner (Option)
 
