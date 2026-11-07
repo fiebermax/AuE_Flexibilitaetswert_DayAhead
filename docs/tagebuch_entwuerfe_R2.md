@@ -79,11 +79,23 @@ Entwürfe von Claude für [Name R2]. **Nicht das Projekttagebuch.** R2 prüft je
 - **Begründung:** Gegenprobe: Feiertagsvariante nur für die Last umgestellt → Test rot.
 - **Beleg:** Test `test_last_und_preise_gleiche_werktage`
 
-### A-003 · Backtest als Funktion (für die Sensitivitätsrechnung)
-- **Von → an:** R2 → R3
-- **Was:** Für `src/06_sensitivitaet.py` muss R3s Backtest als Funktion aufrufbar sein, z. B. `backtest(preise: DataFrame, last: DataFrame, params: dict) -> DataFrame` (Spalten wie `backtest_wochen.csv`), ohne selbst Dateien zu lesen. Außerdem Hinweis zu V5: Mit Blöcken zur vollen Stunde sind 15-min- und Stundenkosten exakt gleich; nur Blockstarts in 15-min-Schritten zeigen einen Unterschied (wichtig für H0c).
-- **Bis:** [Datum, vor 13.11.]
-- **Änderung, nachgezogen von:** [R3]
+### A-003 · Übergabe R2 → R3: Preise und Last bereit, Absprachen zum Backtest
+- **Von → an:** R2 (Max) → R3 [Name]; Review-Paar R2 ↔ R3 laut Kickoff
+- **Kanal und Datum:** WhatsApp, [Datum, Uhrzeit]. Laut Kickoff ist der Chat kein Beleg, deshalb dieser Eintrag innerhalb von 24 Stunden.
+- **Was (Datei, Spalten, Einheit):**
+  - `data/processed/preise_h.parquet`: `zeit` (Europe/Berlin, Stundenbeginn), `preis_eur_mwh` (EUR/MWh), `regime` (stunde/viertel), `werktag` (bool); 2022-01-01 bis 2026-10-31, 42 355 Stunden, 0 Lücken.
+  - `data/processed/last_synth.parquet`: `datum`, `mwh` (MWh pro Tag); 2,0 an Werktagen, sonst 0 (Platzhalter).
+  - `data/processed/preise_15min.parquet`: wie `preise_h`, 15 min ab 01.10.2025 (für Sensitivität V5).
+  - Hinweise in `docs/schnittstellen.md`: März-Umstellungstag hat 23 Stunden (02:00 fehlt), Oktober-02:00 ist gemittelt.
+- **Fragen und Bitten an R3:**
+  1. Passt der 23-Stunden-Tag für die Blockkosten-Matrix, oder brauchst du eine andere Darstellung?
+  2. Backtest als Funktion `backtest(preise, last, params) -> DataFrame` (Spalten wie `backtest_wochen.csv`), die selbst keine Dateien liest, damit `06_sensitivitaet.py` Varianten einspeisen kann.
+  3. V5: Bei Blöcken zur vollen Stunde sind 15-min- und Stundenkosten mathematisch identisch. Ist ein Blockstart in 15-min-Schritten im Backtest machbar? Wichtig für H0c, weil der Anteil am Oracle dadurch sinken kann.
+  4. Review von PR #3 (nachträglich, ist schon gemergt) mit Kommentar auf GitHub; GitHub-Namen schicken, damit R2 dich als Collaborator einlädt und `CODEOWNERS` füllt.
+  5. Relevanzschwelle für die Sensitivität (Vorschlag 5 % oder Umkehr einer H0-Entscheidung) gemeinsam vor dem Rechnen festlegen (P-002).
+- **Bis:** Antwort bis [Datum]; Backtest-Funktion vor dem Zwischenreview Fr 13.11.
+- **Antwort R3:** [Datum, Inhalt]
+- **Änderung, nachgezogen von:** [z. B. R2 passt Schnittstelle an / R3 baut Funktion; Commit]
 
 ### P-002 · Sensitivitätsschwelle vor dem Rechnen festlegen
 - **Problem:** Ohne vorab festgelegte Schwelle könnte man im Nachhinein jede Änderung als „klein“ deklarieren.
