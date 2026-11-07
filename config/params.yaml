@@ -13,6 +13,21 @@ markt:
   gebotszone: "DE-LU"
   produkt: "day_ahead"          # kein Intraday (Abgrenzung, siehe Tagebuch)
   smard_filter_preis: 4169
+  regimewechsel: "2025-10-01"    # erster Tag mit Viertelstundenprodukten (SDAC)
+  zeitzone: "Europe/Berlin"
+
+daten:                           # R2: Download und Ablage (src/01, src/02)
+  smard_basis_url: "https://www.smard.de/app/chart_data"
+  aufloesungen:                  # Download je Auflösung ab "von" bis zeitraeume.datenstand
+    hour: "2022-01-01"
+    quarterhour: "2025-10-01"
+  pfade:                         # relativ zum Repo-Wurzelverzeichnis
+    raw: "data/raw"
+    interim: "data/interim"
+    processed: "data/processed"
+    tables: "results/tables"
+  http_versuche: 5               # Retry bei Verbindungsfehlern
+  http_timeout_s: 30
 
 last:                            # synthetisch, vom Praxiskontakt zu plausibilisieren
   mwh_pro_werktag: 2.0
