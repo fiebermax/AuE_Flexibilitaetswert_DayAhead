@@ -6,6 +6,22 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ---
 
+## 09.11.2026
+
+### E-019 · Rollenbereiche zusätzlich zur Pipeline-Struktur
+- **Person:** Max (R2), umgesetzt von Claude
+- **Entscheidung:** Neuer Ordner `rollen/` mit `R1/` bis `R4/`, je eine README mit Aufgabe, eigenen Dateien im Repo, Schnittstellen (erhält/übergibt), offenen Aufgaben, Review-Partner, Notizen und Gliederung des Verantwortungsnachweises. `src/`, `data/`, `results/` bleiben nach Arbeitsschritten gegliedert. `CODEOWNERS` um die Rollenordner ergänzt.
+- **Verworfen:** (a) Repo komplett nach Rollen gliedern (`R2/01_download.py` usw.): Die Pipeline läuft quer durch alle Rollen; Kickoff und Katalog (K5 Stufe 4: „klar getrennte Schritte `01_download` bis `05_bewertung`“) erwarten die Gliederung nach Arbeitsschritten; Umbau von `run_all.py`, Tests und Pfaden ohne Nutzen. (b) Nur Rollen-Präfix im Dateinamen (`01_download_R2.py`): macht den Eigenanteil sichtbar, gibt aber keinen Platz für Notizen und Verantwortungsnachweis.
+- **Begründung:** Jede Person findet ihren Anteil an einer Stelle (Eigenanteil sichtbar, Individualteil 60 %), ohne die Reproduzierbarkeit zu gefährden.
+- **Beleg:** `rollen/README.md`, `rollen/R1/` bis `rollen/R4/`, `.github/CODEOWNERS`
+
+### A-005 · Rollenbereiche fürs Team
+- **Von → an:** R2 (Max) → R1, R3, R4
+- **Was:** Jede Rolle hat jetzt `rollen/Rx/README.md` mit eigenen Dateien, Schnittstellen und offenen Aufgaben. Bitte Person eintragen, offene Aufgaben prüfen, eigene Notizen und den Entwurf des Verantwortungsnachweises dort führen; GitHub-Namen an Max für Collaborator-Einladung und `CODEOWNERS`.
+- **Kanal und Datum:** WhatsApp, Nachricht am 09.11.2026 formuliert, Versand durch Max
+- **Bis:** Rückmeldung bis Fr 13.11.2026 (Zwischenreview)
+- **Antwort:** offen
+
 ## 07.11.2026
 
 ### A-004 · Regel: Kommunikation immer im Tagebuch dokumentieren
