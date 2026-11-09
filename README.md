@@ -10,27 +10,29 @@ Alle fertigen Daten liegen als **CSV** in `data/processed/`. Öffnen mit Excel o
 
 | Datei | Inhalt |
 | --- | --- |
-| [`data/processed/preise_h.csv`](data/processed/preise_h.csv) | Strompreis für jede Stunde, 01.01.2022 bis 31.10.2026: `zeit`, `datum`, `stunde`, `preis_eur_mwh`, `regime`, `werktag` |
-| [`data/processed/last_synth.csv`](data/processed/last_synth.csv) | Stromverbrauch der Molkerei pro Tag (angenommen): `datum`, `mwh` |
-| [`results/tables/datenqualitaet.csv`](results/tables/datenqualitaet.csv) | Kennzahlen je Jahr: Stunden, Lücken, negative Preise, Durchschnittspreis |
+| [`data/processed/preise_clean.csv`](data/processed/preise_clean.csv) | bereinigter Strompreis für jede Stunde, 01.01.2022 bis 31.10.2026, mit Uhrzeit, Saison, Werktag, Betriebszeit, Verbrauch |
+| [`data/processed/last_synth.csv`](data/processed/last_synth.csv) | Stromverbrauch des Werks pro Tag (50 MWh) und verschiebbarer Anteil (Platzhalter) |
+| [`reports/data_quality.md`](reports/data_quality.md) | Kennzahlen und Grafiken zur Datenqualität |
+| [`reports/cleaning_log.md`](reports/cleaning_log.md) | jeder Bereinigungsschritt mit Zeilenzahl vorher/nachher |
 
 ```python
 import pandas as pd
-preise = pd.read_csv("data/processed/preise_h.csv")
-preise.groupby("stunde")["preis_eur_mwh"].mean()   # Durchschnittspreis je Uhrzeit
+preise = pd.read_csv("data/processed/preise_clean.csv")
+preise.groupby("stunde_lokal")["preis_eur_mwh"].median()   # typischer Preis je Uhrzeit
 ```
 
-Spalten und Einheiten im Detail: [`docs/schnittstellen.md`](docs/schnittstellen.md).
+Jede Spalte erklärt: [`docs/codebook.md`](docs/codebook.md).
 
 ## Wo was liegt
 
 | Ordner | Inhalt |
 | --- | --- |
 | `data/processed/` | **fertige Daten als CSV** (siehe oben) |
-| `docs/` | [Projekttagebuch](docs/projekttagebuch.md), [Kickoff](docs/kickoff.md), Schnittstellen, Datenkatalog |
+| `reports/` | Bereinigungs-Log, Datenqualität, Tabellen, Grafiken |
+| `docs/` | [Projekttagebuch](docs/projekttagebuch.md), [Kickoff](docs/kickoff.md), [Codebook](docs/codebook.md), [Datenaufbereitung](docs/datenaufbereitung.md), Schnittstellen |
 | `config/params.yaml` | alle Annahmen (Zeiträume, Verbrauch, Kosten) |
-| `src/` | die Programme (`01_download`, `02_aufbereitung`, …) |
-| `data/raw/` | Original-Rohdaten von SMARD, nicht anfassen |
+| `src/` | die Programme (`01_download`, `02_synthetisch`, `cleaning`, …) |
+| `data/raw/` | Original-Rohdaten von SMARD, nur lesen ([`MANIFEST.md`](data/raw/MANIFEST.md)) |
 | `tests/`, `results/`, `notebooks/` | automatische Prüfungen, Ergebnisse, Ausprobieren |
 
 ## Fragestellung und Hypothesen
@@ -56,5 +58,5 @@ Für neue Daten nur `zeitraeume.datenstand` in `config/params.yaml` ändern.
 ## Daten, Lizenzen, KI
 
 - Day-Ahead-Großhandelspreise DE-LU: **Bundesnetzagentur | SMARD.de**, Lizenz CC BY 4.0.
-- Verbrauch, Kosten und Betriebsdaten: **synthetisch**, per Skript erzeugt und mit einem Praxisvertreter plausibilisiert. Keine internen Unternehmensdaten, keine personenbezogenen Daten.
+- Verbrauch und Betriebszeit: Angaben des Praxiskontakts (Interview 09.11.2026); verschiebbarer Anteil und Kosten: **synthetisch** (Annahmen in `config/params.yaml`). Keine internen Unternehmensdaten, keine personenbezogenen Daten.
 - KI-Einsatz ist gekennzeichnet: Dateikopf, Commit-Trailer `AI-Assisted: Claude`, [`docs/ki-nutzung.md`](docs/ki-nutzung.md).
