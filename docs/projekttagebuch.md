@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### P-006 · PR #6 ohne Review gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 wird nach `main` nur nach Review des Paarpartners gemergt; R3 ist noch nicht im Repo, das Review von PR #6 steht aus.
+- **Angesprochen von:** Max (R2), 09.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich, damit das Team die CSV-Daten auf `main` hat. Review durch R3 nachträglich.
+- **Ergebnis:** PR #6 am 09.11.2026 gemergt; nachträgliches Review offen.
+
 ### M-001 · Teamtreffen: gemeinsame Einrichtung und Durchsprache, 09.11.2026
 - **Teilnehmende:** alle vier Teammitglieder (u. a. Max, Susan)
 - **Inhalte:**
