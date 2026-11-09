@@ -6,6 +6,95 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ---
 
+## 09.11.2026
+
+### P-006 · PR #6 ohne Review gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 wird nach `main` nur nach Review des Paarpartners gemergt; R3 ist noch nicht im Repo, das Review von PR #6 steht aus.
+- **Angesprochen von:** Max (R2), 09.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich, damit das Team die CSV-Daten auf `main` hat. Review durch R3 nachträglich.
+- **Ergebnis:** PR #6 am 09.11.2026 gemergt; nachträgliches Review offen.
+
+### M-001 · Teamtreffen: gemeinsame Einrichtung und Durchsprache, 09.11.2026
+- **Teilnehmende:** alle vier Teammitglieder (u. a. Max, Susan)
+- **Inhalte:**
+  - VS Code bei allen eingerichtet und das GitHub-Repository darin eingebunden
+  - GitHub-Struktur gemeinsam durchgegangen (Ordner `src/`, `data/`, `docs/`, `config/`), `README.md` gelesen
+  - Coding Agents eingerichtet: Claude Code (Anthropic) und Codex (OpenAI), siehe K-004
+  - Anforderungen besprochen (Kriterienkatalog K1–K10, Abgaben, Termine)
+  - Theorie besprochen: Day-Ahead-Markt, Testdesign (jeden Freitag nachspielen, nur damals bekanntes Wissen), Strategien A–D, C, T, Hypothesen H0a–H0c
+  - Probleme bei der Einrichtung gemeinsam gelöst, siehe P-005
+- **Stand je Paket:**
+
+| Paket | Stand | Rückstand | Maßnahme | Owner | bis |
+| --- | --- | --- | --- | --- | --- |
+| R1 | Rahmen, Kickoff | Problem Statement, Folien 1–2 | im Team verteilen | R1 | Pitch |
+| R2 | Daten fertig als CSV (`data/processed/`), Datenzugriff für R3 | Datenfolie, Code erklären können | Max | R2 | Di 10.11. / Fr 13.11. |
+| R3 | Testdesign besprochen | Merkmale, Backtest | Datenzugriff aus `docs/schnittstellen.md` nutzen | R3 | vor 13.11. |
+| R4 | Testdesign besprochen | Kostenannahmen | Recherche Umstellungskosten | R4 | vor 13.11. |
+
+### P-005 · Probleme bei der Einrichtung
+- **Problem:** Beim Einrichten von VS Code, Repository-Anbindung und Coding Agents traten Probleme auf. [Konkrete Probleme ergänzen, z. B. Anmeldung, Zugriffsrechte, Installation]
+- **Angesprochen von:** Team, 09.11.2026
+- **Lösungsvorschlag:** gemeinsam im Treffen Schritt für Schritt durchgehen
+- **Entscheidung:** im Team gelöst
+- **Ergebnis:** alle können auf das Repository zugreifen und mit den Agents arbeiten
+
+### K-004 · Coding Agents für das Team (Claude Code, OpenAI Codex)
+- **Werkzeug:** Claude Code (Anthropic), Codex (OpenAI), jeweils in VS Code
+- **Zweck:** Unterstützung beim Programmieren und Dokumentieren in den Teilpaketen
+- **Wie geprüft:** Jeder Einsatz wird in `docs/ki-nutzung.md` eingetragen (Werkzeug, Zweck, Prüfung); Dateikopf `# KI: …` und Commit-Trailer `AI-Assisted: …`; wer KI-Code committet, muss ihn in der Verteidigung erklären können (Sperrkriterium).
+
+### E-023 · Rollenordner wieder entfernt
+- **Person:** Max (R2)
+- **Entscheidung:** Der Ordner `rollen/` (R1–R4) wird entfernt; Aufgaben und Zuständigkeiten stehen im Kickoff (`docs/kickoff.md`) und im Tagebuch.
+- **Verworfen:** Rollenordner beibehalten (zusätzliche Struktur, die das Team eher verwirrt als entlastet).
+- **Begründung:** Repo übersichtlich halten, damit sich alle schnell zurechtfinden (siehe E-022).
+
+### K-003 · Rückkopplung Praxiskontakt: Produktion läuft 16 Stunden am Tag
+- **Gesprächspartner:** Kontakt beim Praxispartner (Elektrik), Rücksprache durch Max, 09.11.2026
+- **Aussage:** Die Produktion läuft 16 Stunden am Tag.
+- **Was wir geändert haben:** `params.yaml`: `last.betrieb_h_pro_tag: 16`, `last.betrieb_start_h: null` (offen). Folge für R3: Der verschiebbare 6-Stunden-Block muss innerhalb der 16 Betriebsstunden liegen; ein Nachtblock außerhalb der Betriebszeit ist nicht zulässig.
+- **Offen:** Wann beginnen die 16 Stunden (z. B. 06–22 Uhr)? Welcher Prozess ist verschiebbar, mit welcher Leistung? Betriebsruhe 24./31.12.? Nächste Rückfrage durch Max.
+
+### E-022 · Übergabe als CSV statt Parquet; README gekürzt
+- **Person:** Max (R2), umgesetzt von Claude
+- **Entscheidung:** `preise_h.csv` und `last_synth.csv` statt Parquet; zusätzliche Spalten `datum` und `stunde` in `preise_h.csv`, damit `groupby("stunde")` ohne Datumsbehandlung geht. Die CSV-Dateien und `results/tables/*.csv` liegen im Repo, damit das Team sie ohne Pipeline-Lauf öffnen kann. `README.md` beginnt jetzt mit „Daten ansehen“; `data/interim/` entfällt (wurde nicht mehr gebraucht).
+- **Verworfen:** Parquet beibehalten (kompakter und typsicher, aber nicht in Excel zu öffnen und für Teammitglieder ohne Python-Erfahrung eine Hürde).
+- **Begründung:** Das ganze Team (u. a. Susan) soll die Daten mit pandas oder Excel direkt analysieren können (K9, K10). Schnittstelle zu R3 geändert, siehe `docs/schnittstellen.md`.
+- **Beleg:** `README.md`, `docs/schnittstellen.md`, Test `test_spalten_laut_schnittstelle`
+
+### E-021 · Nur Stundenpreise, keine 15-Minuten-Daten
+- **Person:** Max (R2)
+- **Entscheidung:** Wir arbeiten durchgehend mit Stundenpreisen. Ab 01.10.2025 nutzen wir den Stundenwert, den SMARD aus den vier Viertelstunden bildet. Die 15-min-Rohdaten (57 Wochendateien) und `preise_15min` sind gestrichen, ebenso die Sensitivitätsvariante V5. Die Spalte `regime` (Stunden- vs. Viertelstundenhandel) bleibt, damit Test 1 und Test 2 weiter verglichen werden können (H0c).
+- **Verworfen:** Eigene Stundenmittel aus 15-min-Daten und eine Variante mit Blockstart in 15-min-Schritten (zu komplex für die verbleibenden 10 Tage; bei Blöcken zur vollen Stunde ohnehin rechnerisch gleich, E-012).
+- **Begründung:** Vereinfachung, damit das Team die Daten versteht und nutzen kann. Grenze im Bericht: Ab 10/2025 verschenkt eine Planung im Stundenraster mögliches Potenzial der Viertelstunden (Ausblick).
+- **Beleg:** `src/02_aufbereitung.py`, `config/params.yaml` (`daten.aufloesungen`), `docs/sensitivitaet_plan.md`
+
+### A-007 · Datenzugriff für R3 bereitgestellt, offene Punkte
+- **Von → an:** R2 (Max) → R3
+- **Kanal und Datum:** WhatsApp, Nachricht am 09.11.2026 formuliert, Versand durch Max
+- **Was:** `src/datenzugriff.py` liefert je Freitag `historie` (nur bekannte Preise), `zielwoche` (echte Preise der geplanten Woche) und `last`; Nutzung in `docs/schnittstellen.md`.
+- **Fragen an R3:** (1) Passt die Planungsuhrzeit Freitag 12:00 (`planung.planungsuhrzeit`)? (2) Neben B mit 4 Wochen auch ein Fenster von 2 Jahren als Variante (Vorschlag von Max)? Dafür reicht `historie_wochen=104`. (3) Stresstest 2022: In den ersten Wochen gibt es kaum Historie, weil die Daten am 01.01.2022 beginnen. Sollen wir ab Dezember 2021 laden (`daten.aufloesungen.hour`), oder bewertet der Stresstest nur Strategien, die auf dem Training gelernt haben?
+- **Bis:** Antwort bis Fr 13.11.2026
+- **Antwort R3:** offen
+- **Änderung, nachgezogen von:** offen
+
+### E-020 · Datenzugriff je Freitag als eigenes Modul mit Look-ahead-Schutz
+- **Person:** Max (R2), umgesetzt von Claude
+- **Entscheidung:** Neues Modul `src/datenzugriff.py`. Es liefert für jeden Planungsfreitag einer Periode die bis dahin bekannten Preise (`historie`), die echten Preise der geplanten Woche (`zielwoche`) und die Last dieser Woche. Rollierender Ursprung: Jeden Freitag rückt der Stichtag eine Woche weiter, die vergangene Woche gehört ab dann zur Historie. Ein Datensatz für alles, kein neues Einlesen pro Woche. Neue Schalter in `params.yaml`, Block `planung`: Planung freitags 12:00, also bekannt bis Freitag 23:00, weil die Samstagspreise erst gegen 12:45 veröffentlicht werden; nur volle Wochen je Periode.
+- **Verworfen:** (a) Jede Woche einen neuen Datensatz einlesen: gleiches Ergebnis, aber viele Dateien und mehr Fehlerquellen. (b) Datumslogik in jeder Strategie selbst schreiben (R3): Jede Strategie könnte die Grenze anders ziehen, ein Look-ahead fiele nicht auf. (c) Wochen über Periodengrenzen mitwerten: Die Woche 29.09.–05.10.2025 hätte Stunden- und Viertelstundenregime gemischt (H0c).
+- **Begründung:** K4 Stufe 3 („Validierung korrekt: rollierender Ursprung, Test nie fürs Entwickeln benutzt“), K5 Stufe 5 (automatisierte Prüfung „kein Look-ahead“, dokumentierte Schnittstelle). 38 Freitage in Test 1, 51 in Test 2.
+- **Beleg:** `src/datenzugriff.py`, Tests `test_kein_look_ahead_in_allen_planungswochen`, `test_look_ahead_wird_erkannt`, `docs/schnittstellen.md`
+
+### A-006 · Abgleich des Verständnisses von Fragestellung und Testdesign (Susan, Max)
+- **Von → an:** Susan Jaturat (Rolle noch nicht eingetragen) → Team, Antwort von Max (R2)
+- **Kanal und Datum:** WhatsApp, 09.11.2026, 20:59 und 21:04; Antwort von Max formuliert am 09.11.2026
+- **Was (Susans Zusammenfassung):** Produktion läuft 24/7, energieintensive Aufgaben werden auf wahrscheinlich günstige Zeiten gelegt; der Day-Ahead-Preis ist am Vortag bekannt, der Personalplan steht aber freitags für die ganze Woche, deshalb eine Prognose; Vergangenheit nachspielen; ein Monat ab einem Freitag, vier Wochenwerte aufaddieren und mit dem Festpreis vergleichen; „8–14 Uhr billigster Strom wegen Solar“.
+- **Bestätigt:** Kern des Testdesigns (Freitag nachspielen, nur Wissen bis zu diesem Freitag, mit echten Day-Ahead-Preisen nachrechnen); Grund für die Prognose (Wochenplanung des Personals); nur der energieintensive Prozess wird verschoben.
+- **Korrigiert:** (1) 08–14 Uhr ist der Status quo A (`last.status_quo_start_h: 8`), nicht die günstigste Zeit; dass mittags günstiger ist, ist eine Prototyp-Hypothese, kein Ergebnis. (2) Nicht ein Monat, sondern jeder Freitag in Test 1 (01–09/2025) und Test 2 (10/2025–09/2026); Kennzahl ist die mittlere Ersparnis pro Woche mit 95-%-Konfidenzintervall, keine Summe von vier Werten. (3) Hauptvergleich ist Status quo A mit denselben Day-Ahead-Preisen; Spot gegen Festpreis ist ein eigener Vergleich (R1, R4). (4) Strategie B nutzt die letzten 4 Wochen (`strategien.historie_wochen: 4`), nicht nur die Vorwoche.
+- **Antwort Susan:** offen
+- **Änderung, nachgezogen von:** keine Änderung an Code oder Annahmen. Hinweis für den Pitch (K9): Testdesign so erklären, dass diese Missverständnisse nicht entstehen.
+
 ## 07.11.2026
 
 ### A-004 · Regel: Kommunikation immer im Tagebuch dokumentieren

@@ -8,9 +8,6 @@
 /src/03_*           @R3-github-name
 /src/04_*           @R3-github-name
 /src/05_*           @R4-github-name
-/rollen/R1/         @R1-github-name
-/rollen/R2/         @R2-github-name
-/rollen/R3/         @R3-github-name
-/rollen/R4/         @R4-github-name
 /src/02_synthetisch.py @R2-github-name
 /src/gemeinsam.py   @R2-github-name
+/src/datenzugriff.py @R2-github-name

@@ -25,24 +25,14 @@ Die Varianten sind keine neuen Hypothesentests. Es entstehen keine zusätzlichen
 | V2 | Zeitumstellung März | 02:00 fehlt, Tag hat 23 h | fehlende Stunde mit Preis der Vorstunde gefüllt (nur als Sensitivität!) | `daten.zeitumstellung_maerz: fehlt \| vorstunde` | `02_aufbereitung.baue_tabelle` | **im Basisszenario 0**, wie V1 (E-018) |
 | V3 | Feiertagskalender | ohne Mariä Himmelfahrt | mit Mariä Himmelfahrt (15.08.) | `last.feiertagsvariante_mariae_himmelfahrt` (**existiert schon**) | Preise (`werktag`) und Last zugleich; ein Test erzwingt Gleichlauf | klein: 1 Werktag pro Jahr weniger |
 | V4 | Betriebsruhe 24./31.12. | Werktag | arbeitsfrei | `last.zusaetzlich_frei: ["12-24", "12-31"]` | `gemeinsam.werktage` | klein; **nur falls der Praxiskontakt das bestätigt** |
-| V5 | Zeitauflösung ab 10/2025 | Stundenmittel, Blockstart zur vollen Stunde | 15-min-Preise, Blockstart in 15-min-Schritten | `strategien.blockstart_raster_min: 60 \| 15` | R3: bei 15 `preise_15min.parquet`, Block = `blocklaenge_h` × 4 Viertelstunden, C und T im selben Raster; nur Testperiode 2 | **offen, wichtig für H0c** (siehe unten) |
 | V6 | Lastmenge (synthetisch) | 2,0 MWh/Werktag | 1,0 · 4,0 | `last.mwh_pro_werktag` | `02_synthetisch` | €/Woche skaliert linear, Anteil am Oracle bleibt gleich (rechnerisch, als Kontrolle) |
 | V7 | Blocklänge (synthetisch) | 6 h | 4 h · 8 h | `last.blocklaenge_h` | R3 (Blockkosten-Matrix) | nicht trivial: kurze Blöcke treffen das Preistal besser |
 
 V6 und V7 sind laut Kickoff Pflicht für K2 Stufe 5: Synthetische Daten lassen sich nicht gegen die Wirklichkeit prüfen, also prüfen wir, wie stark das Ergebnis von ihren Parametern abhängt.
 
-## Wichtige Vorab-Erkenntnis zu V5 (15 min statt Stundenmittel)
+## Gestrichen: V5 (15 min statt Stunde)
 
-Bei **konstanter Leistung** und einem **Block, der zur vollen Stunde beginnt und endet**, sind die Kosten mit 15-min-Preisen und mit dem Stundenmittel **exakt gleich**:
-
-Kosten einer Stunde = Leistung × ¼ h × (p₁ + p₂ + p₃ + p₄) = Leistung × 1 h × Mittelwert(p₁…p₄)
-
-Eine Variante „gleiche Blöcke, nur 15-min-Preise“ zeigt also immer 0 % Unterschied und wäre eine Scheinprüfung. Das Mitteln kostet nur dann Potenzial, wenn die Strategie die feinere Auflösung auch **nutzen** kann:
-
-- **Blockstart in 15-min-Schritten** (z. B. 10:15–16:15), das ist die sinnvolle Variante V5;
-- Oracle C und Tagessteuerung T profitieren davon am meisten. Der realisierbare Anteil (Strategie ÷ Oracle) kann deshalb **sinken**, auch wenn die Ersparnis in Euro steigt. Das betrifft direkt H0c und muss R3 bei der Interpretation kennen.
-
-Die höhere Spitze im 15-min-Raster (Höchstwert 2026: 747 statt 697 €/MWh) zeigt nur, dass Information verloren geht. Ob sie Geld wert ist, zeigt erst V5.
+Nur Stundenpreise (Tagebuch E-021). Bei Blöcken zur vollen Stunde wären 15-min- und Stundenkosten ohnehin rechnerisch gleich; ein Unterschied entstünde erst bei Blockstarts in 15-min-Schritten, das ist für den Zeitrahmen zu aufwendig. Im Bericht als Grenze und Ausblick nennen.
 
 ## Technische Umsetzung
 
@@ -51,8 +41,6 @@ Die höhere Spitze im 15-min-Raster (Höchstwert 2026: 747 statt 697 €/MWh) ze
    daten:
      zeitumstellung_oktober: "mittel"   # mittel | erste | zweite
      zeitumstellung_maerz: "fehlt"      # fehlt | vorstunde   (nur für Sensitivität)
-   strategien:
-     blockstart_raster_min: 60          # 60 | 15  (V5, wirkt in R3s Backtest)
    last:
      zusaetzlich_frei: []               # z. B. ["12-24", "12-31"], nach Praxisgespräch
    ```
@@ -65,7 +53,6 @@ Die höhere Spitze im 15-min-Raster (Höchstwert 2026: 747 statt 697 €/MWh) ze
        V1b: {daten.zeitumstellung_oktober: "zweite"}
        V2:  {daten.zeitumstellung_maerz: "vorstunde"}
        V3:  {last.feiertagsvariante_mariae_himmelfahrt: true}
-       V5:  {strategien.blockstart_raster_min: 15}
        V6a: {last.mwh_pro_werktag: 1.0}
        V6b: {last.mwh_pro_werktag: 4.0}
        V7a: {last.blocklaenge_h: 4}
@@ -78,7 +65,6 @@ Die höhere Spitze im 15-min-Raster (Höchstwert 2026: 747 statt 697 €/MWh) ze
    - Die Basis-Variante reproduziert die Basis-Ergebnisse exakt.
    - Jede Variante ändert ihren Schalter tatsächlich, sonst wäre sie eine stille Nullvariante.
    - V6 skaliert die €/Woche linear und lässt den Anteil am Oracle gleich, als Plausibilitätskontrolle.
-   - Raster 60 auf 15-min-Preisen liefert exakt das Basisergebnis (rechnerische Identität, siehe oben).
    - Zeitumstellungstage sind lastfrei (`test_zeitumstellung_nur_an_lastfreien_tagen`); schlägt der Test fehl, V1/V2 aktivieren.
 
 ## Zeitplan und Aufwand (Schätzung)

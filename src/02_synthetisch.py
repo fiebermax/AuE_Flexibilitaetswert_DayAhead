@@ -1,5 +1,5 @@
 # KI: Claude, Zweck: synthetischer Lastgang (deterministisch) aus params.yaml, geprüft von <Name R2> durch Review und pytest
-"""Step 2b: synthetic load profile of the flexible process -> data/processed/last_synth.parquet.
+"""Step 2b: synthetic load profile of the flexible process -> data/processed/last_synth.csv.
 
 Owner: R2. Output columns exactly as in docs/schnittstellen.md: `datum`, `mwh`.
 
@@ -60,7 +60,7 @@ def erzeuge_last(von: str, bis: str, mwh_pro_werktag: float, mariae: bool) -> pd
     tage = pd.date_range(von, bis, freq="D")                       # plain calendar days, no time zone
     ist_werktag = werktage(tage.tz_localize("Europe/Berlin"), mariae)
     df = pd.DataFrame({
-        "datum": tage.date,                                         # stored as a pure date (no time)
+        "datum": tage.strftime("%Y-%m-%d"),                         # pure date as text, e.g. 2025-01-06
         "mwh": [float(mwh_pro_werktag) if w else 0.0 for w in ist_werktag],
     })
     return df[SPALTEN]
@@ -76,9 +76,9 @@ def main() -> None:
     bis = p["zeitraeume"]["datenstand"]
     df = erzeuge_last(von, bis, last["mwh_pro_werktag"], bool(last["feiertagsvariante_mariae_himmelfahrt"]))
 
-    ziel = pfad(p, "processed") / "last_synth.parquet"
+    ziel = pfad(p, "processed") / "last_synth.csv"
     ziel.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(ziel, index=False)
+    df.to_csv(ziel, index=False)
 
     n_wt = int((df["mwh"] > 0).sum())
     leistung = last["mwh_pro_werktag"] / last["blocklaenge_h"]

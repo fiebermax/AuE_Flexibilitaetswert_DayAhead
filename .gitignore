@@ -4,8 +4,10 @@ __pycache__/
 .venv/
 data/interim/*
 data/processed/*
+!data/processed/*.csv
 results/figures/*
 results/tables/*
+!results/tables/*.csv
 !**/.gitkeep
 # Partnerdaten nie ins Repo
 partner/
