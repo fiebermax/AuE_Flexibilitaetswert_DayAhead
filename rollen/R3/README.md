@@ -21,7 +21,7 @@ Arbeitsbereich der Rolle. **Code, Daten und Ergebnisse bleiben in `src/`, `data/
 
 **Erhält:**
 - Von R2: Zugriff je Freitag über `src/datenzugriff.py` (`planungswochen(...)`, siehe `docs/schnittstellen.md`)
-- Von R2: `data/processed/preise_h.parquet` (`zeit`, `preis_eur_mwh`, `regime`, `werktag`), `last_synth.parquet` (`datum`, `mwh`), `preise_15min.parquet`; Hinweise in `docs/schnittstellen.md`
+- Von R2: `data/processed/preise_h.csv` (`zeit`, `datum`, `stunde`, `preis_eur_mwh`, `regime`, `werktag`), `last_synth.csv` (`datum`, `mwh`); Hinweise in `docs/schnittstellen.md`
 
 **Übergibt:**
 - An R4: `results/tables/backtest_wochen.csv` (`woche`, `periode`, `kosten_A` … `kosten_T`, `oracle`), `results/tables/ki_strategien.csv`

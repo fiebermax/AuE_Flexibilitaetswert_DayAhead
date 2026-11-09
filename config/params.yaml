@@ -18,12 +18,10 @@ markt:
 
 daten:                           # R2: Download und Ablage (src/01, src/02)
   smard_basis_url: "https://www.smard.de/app/chart_data"
-  aufloesungen:                  # Download je Auflösung ab "von" bis zeitraeume.datenstand
+  aufloesungen:                  # Download ab "von" bis zeitraeume.datenstand; nur Stundenwerte (Tagebuch E-021)
     hour: "2022-01-01"
-    quarterhour: "2025-10-01"
   pfade:                         # relativ zum Repo-Wurzelverzeichnis
     raw: "data/raw"
-    interim: "data/interim"
     processed: "data/processed"
     tables: "results/tables"
   http_versuche: 5               # Retry bei Verbindungsfehlern
@@ -35,6 +33,8 @@ last:                            # synthetisch, vom Praxiskontakt zu plausibilis
   status_quo_start_h: 8          # Strategie A: fest 08-14 Uhr
   werktage: "Mo-Fr ohne Feiertage Bayern"
   feiertagsvariante_mariae_himmelfahrt: false   # Sensitivität: true
+  betrieb_h_pro_tag: 16          # Praxiskontakt 09.11.2026 (Tagebuch K-003): Produktion läuft 16 h am Tag
+  betrieb_start_h: null          # offen: Wann beginnen die 16 Stunden? Beim Kontakt erfragen
 
 kosten:
   mitarbeiter: 3

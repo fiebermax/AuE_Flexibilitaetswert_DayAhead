@@ -8,6 +8,26 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### K-003 · Rückkopplung Praxiskontakt: Produktion läuft 16 Stunden am Tag
+- **Gesprächspartner:** Kontakt beim Praxispartner (Elektrik), Rücksprache durch Max, 09.11.2026
+- **Aussage:** Die Produktion läuft 16 Stunden am Tag.
+- **Was wir geändert haben:** `params.yaml`: `last.betrieb_h_pro_tag: 16`, `last.betrieb_start_h: null` (offen). Folge für R3: Der verschiebbare 6-Stunden-Block muss innerhalb der 16 Betriebsstunden liegen; ein Nachtblock außerhalb der Betriebszeit ist nicht zulässig.
+- **Offen:** Wann beginnen die 16 Stunden (z. B. 06–22 Uhr)? Welcher Prozess ist verschiebbar, mit welcher Leistung? Betriebsruhe 24./31.12.? Nächste Rückfrage durch Max.
+
+### E-022 · Übergabe als CSV statt Parquet; README gekürzt
+- **Person:** Max (R2), umgesetzt von Claude
+- **Entscheidung:** `preise_h.csv` und `last_synth.csv` statt Parquet; zusätzliche Spalten `datum` und `stunde` in `preise_h.csv`, damit `groupby("stunde")` ohne Datumsbehandlung geht. Die CSV-Dateien und `results/tables/*.csv` liegen im Repo, damit das Team sie ohne Pipeline-Lauf öffnen kann. `README.md` beginnt jetzt mit „Daten ansehen“; `data/interim/` entfällt (wurde nicht mehr gebraucht).
+- **Verworfen:** Parquet beibehalten (kompakter und typsicher, aber nicht in Excel zu öffnen und für Teammitglieder ohne Python-Erfahrung eine Hürde).
+- **Begründung:** Das ganze Team (u. a. Susan) soll die Daten mit pandas oder Excel direkt analysieren können (K9, K10). Schnittstelle zu R3 geändert, siehe `docs/schnittstellen.md`.
+- **Beleg:** `README.md`, `docs/schnittstellen.md`, Test `test_spalten_laut_schnittstelle`
+
+### E-021 · Nur Stundenpreise, keine 15-Minuten-Daten
+- **Person:** Max (R2)
+- **Entscheidung:** Wir arbeiten durchgehend mit Stundenpreisen. Ab 01.10.2025 nutzen wir den Stundenwert, den SMARD aus den vier Viertelstunden bildet. Die 15-min-Rohdaten (57 Wochendateien) und `preise_15min` sind gestrichen, ebenso die Sensitivitätsvariante V5. Die Spalte `regime` (Stunden- vs. Viertelstundenhandel) bleibt, damit Test 1 und Test 2 weiter verglichen werden können (H0c).
+- **Verworfen:** Eigene Stundenmittel aus 15-min-Daten und eine Variante mit Blockstart in 15-min-Schritten (zu komplex für die verbleibenden 10 Tage; bei Blöcken zur vollen Stunde ohnehin rechnerisch gleich, E-012).
+- **Begründung:** Vereinfachung, damit das Team die Daten versteht und nutzen kann. Grenze im Bericht: Ab 10/2025 verschenkt eine Planung im Stundenraster mögliches Potenzial der Viertelstunden (Ausblick).
+- **Beleg:** `src/02_aufbereitung.py`, `config/params.yaml` (`daten.aufloesungen`), `docs/sensitivitaet_plan.md`
+
 ### A-007 · Datenzugriff für R3 bereitgestellt, offene Punkte
 - **Von → an:** R2 (Max) → R3
 - **Kanal und Datum:** WhatsApp, Nachricht am 09.11.2026 formuliert, Versand durch Max

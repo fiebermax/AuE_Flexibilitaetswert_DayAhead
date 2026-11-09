@@ -53,22 +53,28 @@ class Planungswoche:
 # ---------------------------------------------------------------------------------------------
 # Loading (thin wrappers, so R3 never has to know paths)
 # ---------------------------------------------------------------------------------------------
-def lade_preise(params: dict | None = None, aufloesung: str = "h") -> pd.DataFrame:
-    """Load preise_h.parquet ("h") or preise_15min.parquet ("15min") as produced by step 02."""
+def lade_preise(params: dict | None = None) -> pd.DataFrame:
+    """Load preise_h.csv (step 02) and turn the text column `zeit` back into German time.
+
+    The CSV stores times with their UTC offset (+01:00 winter, +02:00 summer). Reading them via UTC and
+    converting back to Europe/Berlin gives one clean time column, also across the clock changes.
+    """
     p = params or lade_params()
-    datei = pfad(p, "processed") / ("preise_h.parquet" if aufloesung == "h" else "preise_15min.parquet")
+    datei = pfad(p, "processed") / "preise_h.csv"
     if not datei.exists():
         raise FileNotFoundError(f"{datei} fehlt. Zuerst ausführen: python src/run_all.py")
-    return pd.read_parquet(datei)
+    df = pd.read_csv(datei)
+    df["zeit"] = pd.to_datetime(df["zeit"], utc=True).dt.tz_convert(p["markt"]["zeitzone"])
+    return df
 
 
 def lade_last(params: dict | None = None) -> pd.DataFrame:
-    """Load last_synth.parquet (datum, mwh) as produced by step 02b; `datum` as pandas Timestamp."""
+    """Load last_synth.csv (datum, mwh) as produced by step 02b; `datum` as pandas Timestamp."""
     p = params or lade_params()
-    datei = pfad(p, "processed") / "last_synth.parquet"
+    datei = pfad(p, "processed") / "last_synth.csv"
     if not datei.exists():
         raise FileNotFoundError(f"{datei} fehlt. Zuerst ausführen: python src/run_all.py")
-    df = pd.read_parquet(datei)
+    df = pd.read_csv(datei)
     df["datum"] = pd.to_datetime(df["datum"])
     return df
 

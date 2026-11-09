@@ -1,0 +1,6 @@
+jahr,stunden,mit_preis,luecken,zeitumstellung_23h_tage,negative_preise,anteil_negativ_pct,preis_min,preis_mittel,preis_max,doppelte_zeitstempel_roh
+2022,8759,8759,0,1,69,0.79,-19.04,235.46,871.0,0
+2023,8759,8759,0,1,301,3.44,-500.0,95.19,524.27,0
+2024,8783,8783,0,1,457,5.2,-135.45,78.51,936.28,0
+2025,8759,8759,0,1,573,6.54,-250.32,89.33,583.4,0
+2026,7295,7295,0,1,462,6.33,-499.0,114.02,697.31,0
