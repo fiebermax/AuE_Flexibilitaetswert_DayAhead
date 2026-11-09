@@ -32,6 +32,7 @@ def _lade_modul(name):
 
 auf = _lade_modul("02_aufbereitung")
 syn = _lade_modul("02_synthetisch")
+dz = _lade_modul("datenzugriff")
 LAST = ROOT / PARAMS["daten"]["pfade"]["processed"] / "last_synth.parquet"
 dl = _lade_modul("01_download")
 
@@ -256,3 +257,53 @@ def test_zeitumstellung_nur_an_lastfreien_tagen(preise):
     last = pd.read_parquet(LAST)
     last_an_tagen = last[pd.to_datetime(last["datum"]).isin(tage)]["mwh"]
     assert (last_an_tagen == 0).all(), "Last an einem Zeitumstellungstag: Varianten V1/V2 der Sensitivität aktivieren"
+
+
+# ---------------------------------------------------------------------------------------------
+# Datenzugriff für den Backtest (src/datenzugriff.py): rollierender Ursprung ohne Look-ahead
+# ---------------------------------------------------------------------------------------------
+def test_bekannt_bis_haengt_an_der_planungsuhrzeit():
+    fr = pd.Timestamp("2025-03-07", tz=TZ)
+    vorher = {**PARAMS, "planung": {**PARAMS["planung"], "planungsuhrzeit": "12:00"}}
+    nachher = {**PARAMS, "planung": {**PARAMS["planung"], "planungsuhrzeit": "14:00"}}
+    assert dz.bekannt_bis(fr, vorher) == pd.Timestamp("2025-03-08", tz=TZ)   # nur bis Freitag 23:00 bekannt
+    assert dz.bekannt_bis(fr, nachher) == pd.Timestamp("2025-03-09", tz=TZ)  # Samstag schon veröffentlicht
+
+
+def test_freitage_nur_volle_wochen_je_periode():
+    f1 = dz.freitage("test_1_stunde", PARAMS)
+    f2 = dz.freitage("test_2_viertel", PARAMS)
+    assert all(f.weekday() == 4 for f in f1 + f2)
+    # keine Woche gehört zu beiden Testperioden und keine reicht über den Regimewechsel
+    assert set(f1).isdisjoint(f2)
+    assert f1[-1] + pd.Timedelta(days=10) < WECHSEL <= f2[0] + pd.Timedelta(days=3)
+
+
+@pytest.mark.skipif(not (LAST.exists() and PREISE.exists()), reason="Pipeline noch nicht gelaufen")
+def test_kein_look_ahead_in_allen_planungswochen(preise):
+    last = dz.lade_last(PARAMS)
+    for periode in ("training", "test_1_stunde", "test_2_viertel", "stresstest"):
+        for w in dz.planungswochen(preise, last, periode, PARAMS, historie_wochen=4):
+            assert w.historie.empty or w.historie["zeit"].max() < w.bekannt_bis
+            assert w.zielwoche["zeit"].min() >= w.bekannt_bis                 # Zielwoche liegt ganz in der Zukunft
+            assert w.zielwoche["zeit"].min().weekday() == 0 and w.zielwoche["zeit"].min().hour == 0
+            assert len(w.zielwoche) in (167, 168)                             # 167 in der März-Umstellungswoche
+            assert len(w.last) == 7
+
+
+def test_look_ahead_wird_erkannt():
+    # Gegenprobe: eine Historie mit Daten aus der Zielwoche muss abbrechen
+    fr = pd.Timestamp("2025-03-07", tz=TZ)
+    zeiten = pd.date_range("2025-03-01", "2025-03-17", freq="h", tz=TZ)
+    preise = pd.DataFrame({"zeit": zeiten, "preis_eur_mwh": 1.0, "regime": "stunde", "werktag": True})
+    last = pd.DataFrame({"datum": pd.date_range("2025-03-01", "2025-03-17"), "mwh": 2.0})
+    kaputt = {**PARAMS, "planung": {**PARAMS["planung"], "planungsuhrzeit": "12:00"}}
+    w = dz.planungswoche(preise, last, fr, kaputt)
+    assert w.historie["zeit"].max() < w.zielwoche["zeit"].min()
+    original = dz.bekannt_bis
+    try:
+        dz.bekannt_bis = lambda f, p=None: pd.Timestamp("2025-03-12", tz=TZ)   # absichtlich falsche Grenze
+        with pytest.raises(dz.LookAheadFehler):
+            dz.planungswoche(preise, last, fr, kaputt)
+    finally:
+        dz.bekannt_bis = original

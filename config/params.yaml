@@ -50,6 +50,12 @@ strategien:
   saisonaler_block: true         # D je Saison (K3-Kandidat)
   tagessteuerung: true           # T: Kontrastfall, Day-Ahead am Vortag bekannt
 
+planung:                         # R2: Datenzugriff für den Backtest (src/datenzugriff.py)
+  planungstag: "Friday"          # Schichtplan für die Folgewoche (Mo-So)
+  planungsuhrzeit: "12:00"       # Annahme: Planung Freitagmittag
+  day_ahead_veroeffentlichung: "12:45"   # SDAC-Ergebnis für den Folgetag (ca.); vorher ist nur Freitag bekannt
+  nur_volle_wochen: true         # Wochen, die über eine Periodengrenze reichen, werden nicht gewertet
+
 statistik:
   alpha_gesamt: 0.05
   anzahl_hypothesen: 3           # Bonferroni

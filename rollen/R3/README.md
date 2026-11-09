@@ -20,6 +20,7 @@ Arbeitsbereich der Rolle. **Code, Daten und Ergebnisse bleiben in `src/`, `data/
 ## Schnittstellen (Details in `docs/schnittstellen.md`)
 
 **Erhält:**
+- Von R2: Zugriff je Freitag über `src/datenzugriff.py` (`planungswochen(...)`, siehe `docs/schnittstellen.md`)
 - Von R2: `data/processed/preise_h.parquet` (`zeit`, `preis_eur_mwh`, `regime`, `werktag`), `last_synth.parquet` (`datum`, `mwh`), `preise_15min.parquet`; Hinweise in `docs/schnittstellen.md`
 
 **Übergibt:**

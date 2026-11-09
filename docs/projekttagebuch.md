@@ -8,6 +8,22 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### A-007 · Datenzugriff für R3 bereitgestellt, offene Punkte
+- **Von → an:** R2 (Max) → R3
+- **Kanal und Datum:** WhatsApp, Nachricht am 09.11.2026 formuliert, Versand durch Max
+- **Was:** `src/datenzugriff.py` liefert je Freitag `historie` (nur bekannte Preise), `zielwoche` (echte Preise der geplanten Woche) und `last`; Nutzung in `docs/schnittstellen.md`.
+- **Fragen an R3:** (1) Passt die Planungsuhrzeit Freitag 12:00 (`planung.planungsuhrzeit`)? (2) Neben B mit 4 Wochen auch ein Fenster von 2 Jahren als Variante (Vorschlag von Max)? Dafür reicht `historie_wochen=104`. (3) Stresstest 2022: In den ersten Wochen gibt es kaum Historie, weil die Daten am 01.01.2022 beginnen. Sollen wir ab Dezember 2021 laden (`daten.aufloesungen.hour`), oder bewertet der Stresstest nur Strategien, die auf dem Training gelernt haben?
+- **Bis:** Antwort bis Fr 13.11.2026
+- **Antwort R3:** offen
+- **Änderung, nachgezogen von:** offen
+
+### E-020 · Datenzugriff je Freitag als eigenes Modul mit Look-ahead-Schutz
+- **Person:** Max (R2), umgesetzt von Claude
+- **Entscheidung:** Neues Modul `src/datenzugriff.py`. Es liefert für jeden Planungsfreitag einer Periode die bis dahin bekannten Preise (`historie`), die echten Preise der geplanten Woche (`zielwoche`) und die Last dieser Woche. Rollierender Ursprung: Jeden Freitag rückt der Stichtag eine Woche weiter, die vergangene Woche gehört ab dann zur Historie. Ein Datensatz für alles, kein neues Einlesen pro Woche. Neue Schalter in `params.yaml`, Block `planung`: Planung freitags 12:00, also bekannt bis Freitag 23:00, weil die Samstagspreise erst gegen 12:45 veröffentlicht werden; nur volle Wochen je Periode.
+- **Verworfen:** (a) Jede Woche einen neuen Datensatz einlesen: gleiches Ergebnis, aber viele Dateien und mehr Fehlerquellen. (b) Datumslogik in jeder Strategie selbst schreiben (R3): Jede Strategie könnte die Grenze anders ziehen, ein Look-ahead fiele nicht auf. (c) Wochen über Periodengrenzen mitwerten: Die Woche 29.09.–05.10.2025 hätte Stunden- und Viertelstundenregime gemischt (H0c).
+- **Begründung:** K4 Stufe 3 („Validierung korrekt: rollierender Ursprung, Test nie fürs Entwickeln benutzt“), K5 Stufe 5 (automatisierte Prüfung „kein Look-ahead“, dokumentierte Schnittstelle). 38 Freitage in Test 1, 51 in Test 2.
+- **Beleg:** `src/datenzugriff.py`, Tests `test_kein_look_ahead_in_allen_planungswochen`, `test_look_ahead_wird_erkannt`, `docs/schnittstellen.md`
+
 ### A-006 · Abgleich des Verständnisses von Fragestellung und Testdesign (Susan, Max)
 - **Von → an:** Susan Jaturat (Rolle noch nicht eingetragen) → Team, Antwort von Max (R2)
 - **Kanal und Datum:** WhatsApp, 09.11.2026, 20:59 und 21:04; Antwort von Max formuliert am 09.11.2026

@@ -16,6 +16,7 @@ Arbeitsbereich der Rolle. **Code, Daten und Ergebnisse bleiben in `src/`, `data/
 - `src/01_download.py`: SMARD-Download mit Cache, Retry, SHA256 (Commit `b68dfdb`)
 - `src/02_aufbereitung.py`: Zeitzone, Zeitumstellung, 15 → 60 min, Werktage, Datenqualität (`b68dfdb`, Kommentare `9ce870e`)
 - `src/02_synthetisch.py`: synthetischer Lastgang (`38765e1`)
+- `src/datenzugriff.py`: Zugriff für R3 je Freitag, ohne Blick in die Zukunft (E-020)
 - `src/gemeinsam.py`, `src/run_all.py`
 - `tests/test_datenannahmen.py` (25 Tests)
 - `data/raw/` mit `SOURCES.md` und `smard/manifest.csv`

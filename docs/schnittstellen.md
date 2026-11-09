@@ -43,3 +43,22 @@ def main():
 
 - Blockkosten nur für Werktage (`werktag == True`, `mwh > 0`). Zeitumstellungstage sind Sonntage und damit nie betroffen (Test).
 - Neuer Schalter `strategien.blockstart_raster_min` (60 Basis, 15 Variante V5): bei 15 mit `preise_15min.parquet`, nur Testperiode 2.
+
+## Datenzugriff für den Backtest: `src/datenzugriff.py` (R2 → R3)
+
+Damit R3 nicht selbst mit Datumsgrenzen hantieren muss und kein Look-ahead entsteht:
+
+```python
+import datenzugriff as dz
+preise, last = dz.lade_preise(), dz.lade_last()
+for w in dz.planungswochen(preise, last, "test_1_stunde", historie_wochen=4):   # None = alle Daten bis zum Freitag
+    w.freitag      # Planungstag
+    w.historie     # Preise, die am Freitag bekannt waren (zeit < w.bekannt_bis)
+    w.zielwoche    # echte Preise der geplanten Woche Mo 00:00 bis Mo 00:00 (zur Bewertung)
+    w.last         # Last der geplanten Woche (datum, mwh)
+```
+
+- Perioden = Schlüssel aus `zeitraeume` in `params.yaml`: `training` (104 Freitage), `test_1_stunde` (38), `test_2_viertel` (51), `stresstest` (51).
+- Planung freitags 12:00 (`planung.planungsuhrzeit`): bekannt sind Preise bis einschließlich Freitag 23:00; Samstag erst nach der Auktion gegen 12:45.
+- Nur volle Wochen je Periode (`planung.nur_volle_wochen`); die Woche 29.09.–05.10.2025 über den Regimewechsel zählt zu keiner Testperiode.
+- Bricht mit `LookAheadFehler` ab, wenn Daten aus der Zukunft in die Historie geraten (Test vorhanden).
