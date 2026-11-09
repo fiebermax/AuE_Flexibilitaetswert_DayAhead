@@ -23,6 +23,7 @@ preise[preise["in_betriebszeit"]].groupby(["saison", "stunde_lokal"])["preis_eur
 
 ## Hinweise
 
+- **Begriffe:** **Status quo A** = festes Fenster 08–14 Uhr Ortszeit (Kickoff-Definition, `last.status_quo_start_h`). Die Faustregel D (fester Block, vermutlich mittags) legt R3 im Backtest fest; 08–14 Uhr heißt nie „Faustregel“.
 - **Schlüssel ist `ts_utc`.** In UTC gibt es keine doppelten oder fehlenden Stunden. Die lokale Zeit (`ts_lokal`, `stunde_lokal`) ist Zusatz: Am Oktober-Umstellungssonntag kommt 02:00 Uhr zweimal vor (zwei UTC-Stunden, zwei Preise), im März fehlt 02:00. Beides liegt außerhalb der Betriebszeit 06–22 Uhr.
 - **Nur Stundenpreise**; ab 01.10.2025 der SMARD-Stundenwert (Mittel der vier Viertelstunden).
 - **`flag_outlier` nie für die Planung nutzen** (Look-ahead, siehe Codebook).
@@ -44,3 +45,9 @@ for w in dz.planungswochen(preise, last, "test_1_stunde", historie_wochen=4):   
 - Perioden aus `zeitraeume` in `params.yaml`: `training` (104 Freitage), `test_1_stunde` (38), `test_2_viertel` (51), `stresstest` (51).
 - Planung freitags 12:00: bekannt sind Preise bis Freitag 23:00 (die Samstagspreise kommen erst gegen 12:45).
 - Nur volle Wochen je Periode; bricht mit `LookAheadFehler` ab, wenn Zukunftsdaten in die Historie geraten.
+
+## Folien und Kennzahlen R2: `src/build_presentation.py`
+
+- `python src/build_presentation.py` erzeugt `output/R2_Datenanalyse.pptx` und `pptx_kit/` (Kennzahlen, Grafiken, Prüferfragen, Quellen).
+- `pptx_kit/key_figures.json` ist die einzige Quelle für Zahlen auf den Folien (je Kennzahl: Wert, Einheit, Zeitraum, Skript, Commit, Status ERGEBNIS / HYPOTHESE / ANNAHME).
+- Rückblick-Kennzahl „Mehrkosten Status quo A gegenüber billigstem 6-h-Fenster“ (`src/fensteranalyse.py`): beschreibend, keine Strategie.

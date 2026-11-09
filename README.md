@@ -29,6 +29,7 @@ Jede Spalte erklärt: [`docs/codebook.md`](docs/codebook.md).
 | --- | --- |
 | `data/processed/` | **fertige Daten als CSV** (siehe oben) |
 | `reports/` | Bereinigungs-Log, Datenqualität, Tabellen, Grafiken |
+| `output/`, `pptx_kit/` | Folien R2 (`R2_Datenanalyse.pptx`), Kennzahlen, Grafiken, Prüferfragen; neu erzeugen mit `python src/build_presentation.py` |
 | `docs/` | [Projekttagebuch](docs/projekttagebuch.md), [Kickoff](docs/kickoff.md), [Codebook](docs/codebook.md), [Datenaufbereitung](docs/datenaufbereitung.md), Schnittstellen |
 | `config/params.yaml` | alle Annahmen (Zeiträume, Verbrauch, Kosten) |
 | `src/` | die Programme (`01_download`, `02_synthetisch`, `cleaning`, …) |

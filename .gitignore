@@ -11,3 +11,5 @@ results/tables/*
 !**/.gitkeep
 # Partnerdaten nie ins Repo
 partner/
+# gerenderte Prüfbilder der Folien (werden mit --render neu erzeugt)
+output/render/
