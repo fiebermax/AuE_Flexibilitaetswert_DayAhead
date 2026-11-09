@@ -8,6 +8,25 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### K-007 · KI-Einsatz Folien R2
+- **Werkzeug:** Claude Code
+- **Zweck:** `src/fensteranalyse.py`, `src/build_presentation.py`, Grafiken, vier Folien mit Sprechernotizen, `pptx_kit/defense_qa.md`, `pptx_kit/sources.md`.
+- **Wie geprüft:** Bestandsaufnahme und Entscheidungen D1–D6 vor dem Bau (A-009); Ortszeit geprüft (Betriebszeit 06–22 Uhr = 04–20 UTC im Sommer, 05–21 UTC im Winter; neue Tests für beide); Zahlenprüfung im Build (eine absichtlich eingefügte Zahl wird erkannt); Folien über LibreOffice gerendert und gesichtet, Überlappung auf Folie 3 behoben; Notizen 57–64 s.
+- **Offen:** Max erklärt Folien und Kennzahl selbst; Probelauf.
+
+### E-030 · Kennzahl „Mehrkosten des Status quo A“ statt „Anteil 08–14“
+- **Person:** Max (R2)
+- **Entscheidung:** Für Folie c: Mehrkosten des Status-quo-Fensters 08–14 Uhr gegenüber dem billigsten 6-h-Fenster innerhalb 06–22 Uhr (Ortszeit), je Tag als Differenz der Mittelpreise, je Saison Median und IQR in €/MWh und %; dazu die Verteilung der Startzeit des billigsten Fensters. „Genau 08–14 Uhr an unter 1 % der Tage“ nur als Nebeninfo. Prozent nur für Tage mit positivem billigsten Preis (sonst nicht definiert). Ausdrücklich gekennzeichnet: Rückblick mit bekannten Preisen, keine Strategie.
+- **Verworfen:** (a) Anteil der Tage, an denen 08–14 genau das billigste Fenster ist (fast immer null, sagt nichts über die Größenordnung); (b) Anteil der Tage, an denen die billigste Einzelstunde in 08–14 liegt (passt nicht zum 6-h-Block).
+- **Ergebnis:** Median-Mehrkosten Winter 9,0, Frühling 19,3, Sommer 22,3, Herbst 15,4 €/MWh; billigstes Fenster beginnt meist um 10 oder 11 Uhr. Prozentwerte im Frühling und Sommer breit gestreut (Preise nahe null), deshalb Kernaussage in €/MWh.
+- **Beleg:** `src/fensteranalyse.py`, `pptx_kit/key_figures.json`, Tests `tests/test_fensteranalyse.py`
+
+### A-009 · Auftrag Folien R2: Bestandsaufnahme und Entscheidungen
+- **Von → an:** Max (R2) → Claude Code
+- **Was:** PowerPoint für Teil R2 per Skript, mit `pptx_kit/` (Kennzahlen, Grafiken, Prüferfragen, Quellen). Erst Bestandsaufnahme, dann Freigabe. Entscheidungen von Max: D1 Kennzahl Mehrkosten (E-030) nach vorheriger Prüfung der Ortszeit; D2 08–14 Uhr = Status quo A, einheitlich benannt; D3 keine Vorlage, Design-Konstanten oben im Skript; D4 Folien und Kit committen; D5 Zahlenprüfung, ausgenommen Bezeichner und Foliennummern; D6 keine Titelfolie. Verschiebbare Menge 2,0 MWh/Tag als ANNAHME, Frage „Warum 2,0 MWh?“ in `defense_qa.md`.
+- **Kanal und Datum:** Chat mit Claude Code, 09.11.2026
+- **Änderung, nachgezogen von:** E-030, K-007; `docs/schnittstellen.md` (Begriff Status quo A)
+
 ### P-007 · PR #7 ohne Review gemergt (auf Anweisung von Max)
 - **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; R3 ist noch nicht im Repo.
 - **Angesprochen von:** Max (R2), 09.11.2026
