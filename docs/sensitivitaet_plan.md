@@ -1,6 +1,6 @@
 # Plan: Sensitivitätsrechnung (K2 Stufe 5)
 
-Stand 07.11.2026, Owner R2. **Nur Plan, noch nicht gerechnet**: Es fehlt der Backtest von R3 (`src/04_strategien.py`).
+Stand 07.11.2026, Owner R2. Abgestimmt mit R3 über Tagebuch A-003 (Antwort offen). **Nur Plan, noch nicht gerechnet**: Es fehlt der Backtest von R3 (`src/04_strategien.py`).
 
 ## Ziel
 
@@ -21,11 +21,11 @@ Die Varianten sind keine neuen Hypothesentests. Es entstehen keine zusätzlichen
 
 | ID | Was | Basis | Variante(n) | Schalter in `params.yaml` | Betroffen | Erwartung (Annahme) |
 | --- | --- | --- | --- | --- | --- | --- |
-| V1 | Zeitumstellung Oktober | doppelte Stunde gemittelt | erste Stunde · zweite Stunde | `daten.zeitumstellung_oktober: mittel \| erste \| zweite` | `02_aufbereitung.zu_ortszeit` | sehr klein: 1 Nachtstunde pro Jahr; nur Nachtblöcke betroffen |
-| V2 | Zeitumstellung März | 02:00 fehlt, Tag hat 23 h | fehlende Stunde mit Preis der Vorstunde gefüllt (nur als Sensitivität!) | `daten.zeitumstellung_maerz: fehlt \| vorstunde` | `02_aufbereitung.baue_tabelle` | sehr klein; zeigt, dass „nicht füllen“ das Ergebnis nicht treibt |
+| V1 | Zeitumstellung Oktober | doppelte Stunde gemittelt | erste Stunde · zweite Stunde | `daten.zeitumstellung_oktober: mittel \| erste \| zweite` | `02_aufbereitung.zu_ortszeit` | **im Basisszenario 0**: Umstellung immer sonntags, Last 0 (Tagebuch E-018, Test). Nur bei Wochenendproduktion rechnen |
+| V2 | Zeitumstellung März | 02:00 fehlt, Tag hat 23 h | fehlende Stunde mit Preis der Vorstunde gefüllt (nur als Sensitivität!) | `daten.zeitumstellung_maerz: fehlt \| vorstunde` | `02_aufbereitung.baue_tabelle` | **im Basisszenario 0**, wie V1 (E-018) |
 | V3 | Feiertagskalender | ohne Mariä Himmelfahrt | mit Mariä Himmelfahrt (15.08.) | `last.feiertagsvariante_mariae_himmelfahrt` (**existiert schon**) | Preise (`werktag`) und Last zugleich; ein Test erzwingt Gleichlauf | klein: 1 Werktag pro Jahr weniger |
 | V4 | Betriebsruhe 24./31.12. | Werktag | arbeitsfrei | `last.zusaetzlich_frei: ["12-24", "12-31"]` | `gemeinsam.werktage` | klein; **nur falls der Praxiskontakt das bestätigt** |
-| V5 | Zeitauflösung ab 10/2025 | Stundenmittel, Blockstart zur vollen Stunde | 15-min-Preise, Blockstart in 15-min-Schritten | `daten.preisaufloesung: stunde \| viertel` | R3 liest `preise_15min.parquet` statt `preise_h.parquet` | **offen, wichtig für H0c** (siehe unten) |
+| V5 | Zeitauflösung ab 10/2025 | Stundenmittel, Blockstart zur vollen Stunde | 15-min-Preise, Blockstart in 15-min-Schritten | `strategien.blockstart_raster_min: 60 \| 15` | R3: bei 15 `preise_15min.parquet`, Block = `blocklaenge_h` × 4 Viertelstunden, C und T im selben Raster; nur Testperiode 2 | **offen, wichtig für H0c** (siehe unten) |
 | V6 | Lastmenge (synthetisch) | 2,0 MWh/Werktag | 1,0 · 4,0 | `last.mwh_pro_werktag` | `02_synthetisch` | €/Woche skaliert linear, Anteil am Oracle bleibt gleich (rechnerisch, als Kontrolle) |
 | V7 | Blocklänge (synthetisch) | 6 h | 4 h · 8 h | `last.blocklaenge_h` | R3 (Blockkosten-Matrix) | nicht trivial: kurze Blöcke treffen das Preistal besser |
 
@@ -51,7 +51,8 @@ Die höhere Spitze im 15-min-Raster (Höchstwert 2026: 747 statt 697 €/MWh) ze
    daten:
      zeitumstellung_oktober: "mittel"   # mittel | erste | zweite
      zeitumstellung_maerz: "fehlt"      # fehlt | vorstunde   (nur für Sensitivität)
-     preisaufloesung: "stunde"          # stunde | viertel     (V5, wirkt in R3s Backtest)
+   strategien:
+     blockstart_raster_min: 60          # 60 | 15  (V5, wirkt in R3s Backtest)
    last:
      zusaetzlich_frei: []               # z. B. ["12-24", "12-31"], nach Praxisgespräch
    ```
@@ -64,7 +65,7 @@ Die höhere Spitze im 15-min-Raster (Höchstwert 2026: 747 statt 697 €/MWh) ze
        V1b: {daten.zeitumstellung_oktober: "zweite"}
        V2:  {daten.zeitumstellung_maerz: "vorstunde"}
        V3:  {last.feiertagsvariante_mariae_himmelfahrt: true}
-       V5:  {daten.preisaufloesung: "viertel"}
+       V5:  {strategien.blockstart_raster_min: 15}
        V6a: {last.mwh_pro_werktag: 1.0}
        V6b: {last.mwh_pro_werktag: 4.0}
        V7a: {last.blocklaenge_h: 4}
@@ -77,6 +78,8 @@ Die höhere Spitze im 15-min-Raster (Höchstwert 2026: 747 statt 697 €/MWh) ze
    - Die Basis-Variante reproduziert die Basis-Ergebnisse exakt.
    - Jede Variante ändert ihren Schalter tatsächlich, sonst wäre sie eine stille Nullvariante.
    - V6 skaliert die €/Woche linear und lässt den Anteil am Oracle gleich, als Plausibilitätskontrolle.
+   - Raster 60 auf 15-min-Preisen liefert exakt das Basisergebnis (rechnerische Identität, siehe oben).
+   - Zeitumstellungstage sind lastfrei (`test_zeitumstellung_nur_an_lastfreien_tagen`); schlägt der Test fehl, V1/V2 aktivieren.
 
 ## Zeitplan und Aufwand (Schätzung)
 
