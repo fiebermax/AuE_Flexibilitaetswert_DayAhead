@@ -8,6 +8,13 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### P-004 · PR #4 ohne Review gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 wird nach `main` nur nach Review des Paarpartners gemergt. R3 ist noch nicht im Repo (kein GitHub-Name), das Review von PR #4 (Tagebuch R2, Abstimmung mit R3, Rollenordner) steht aus.
+- **Angesprochen von:** Max (R2), 09.11.2026
+- **Lösungsvorschlag:** Mergen, damit das Team die Rollenordner und den Stand auf `main` sieht; Review durch R3 nachträglich auf GitHub (PR #3 und #4).
+- **Entscheidung:** Max verlangt den Merge ausdrücklich (Ausnahme laut `CLAUDE.md`). Die Regel aus P-003 gilt weiter, sobald R3 Collaborator ist.
+- **Ergebnis:** PR #4 am 09.11.2026 gemergt; nachträgliches Review offen.
+
 ### E-019 · Rollenbereiche zusätzlich zur Pipeline-Struktur
 - **Person:** Max (R2), umgesetzt von Claude
 - **Entscheidung:** Neuer Ordner `rollen/` mit `R1/` bis `R4/`, je eine README mit Aufgabe, eigenen Dateien im Repo, Schnittstellen (erhält/übergibt), offenen Aufgaben, Review-Partner, Notizen und Gliederung des Verantwortungsnachweises. `src/`, `data/`, `results/` bleiben nach Arbeitsschritten gegliedert. `CODEOWNERS` um die Rollenordner ergänzt.
