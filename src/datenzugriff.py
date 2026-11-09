@@ -54,22 +54,25 @@ class Planungswoche:
 # Loading (thin wrappers, so R3 never has to know paths)
 # ---------------------------------------------------------------------------------------------
 def lade_preise(params: dict | None = None) -> pd.DataFrame:
-    """Load preise_h.csv (step 02) and turn the text column `zeit` back into German time.
+    """Load preise_clean.csv (src/cleaning.py) and add `zeit` = the UTC hour in German time.
 
-    The CSV stores times with their UTC offset (+01:00 winter, +02:00 summer). Reading them via UTC and
-    converting back to Europe/Berlin gives one clean time column, also across the clock changes.
+    Key of the file is ts_utc. `zeit` is only a convenience for date logic in local time; it stays
+    unique because it keeps the UTC offset (the two October 02:00 hours are +02:00 and +01:00).
+    flag_outlier is removed here on purpose: it compares with the whole month (future hours included),
+    so a planning strategy must never see it (look-ahead, docs/codebook.md).
     """
     p = params or lade_params()
-    datei = pfad(p, "processed") / "preise_h.csv"
+    datei = pfad(p, "processed") / "preise_clean.csv"
     if not datei.exists():
         raise FileNotFoundError(f"{datei} fehlt. Zuerst ausführen: python src/run_all.py")
-    df = pd.read_csv(datei)
-    df["zeit"] = pd.to_datetime(df["zeit"], utc=True).dt.tz_convert(p["markt"]["zeitzone"])
+    df = pd.read_csv(datei).drop(columns=["flag_outlier"])
+    df["ts_utc"] = pd.to_datetime(df["ts_utc"], utc=True)
+    df["zeit"] = df["ts_utc"].dt.tz_convert(p["markt"]["zeitzone"])
     return df
 
 
 def lade_last(params: dict | None = None) -> pd.DataFrame:
-    """Load last_synth.csv (datum, mwh) as produced by step 02b; `datum` as pandas Timestamp."""
+    """Load last_synth.csv (datum, mwh_gesamt, mwh_flexibel) from step 02b; `datum` as pandas Timestamp."""
     p = params or lade_params()
     datei = pfad(p, "processed") / "last_synth.csv"
     if not datei.exists():

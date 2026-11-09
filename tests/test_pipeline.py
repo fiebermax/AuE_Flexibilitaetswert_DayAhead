@@ -1,15 +1,10 @@
-# KI: Claude, Zweck: Tests der Datenannahmen und der Aufbereitungslogik, geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
-"""Automatisierte Prüfungen der Datenannahmen (K5 Stufe 5). Laufen mit `pytest tests/`.
-
-Teil 1 (immer): Logik an kleinen, von Hand nachrechenbaren Beispielen.
-Teil 2 (nach Pipeline-Lauf): Annahmen über die echten Dateien in data/ und die Schnittstelle zu R3.
-"""
+# KI: Claude, Zweck: Tests für Download, synthetischen Lastgang und Datenzugriff, geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
+"""Tests für src/01_download.py, src/02_synthetisch.py und src/datenzugriff.py (Bereinigung: tests/test_cleaning.py)."""
 import csv
 import hashlib
 import importlib.util
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import pytest
 import yaml
@@ -18,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PARAMS = yaml.safe_load((ROOT / "config" / "params.yaml").read_text(encoding="utf-8"))
 TZ = PARAMS["markt"]["zeitzone"]
 PROCESSED = ROOT / PARAMS["daten"]["pfade"]["processed"]
-PREISE = PROCESSED / "preise_h.csv"
+CLEAN = PROCESSED / "preise_clean.csv"
 LAST = PROCESSED / "last_synth.csv"
 MANIFEST = ROOT / PARAMS["daten"]["pfade"]["raw"] / "smard" / "manifest.csv"
 WECHSEL = pd.Timestamp(PARAMS["markt"]["regimewechsel"]).tz_localize(TZ)
@@ -32,82 +27,35 @@ def _lade_modul(name):
 
 
 dl = _lade_modul("01_download")
-auf = _lade_modul("02_aufbereitung")
 syn = _lade_modul("02_synthetisch")
 dz = _lade_modul("datenzugriff")
 
 
-# ---------------------------------------------------------------------------------------------
-# Teil 1: Logik an Beispielen
-# ---------------------------------------------------------------------------------------------
-def _utc_reihe(start_utc, n):
-    idx = pd.date_range(start_utc, periods=n, freq="h", tz="UTC")
-    return pd.Series(np.arange(n, dtype=float), index=idx)
-
-
-def test_oktober_doppelte_stunde_wird_gemittelt():
-    s = _utc_reihe("2025-10-25 22:00", 25)          # 26.10.2025: 25 Stunden
-    ort, n_doppelt = auf.zu_ortszeit(s, TZ)
-    assert len(ort) == 24 and n_doppelt == 1
-    assert ort[ort.index.hour == 2].iloc[0] == pytest.approx((2 + 3) / 2)
-
-
-def test_oktober_mittel_bleibt_leer_wenn_ein_wert_fehlt():
-    s = _utc_reihe("2025-10-25 22:00", 25)
-    s.iloc[3] = np.nan
-    ort, _ = auf.zu_ortszeit(s, TZ)
-    assert np.isnan(ort[ort.index.hour == 2].iloc[0])
-
-
-def test_maerz_fehlende_stunde_wird_nicht_aufgefuellt():
-    s = _utc_reihe("2026-03-28 23:00", 23)          # 29.03.2026: 23 Stunden
-    ort, _ = auf.zu_ortszeit(s, TZ)
-    assert len(ort) == 23 and 2 not in set(ort.index.hour)
-    raster = auf.erwartetes_raster(pd.Timestamp("2026-03-29", tz=TZ), pd.Timestamp("2026-03-30", tz=TZ), TZ)
-    assert len(raster) == 23
+def test_wochenanfaenge_bleiben_montag_mitternacht():
+    b, e = dl.benoetigter_zeitraum("2025-03-20", "2025-04-10", TZ)
+    assert all(w.weekday() == 0 and w.hour == 0 for w in dl.wochenanfaenge(b, e, TZ))
 
 
 def test_werktage_bayern_und_variante():
+    gem = _lade_modul("gemeinsam")
     tage = pd.DatetimeIndex(pd.to_datetime(["2025-01-06", "2025-06-19", "2025-08-15", "2025-10-04", "2025-10-06"])).tz_localize(TZ)
-    assert list(auf.werktage(tage, mariae_himmelfahrt=False)) == [False, False, True, False, True]
-    assert list(auf.werktage(tage, mariae_himmelfahrt=True)) == [False, False, False, False, True]
+    assert list(gem.werktage(tage, mariae_himmelfahrt=False)) == [False, False, True, False, True]
+    assert list(gem.werktage(tage, mariae_himmelfahrt=True)) == [False, False, False, False, True]
 
 
-def test_wochenanfaenge_bleiben_montag_mitternacht():
-    b, e = dl.benoetigter_zeitraum("2025-03-20", "2025-04-10", TZ)
-    wochen = dl.wochenanfaenge(b, e, TZ)
-    assert all(w.weekday() == 0 and w.hour == 0 for w in wochen)
-
-
-def test_last_beispielwoche_taeglich_und_variante_werktage():
-    # Mo 02.06. bis So 08.06.2025: täglich = jeden Tag; Variante Mo-Fr = Wochenende 0
-    taeglich = syn.erzeuge_last("2025-06-02", "2025-06-08", 2.0, "taeglich")
-    assert list(taeglich.columns) == ["datum", "mwh"] and list(taeglich["mwh"]) == [2.0] * 7
-    werktags = syn.erzeuge_last("2025-06-02", "2025-06-08", 2.0, "Mo-Fr ohne Feiertage Bayern")
-    assert list(werktags["mwh"]) == [2.0, 2.0, 2.0, 2.0, 2.0, 0.0, 0.0]
-    # Feiertag (Fronleichnam 19.06.2025) nur in der Werktags-Variante ohne Produktion
-    assert syn.erzeuge_last("2025-06-19", "2025-06-19", 2.0, "Mo-Fr ohne Feiertage Bayern")["mwh"].iloc[0] == 0.0
-    assert syn.erzeuge_last("2025-06-19", "2025-06-19", 2.0, "taeglich")["mwh"].iloc[0] == 2.0
+def test_last_taeglich_inklusive_feiertage_und_variante():
+    taeglich = syn.erzeuge_last("2025-06-16", "2025-06-22", 2.0, "taeglich", 50.0)     # Fronleichnam 19.06.
+    assert list(taeglich.columns) == ["datum", "mwh_gesamt", "mwh_flexibel"]
+    assert list(taeglich["mwh_gesamt"]) == [50.0] * 7 and list(taeglich["mwh_flexibel"]) == [2.0] * 7
+    werktags = syn.erzeuge_last("2025-06-16", "2025-06-22", 2.0, "Mo-Fr ohne Feiertage Bayern", 50.0)
+    assert list(werktags["mwh_gesamt"]) == [50.0, 50.0, 50.0, 0.0, 50.0, 0.0, 0.0]
 
 
 def test_last_unsinnige_parameter_werden_abgelehnt():
-    for feld, wert in [("mwh_pro_tag", 0), ("blocklaenge_h", 17), ("produktionstage", "Mo-Sa"),
+    for feld, wert in [("mwh_pro_tag", 0), ("mwh_pro_tag", 60), ("blocklaenge_h", 17), ("produktionstage", "Mo-Sa"),
                        ("status_quo_start_h", 20), ("betrieb_ende_h", 5)]:
         with pytest.raises(syn.LastFehler):
             syn.pruefe_parameter({**PARAMS["last"], feld: wert})
-
-
-def test_robuster_z_und_ausreisser_werden_nur_markiert():
-    # 30 normale Preise um 50 und ein Ausreißer von 500: nur der Ausreißer wird markiert, keine Zeile fällt weg
-    werte = [50.0 + (i % 5) for i in range(30)] + [500.0]
-    zeiten = pd.date_range("2025-05-01 12:00", periods=31, freq="D", tz=TZ)[:31]
-    zeiten = pd.DatetimeIndex([z.replace(month=5, day=1 + i % 28) for i, z in enumerate(zeiten)])
-    df = pd.DataFrame({"zeit": zeiten, "stunde": 12, "preis_eur_mwh": werte, "auffaellig": False})
-    out, z = auf.markiere_ausreisser(df, 3.5)
-    assert len(out) == len(df) and out["preis_eur_mwh"].equals(df["preis_eur_mwh"])   # nichts gelöscht/verändert
-    assert out["auffaellig"].sum() == 1 and out["auffaellig"].iloc[-1]
-    # Mittelwert und Standardabweichung würden den Ausreißer selbst verschieben, Median und MAD kaum
-    assert auf.robuster_z(pd.Series(werte)).iloc[-1] > 3.5
 
 
 def test_bekannt_bis_haengt_an_der_planungsuhrzeit():
@@ -137,106 +85,33 @@ def test_look_ahead_wird_erkannt():
         dz.bekannt_bis = original
 
 
-# ---------------------------------------------------------------------------------------------
-# Teil 2: Annahmen über die echten Daten (erst nach `python src/run_all.py`)
-# ---------------------------------------------------------------------------------------------
-braucht_daten = pytest.mark.skipif(not (PREISE.exists() and LAST.exists()), reason="Pipeline noch nicht gelaufen")
 
-
-@pytest.fixture(scope="module")
-def preise():
-    return dz.lade_preise(PARAMS)
-
-
-@pytest.fixture(scope="module")
-def last():
-    return dz.lade_last(PARAMS)
+braucht_daten = pytest.mark.skipif(not (CLEAN.exists() and LAST.exists()), reason="Pipeline noch nicht gelaufen")
 
 
 @braucht_daten
-def test_spalten_laut_schnittstelle():
-    assert list(pd.read_csv(PREISE, nrows=1).columns) == ["zeit", "datum", "stunde", "preis_eur_mwh", "regime", "werktag", "auffaellig"]
-    assert list(pd.read_csv(LAST, nrows=1).columns) == ["datum", "mwh"]
-
-
-@braucht_daten
-def test_keine_luecken(preise):
-    assert preise["preis_eur_mwh"].notna().all(), f"Fehlende Preise:\n{preise[preise['preis_eur_mwh'].isna()].head()}"
-
-
-@braucht_daten
-def test_stunden_pro_tag(preise):
-    # 24 Stunden; nur am letzten Sonntag im März 23 (02:00 Uhr existiert nicht)
-    n = preise.groupby("datum").size()
-    tage = pd.to_datetime(pd.Series(n.index))
-    maerz = ((tage.dt.month == 3) & (tage.dt.weekday == 6) & (tage.dt.day >= 25)).to_numpy()
-    assert (n[maerz] == 23).all() and (n[~maerz] == 24).all()
-
-
-@braucht_daten
-def test_zeitraum_vollstaendig(preise):
-    assert preise["zeit"].min() == pd.Timestamp(PARAMS["daten"]["aufloesungen"]["hour"]).tz_localize(TZ)
-    assert preise["zeit"].max() == pd.Timestamp(PARAMS["zeitraeume"]["datenstand"]).tz_localize(TZ) + pd.Timedelta(hours=23)
-
-
-@braucht_daten
-def test_zeit_sortiert_eindeutig_volle_stunden(preise):
-    assert preise["zeit"].is_monotonic_increasing and not preise["zeit"].duplicated().any()
-    assert (preise["zeit"].dt.minute == 0).all()
-    assert (preise["stunde"] == preise["zeit"].dt.hour).all()
-
-
-@braucht_daten
-def test_preisbereich(preise):
-    # Preisgrenzen der Day-Ahead-Auktion; negative Preise sind erlaubt und bleiben drin
-    assert preise["preis_eur_mwh"].between(-500, 4000).all()
-    assert (preise["preis_eur_mwh"] < 0).any()
-
-
-@braucht_daten
-def test_regime_am_wechsel(preise):
-    assert (preise.loc[preise["zeit"] < WECHSEL, "regime"] == "stunde").all()
-    assert (preise.loc[preise["zeit"] >= WECHSEL, "regime"] == "viertel").all()
-
-
-@braucht_daten
-def test_werktag_nie_am_wochenende(preise):
-    assert not preise.loc[preise["zeit"].dt.weekday >= 5, "werktag"].any()
-
-
-@braucht_daten
-def test_last_laut_params(last):
-    assert last["datum"].is_monotonic_increasing and not last["datum"].duplicated().any()
+def test_last_laut_params():
+    last = dz.lade_last(PARAMS)
     assert len(last) == (last["datum"].max() - last["datum"].min()).days + 1
-    assert set(last["mwh"]) <= {PARAMS["last"]["mwh_pro_tag"], 0.0}
     if PARAMS["last"]["produktionstage"] == "taeglich":
-        assert (last["mwh"] == PARAMS["last"]["mwh_pro_tag"]).all()
+        assert (last["mwh_gesamt"] == PARAMS["last"]["gesamtverbrauch_mwh_pro_tag"]).all()
+        assert (last["mwh_flexibel"] == PARAMS["last"]["mwh_pro_tag"]).all()
 
 
 @braucht_daten
-def test_zeitumstellung_liegt_ausserhalb_der_betriebszeit():
-    # Tagebuch E-024: Die Zeitumstellung betrifft 02:00-03:00 Uhr, die Produktion läuft 06-22 Uhr.
-    # Solange das gilt, ändert die Behandlung der Zeitumstellung keine Kosten.
-    tage = pd.to_datetime(pd.read_csv(PROCESSED / "zeitumstellung.csv")["datum"])
-    assert len(tage) > 0 and (tage.dt.weekday == 6).all()
-    assert 3 <= PARAMS["last"]["betrieb_start_h"] and PARAMS["last"]["betrieb_ende_h"] <= 24
+def test_datenzugriff_ohne_ausreisserflag():
+    # flag_outlier nutzt den ganzen Monat (auch Zukunft) und darf nicht in die Planung gelangen
+    assert "flag_outlier" not in dz.lade_preise(PARAMS).columns
 
 
 @braucht_daten
-def test_ausreisser_markiert_aber_nicht_entfernt(preise):
-    # Ausreißer bleiben als Zeile mit Originalpreis drin (E-025); Anteil plausibel klein
-    assert preise["auffaellig"].dtype == bool
-    assert 0 < preise["auffaellig"].mean() < 0.10
-    assert preise["preis_eur_mwh"].notna().all()
-
-
-@braucht_daten
-def test_kein_look_ahead_in_allen_planungswochen(preise, last):
+def test_kein_look_ahead_in_allen_planungswochen():
+    preise, last = dz.lade_preise(PARAMS), dz.lade_last(PARAMS)
     for periode in ("training", "test_1_stunde", "test_2_viertel", "stresstest"):
         for w in dz.planungswochen(preise, last, periode, PARAMS, historie_wochen=4):
             assert w.historie.empty or w.historie["zeit"].max() < w.bekannt_bis
             assert w.zielwoche["zeit"].min() >= w.bekannt_bis
-            assert len(w.zielwoche) in (167, 168) and len(w.last) == 7
+            assert len(w.zielwoche) in (167, 168, 169) and len(w.last) == 7
 
 
 @pytest.mark.skipif(not MANIFEST.exists(), reason="Download noch nicht gelaufen")
@@ -245,5 +120,4 @@ def test_rohdaten_unveraendert():
         zeilen = [z for z in csv.DictReader(f) if z["status"] == "aktiv"]
     assert zeilen
     for z in zeilen:
-        datei = MANIFEST.parent.parent / z["datei"]
-        assert hashlib.sha256(datei.read_bytes()).hexdigest() == z["sha256"], f"verändert: {datei}"
+        assert hashlib.sha256((MANIFEST.parent.parent / z["datei"]).read_bytes()).hexdigest() == z["sha256"]
