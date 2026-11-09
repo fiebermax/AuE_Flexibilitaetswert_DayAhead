@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### P-008 · PR #8 ohne Review gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; R3 ist noch nicht im Repo.
+- **Angesprochen von:** Max (R2), 09.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich, damit die Folien R2 und `pptx_kit/` auf `main` liegen. Weiterarbeit mit Susan am 10.11.2026.
+- **Ergebnis:** PR #8 am 09.11.2026 gemergt; nachträgliches Review offen.
+
 ### K-007 · KI-Einsatz Folien R2
 - **Werkzeug:** Claude Code
 - **Zweck:** `src/fensteranalyse.py`, `src/build_presentation.py`, Grafiken, vier Folien mit Sprechernotizen, `pptx_kit/defense_qa.md`, `pptx_kit/sources.md`.
