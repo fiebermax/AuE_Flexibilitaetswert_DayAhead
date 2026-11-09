@@ -28,7 +28,6 @@ Spalten und Einheiten im Detail: [`docs/schnittstellen.md`](docs/schnittstellen.
 | --- | --- |
 | `data/processed/` | **fertige Daten als CSV** (siehe oben) |
 | `docs/` | [Projekttagebuch](docs/projekttagebuch.md), [Kickoff](docs/kickoff.md), Schnittstellen, Datenkatalog |
-| `rollen/` | ein Ordner je Rolle R1–R4 mit Aufgaben |
 | `config/params.yaml` | alle Annahmen (Zeiträume, Verbrauch, Kosten) |
 | `src/` | die Programme (`01_download`, `02_aufbereitung`, …) |
 | `data/raw/` | Original-Rohdaten von SMARD, nicht anfassen |

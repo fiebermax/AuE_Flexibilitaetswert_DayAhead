@@ -8,6 +8,42 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### M-001 · Teamtreffen: gemeinsame Einrichtung und Durchsprache, 09.11.2026
+- **Teilnehmende:** alle vier Teammitglieder (u. a. Max, Susan)
+- **Inhalte:**
+  - VS Code bei allen eingerichtet und das GitHub-Repository darin eingebunden
+  - GitHub-Struktur gemeinsam durchgegangen (Ordner `src/`, `data/`, `docs/`, `config/`), `README.md` gelesen
+  - Coding Agents eingerichtet: Claude Code (Anthropic) und Codex (OpenAI), siehe K-004
+  - Anforderungen besprochen (Kriterienkatalog K1–K10, Abgaben, Termine)
+  - Theorie besprochen: Day-Ahead-Markt, Testdesign (jeden Freitag nachspielen, nur damals bekanntes Wissen), Strategien A–D, C, T, Hypothesen H0a–H0c
+  - Probleme bei der Einrichtung gemeinsam gelöst, siehe P-005
+- **Stand je Paket:**
+
+| Paket | Stand | Rückstand | Maßnahme | Owner | bis |
+| --- | --- | --- | --- | --- | --- |
+| R1 | Rahmen, Kickoff | Problem Statement, Folien 1–2 | im Team verteilen | R1 | Pitch |
+| R2 | Daten fertig als CSV (`data/processed/`), Datenzugriff für R3 | Datenfolie, Code erklären können | Max | R2 | Di 10.11. / Fr 13.11. |
+| R3 | Testdesign besprochen | Merkmale, Backtest | Datenzugriff aus `docs/schnittstellen.md` nutzen | R3 | vor 13.11. |
+| R4 | Testdesign besprochen | Kostenannahmen | Recherche Umstellungskosten | R4 | vor 13.11. |
+
+### P-005 · Probleme bei der Einrichtung
+- **Problem:** Beim Einrichten von VS Code, Repository-Anbindung und Coding Agents traten Probleme auf. [Konkrete Probleme ergänzen, z. B. Anmeldung, Zugriffsrechte, Installation]
+- **Angesprochen von:** Team, 09.11.2026
+- **Lösungsvorschlag:** gemeinsam im Treffen Schritt für Schritt durchgehen
+- **Entscheidung:** im Team gelöst
+- **Ergebnis:** alle können auf das Repository zugreifen und mit den Agents arbeiten
+
+### K-004 · Coding Agents für das Team (Claude Code, OpenAI Codex)
+- **Werkzeug:** Claude Code (Anthropic), Codex (OpenAI), jeweils in VS Code
+- **Zweck:** Unterstützung beim Programmieren und Dokumentieren in den Teilpaketen
+- **Wie geprüft:** Jeder Einsatz wird in `docs/ki-nutzung.md` eingetragen (Werkzeug, Zweck, Prüfung); Dateikopf `# KI: …` und Commit-Trailer `AI-Assisted: …`; wer KI-Code committet, muss ihn in der Verteidigung erklären können (Sperrkriterium).
+
+### E-023 · Rollenordner wieder entfernt
+- **Person:** Max (R2)
+- **Entscheidung:** Der Ordner `rollen/` (R1–R4) wird entfernt; Aufgaben und Zuständigkeiten stehen im Kickoff (`docs/kickoff.md`) und im Tagebuch.
+- **Verworfen:** Rollenordner beibehalten (zusätzliche Struktur, die das Team eher verwirrt als entlastet).
+- **Begründung:** Repo übersichtlich halten, damit sich alle schnell zurechtfinden (siehe E-022).
+
 ### K-003 · Rückkopplung Praxiskontakt: Produktion läuft 16 Stunden am Tag
 - **Gesprächspartner:** Kontakt beim Praxispartner (Elektrik), Rücksprache durch Max, 09.11.2026
 - **Aussage:** Die Produktion läuft 16 Stunden am Tag.
