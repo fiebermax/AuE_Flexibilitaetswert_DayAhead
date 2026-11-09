@@ -1,6 +1,0 @@
-jahr,stunden,auffaellig,anteil_pct,davon_ungewoehnlich_niedrig,davon_ungewoehnlich_hoch,davon_negativer_preis,davon_sonntag,davon_in_betriebszeit,niedrigster_preis,hoechster_preis
-2022,8759,157,1.79,127,30,4,33,84,-1.36,700.0
-2023,8759,284,3.24,252,32,73,87,163,-500.0,524.27
-2024,8783,386,4.39,287,99,56,124,194,-15.69,936.28
-2025,8759,605,6.91,334,271,77,117,415,-250.32,583.4
-2026,7295,395,5.41,277,118,47,95,244,-499.0,697.31

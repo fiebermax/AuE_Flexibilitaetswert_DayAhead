@@ -26,7 +26,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from gemeinsam import lade_params, pfad, werktage  # noqa: E402
 
-SPALTEN = ["datum", "mwh"]                          # exactly as in docs/schnittstellen.md
+SPALTEN = ["datum", "mwh_gesamt", "mwh_flexibel"]   # exactly as in docs/schnittstellen.md / docs/codebook.md
 PRODUKTIONSTAGE = ("taeglich", "Mo-Fr ohne Feiertage Bayern")
 
 
@@ -43,8 +43,8 @@ def pruefe_parameter(last: dict) -> None:
     if last["produktionstage"] not in PRODUKTIONSTAGE:
         raise LastFehler(f"last.produktionstage = '{last['produktionstage']}' wird nicht unterstützt. "
                          f"Möglich: {', '.join(PRODUKTIONSTAGE)}.")
-    if not last["mwh_pro_tag"] > 0:
-        raise LastFehler("last.mwh_pro_tag muss größer als 0 sein.")
+    if not 0 < last["mwh_pro_tag"] <= last["gesamtverbrauch_mwh_pro_tag"]:
+        raise LastFehler("last.mwh_pro_tag muss größer als 0 und höchstens gesamtverbrauch_mwh_pro_tag sein.")
     if not 0 <= last["betrieb_start_h"] < last["betrieb_ende_h"] <= 24:
         raise LastFehler("Betriebszeit unplausibel: 0 <= betrieb_start_h < betrieb_ende_h <= 24.")
     fenster = last["betrieb_ende_h"] - last["betrieb_start_h"]
@@ -54,11 +54,13 @@ def pruefe_parameter(last: dict) -> None:
         raise LastFehler("Der Status-quo-Block (status_quo_start_h) liegt nicht in der Betriebszeit.")
 
 
-def erzeuge_last(von: str, bis: str, mwh_pro_tag: float, produktionstage: str = "taeglich") -> pd.DataFrame:
+def erzeuge_last(von: str, bis: str, mwh_pro_tag: float, produktionstage: str = "taeglich",
+                 mwh_gesamt: float = 50.0) -> pd.DataFrame:
     """One row per calendar day from `von` to `bis` (both included).
 
-    "taeglich": mwh_pro_tag on every day. "Mo-Fr ohne Feiertage Bayern": mwh_pro_tag on working days,
-    0 otherwise (same rule as the column `werktag` of the prices, see gemeinsam.werktage).
+    mwh_gesamt:   consumption of the whole plant on a production day (practice contact: 50 MWh).
+    mwh_flexibel: the shiftable part of it (placeholder until the process is fixed).
+    "taeglich": every day incl. public holidays. "Mo-Fr ohne Feiertage Bayern": working days only, 0 otherwise.
     Kept free of file access so the tests can call it with small date ranges.
     """
     tage = pd.date_range(von, bis, freq="D")                       # plain calendar days, no time zone
@@ -68,7 +70,8 @@ def erzeuge_last(von: str, bis: str, mwh_pro_tag: float, produktionstage: str = 
         produziert = werktage(tage.tz_localize("Europe/Berlin"), mariae_himmelfahrt=False)
     df = pd.DataFrame({
         "datum": tage.strftime("%Y-%m-%d"),                         # pure date as text, e.g. 2025-01-06
-        "mwh": [float(mwh_pro_tag) if x else 0.0 for x in produziert],
+        "mwh_gesamt": [float(mwh_gesamt) if x else 0.0 for x in produziert],
+        "mwh_flexibel": [float(mwh_pro_tag) if x else 0.0 for x in produziert],
     })
     return df[SPALTEN]
 
@@ -80,15 +83,15 @@ def main() -> None:
 
     # Same period as the prices, so every price day has a load value (and vice versa).
     df = erzeuge_last(p["daten"]["aufloesungen"]["hour"], p["zeitraeume"]["datenstand"],
-                      last["mwh_pro_tag"], last["produktionstage"])
+                      last["mwh_pro_tag"], last["produktionstage"], last["gesamtverbrauch_mwh_pro_tag"])
 
     ziel = pfad(p, "processed") / "last_synth.csv"
     ziel.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(ziel, index=False)
 
     leistung = last["mwh_pro_tag"] / last["blocklaenge_h"]
-    print(f"Lastgang (synthetisch): {len(df)} Tage, {int((df['mwh'] > 0).sum())} Produktionstage x "
-          f"{last['mwh_pro_tag']} MWh = {df['mwh'].sum():.0f} MWh; Block {last['blocklaenge_h']} h mit "
+    print(f"Lastgang: {len(df)} Tage, {int((df['mwh_gesamt'] > 0).sum())} Produktionstage x "
+          f"{last['gesamtverbrauch_mwh_pro_tag']} MWh gesamt, davon {last['mwh_pro_tag']} MWh verschiebbar (Platzhalter); Block {last['blocklaenge_h']} h mit "
           f"{leistung:.2f} MW in {last['betrieb_start_h']:02d}-{last['betrieb_ende_h']:02d} Uhr -> {ziel}")
 
 
