@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### P-007 · PR #7 ohne Review gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; R3 ist noch nicht im Repo.
+- **Angesprochen von:** Max (R2), 09.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich, damit das Team die bereinigten Daten auf `main` hat. Review durch R3 nachträglich.
+- **Ergebnis:** PR #7 am 09.11.2026 gemergt; nachträgliches Review offen.
+
 ### K-006 · KI-Einsatz Datenbereinigung
 - **Werkzeug:** Claude Code
 - **Zweck:** Plan der Bereinigung, `src/cleaning.py`, `tests/test_cleaning.py`, `reports/`, `docs/codebook.md`, `data/raw/MANIFEST.md`; Recherche der SDAC-Preisgrenzen und des Umstellungstermins auf 15 Minuten (Quellen in `docs/datenaufbereitung.md`).
