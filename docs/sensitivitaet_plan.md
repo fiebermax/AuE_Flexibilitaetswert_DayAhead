@@ -21,11 +21,11 @@ Die Varianten sind keine neuen Hypothesentests. Es entstehen keine zusätzlichen
 
 | ID | Was | Basis | Variante(n) | Schalter in `params.yaml` | Betroffen | Erwartung (Annahme) |
 | --- | --- | --- | --- | --- | --- | --- |
-| V1 | Zeitumstellung Oktober | doppelte Stunde gemittelt | erste Stunde · zweite Stunde | `daten.zeitumstellung_oktober: mittel \| erste \| zweite` | `02_aufbereitung.zu_ortszeit` | **im Basisszenario 0**: Umstellung immer sonntags, Last 0 (Tagebuch E-018, Test). Nur bei Wochenendproduktion rechnen |
-| V2 | Zeitumstellung März | 02:00 fehlt, Tag hat 23 h | fehlende Stunde mit Preis der Vorstunde gefüllt (nur als Sensitivität!) | `daten.zeitumstellung_maerz: fehlt \| vorstunde` | `02_aufbereitung.baue_tabelle` | **im Basisszenario 0**, wie V1 (E-018) |
-| V3 | Feiertagskalender | ohne Mariä Himmelfahrt | mit Mariä Himmelfahrt (15.08.) | `last.feiertagsvariante_mariae_himmelfahrt` (**existiert schon**) | Preise (`werktag`) und Last zugleich; ein Test erzwingt Gleichlauf | klein: 1 Werktag pro Jahr weniger |
-| V4 | Betriebsruhe 24./31.12. | Werktag | arbeitsfrei | `last.zusaetzlich_frei: ["12-24", "12-31"]` | `gemeinsam.werktage` | klein; **nur falls der Praxiskontakt das bestätigt** |
-| V6 | Lastmenge (synthetisch) | 2,0 MWh/Werktag | 1,0 · 4,0 | `last.mwh_pro_werktag` | `02_synthetisch` | €/Woche skaliert linear, Anteil am Oracle bleibt gleich (rechnerisch, als Kontrolle) |
+| V1 | Zeitumstellung | — | **entfällt** | — | — | Mit `ts_utc` als Schlüssel wird nichts gemittelt oder aufgefüllt (E-026); 02–03 Uhr liegt außerhalb der Betriebszeit 06–22 Uhr |
+| V2 | Auffällige Preise | alle Stunden | Auswertung ohne Stunden mit `flag_outlier` (Daten bleiben unverändert) | Filter in `06_sensitivitaet.py` | Auswertung | zeigt, ob das Ergebnis an wenigen Extremstunden hängt (E-025) |
+| V3 | Feiertagskalender | ohne Mariä Himmelfahrt | mit Mariä Himmelfahrt (15.08.) | `last.feiertagsvariante_mariae_himmelfahrt` | nur Spalte `werktag` der Preise (Produktion läuft täglich) | voraussichtlich 0 für die Kosten; nur relevant für Strategien, die `werktag` nutzen |
+| V4 | Produktionstage | täglich (Praxiskontakt) | Mo–Fr ohne Feiertage | `last.produktionstage` | `02_synthetisch` | zeigt, wie stark das Ergebnis an der Wochenendproduktion hängt |
+| V6 | verschiebbare Menge (synthetisch) | 2,0 MWh/Tag | 1,0 · 4,0 · 8,0 | `last.mwh_pro_tag` | `02_synthetisch` | €/Woche skaliert linear, Anteil am Oracle bleibt gleich (rechnerisch, als Kontrolle) |
 | V7 | Blocklänge (synthetisch) | 6 h | 4 h · 8 h | `last.blocklaenge_h` | R3 (Blockkosten-Matrix) | nicht trivial: kurze Blöcke treffen das Preistal besser |
 
 V6 und V7 sind laut Kickoff Pflicht für K2 Stufe 5: Synthetische Daten lassen sich nicht gegen die Wirklichkeit prüfen, also prüfen wir, wie stark das Ergebnis von ihren Parametern abhängt.
@@ -39,33 +39,30 @@ Nur Stundenpreise (Tagebuch E-021). Bei Blöcken zur vollen Stunde wären 15-min
 1. **Neue Schalter in `params.yaml`** (Standardwert = heutiges Verhalten, Ergebnis bleibt bit-gleich):
    ```yaml
    daten:
-     zeitumstellung_oktober: "mittel"   # mittel | erste | zweite
-     zeitumstellung_maerz: "fehlt"      # fehlt | vorstunde   (nur für Sensitivität)
    last:
-     zusaetzlich_frei: []               # z. B. ["12-24", "12-31"], nach Praxisgespräch
+     produktionstage: "taeglich"        # Variante V4: "Mo-Fr ohne Feiertage Bayern"
    ```
 2. **Variantenliste in `params.yaml`**, jede Variante überschreibt einzelne Schalter:
    ```yaml
    sensitivitaet:
      schwelle_pct: 5
      varianten:
-       V1a: {daten.zeitumstellung_oktober: "erste"}
-       V1b: {daten.zeitumstellung_oktober: "zweite"}
-       V2:  {daten.zeitumstellung_maerz: "vorstunde"}
+       V2:  {auswertung.ohne_flag_outlier: true}
        V3:  {last.feiertagsvariante_mariae_himmelfahrt: true}
-       V6a: {last.mwh_pro_werktag: 1.0}
-       V6b: {last.mwh_pro_werktag: 4.0}
+       V4:  {last.produktionstage: "Mo-Fr ohne Feiertage Bayern"}
+       V6a: {last.mwh_pro_tag: 1.0}
+       V6b: {last.mwh_pro_tag: 4.0}
        V7a: {last.blocklaenge_h: 4}
        V7b: {last.blocklaenge_h: 8}
    ```
-3. **Umbau der Schritte, damit Varianten nichts überschreiben:** `02_aufbereitung.main()` und `02_synthetisch.main()` bekommen die optionalen Argumente `params` und `ausgabe_ordner`. Ohne Argumente verhalten sie sich wie heute. Varianten schreiben nach `data/processed/sensitivitaet/<ID>/` (in `.gitignore`).
+3. **Umbau der Schritte, damit Varianten nichts überschreiben:** `cleaning.main()` und `02_synthetisch.main()` bekommen die optionalen Argumente `params` und `ausgabe_ordner`. Ohne Argumente verhalten sie sich wie heute. Varianten schreiben nach `data/processed/sensitivitaet/<ID>/` (in `.gitignore`).
 4. **Neues Skript `src/06_sensitivitaet.py` (R2):** je Variante Parameter kopieren, Schalter setzen, Schritte 02 und 02b ausführen, R3s Backtest aufrufen, Kennzahlen sammeln. Ausgabe `results/tables/sensitivitaet.csv` mit den Spalten `variante`, `schalter`, `wert`, `strategie`, `periode`, `mittel_eur_woche`, `delta_eur`, `delta_pct`, `anteil_oracle`, `h0_entscheidung_gleich`, `relevant`. Der Bootstrap braucht denselben Seed wie die Basis, damit Unterschiede nicht vom Zufall kommen.
 5. **Absprache mit R3 (A-xxx, jetzt nötig):** Der Backtest muss als Funktion aufrufbar sein, z. B. `backtest(preise: DataFrame, last: DataFrame, params: dict) -> DataFrame`. Er darf selbst keine Dateien lesen, sonst kann `06_sensitivitaet.py` keine Varianten einspeisen.
 6. **Tests:**
    - Die Basis-Variante reproduziert die Basis-Ergebnisse exakt.
    - Jede Variante ändert ihren Schalter tatsächlich, sonst wäre sie eine stille Nullvariante.
    - V6 skaliert die €/Woche linear und lässt den Anteil am Oracle gleich, als Plausibilitätskontrolle.
-   - Zeitumstellungstage sind lastfrei (`test_zeitumstellung_nur_an_lastfreien_tagen`); schlägt der Test fehl, V1/V2 aktivieren.
+   - Zeitumstellung liegt außerhalb der Betriebszeit (`test_lokale_tage_23_24_25_stunden`).
 
 ## Zeitplan und Aufwand (Schätzung)
 
@@ -73,7 +70,7 @@ Nur Stundenpreise (Tagebuch E-021). Bei Blöcken zur vollen Stunde wären 15-min
 | --- | --- | --- |
 | Schwelle und Basis im Team festlegen, Tagebuch | vor 13.11. | 15 min |
 | Absprache Backtest-Funktion mit R3 | sofort | 15 min |
-| Schalter V1, V2, V4 in `02_aufbereitung` und `gemeinsam` | sobald Schwelle steht | 2 h inkl. Tests |
+| Schalter V2 (Filter) in `06_sensitivitaet.py`; V4 existiert schon | sobald Schwelle steht | 1 h inkl. Tests |
 | `06_sensitivitaet.py` | sobald R3s Backtest als Funktion steht | 2–3 h |
 | Lauf, Tabelle, ein Satz je Variante für Bericht Kap. 3 | Sa 14.11. | 1 h |
 

@@ -209,6 +209,17 @@ def aktualisiere_sources(sources: Path, manifest: list[dict], manifest_datei: Pa
     sources.write_text(text, encoding="utf-8")
 
 
+def schreibe_manifest_md(ziel: Path, manifest: list[dict]) -> None:
+    """Human-readable list of every raw file: file, source, URL, retrieval date, licence, SHA-256."""
+    zeilen = ["# Manifest der Rohdaten", "",
+              "Automatisch erzeugt von `src/01_download.py` aus `smard/manifest.csv`. `data/raw/` wird nur gelesen, nie überschrieben.",
+              "Lizenz aller Dateien: CC BY 4.0, Namensnennung „Bundesnetzagentur | SMARD.de“.", "",
+              "| Datei | Quelle | URL | Abrufdatum (UTC) | Lizenz | SHA-256 |", "| --- | --- | --- | --- | --- | --- |"]
+    for z in sorted((z for z in manifest if z["status"] == "aktiv"), key=lambda z: z["datei"]):
+        zeilen.append(f"| `{z['datei']}` | {z['quelle']} | {z['url']} | {z['abgerufen_am_utc']} | CC BY 4.0 | `{z['sha256']}` |")
+    ziel.write_text("\n".join(zeilen) + "\n", encoding="utf-8")
+
+
 # ---------------------------------------------------------------------------------------------
 # Main flow
 # ---------------------------------------------------------------------------------------------
@@ -321,6 +332,7 @@ def main() -> None:
     # --- Finish: write manifest and summary in SOURCES.md -----------------------------------
     schreibe_manifest(manifest_datei, manifest)
     aktualisiere_sources(raw / "SOURCES.md", manifest, manifest_datei)
+    schreibe_manifest_md(raw / "MANIFEST.md", manifest)
     print(f"Download: {neu} neu geladen, {vorhanden} bereits vorhanden ({'offline' if session is None else 'online'}).")
 
 

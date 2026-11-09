@@ -38,7 +38,7 @@ def werktage(daten: pd.DatetimeIndex, mariae_himmelfahrt: bool) -> np.ndarray:
     Mariä Himmelfahrt (15.08.) is a holiday only in mainly catholic municipalities; the package files
     it under the category "catholic", so we add that category only if the switch in params.yaml is on.
     The result is a True/False array with one entry per timestamp.
-    Lives here because prices (02_aufbereitung) and load (02_synthetisch) must use the SAME rule.
+    Lives here because prices (cleaning) and load (02_synthetisch variant Mo-Fr) must use the SAME rule.
     """
     kategorien = ("public", "catholic") if mariae_himmelfahrt else ("public",)
     jahre = range(daten.min().year, daten.max().year + 1)

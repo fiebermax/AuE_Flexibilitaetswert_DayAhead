@@ -8,6 +8,67 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 09.11.2026
 
+### P-007 · PR #7 ohne Review gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; R3 ist noch nicht im Repo.
+- **Angesprochen von:** Max (R2), 09.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich, damit das Team die bereinigten Daten auf `main` hat. Review durch R3 nachträglich.
+- **Ergebnis:** PR #7 am 09.11.2026 gemergt; nachträgliches Review offen.
+
+### K-006 · KI-Einsatz Datenbereinigung
+- **Werkzeug:** Claude Code
+- **Zweck:** Plan der Bereinigung, `src/cleaning.py`, `tests/test_cleaning.py`, `reports/`, `docs/codebook.md`, `data/raw/MANIFEST.md`; Recherche der SDAC-Preisgrenzen und des Umstellungstermins auf 15 Minuten (Quellen in `docs/datenaufbereitung.md`).
+- **Wie geprüft:** Plan vor dem Code von Max freigegeben (A-008); 24 Tests grün; Gegenprobe: eine Stunde gelöscht und ein Preis auf 6 000 €/MWh gesetzt → 3 Tests rot; Umstellungstage von Hand nachgesehen (26.10.2025: beide 02:00-Stunden mit 3,19 und 2,02 €/MWh erhalten). Commits mit Präfix `cleaning:` und Trailer `Co-Authored-By: Claude Code`.
+- **Offen:** Max erklärt `src/cleaning.py` selbst (Sperrkriterium Erklärbarkeit) bis Fr 13.11.
+
+### E-029 · Bereinigung als eigenes Skript mit Log, Berichten und Codebook
+- **Person:** Max (R2), umgesetzt von Claude
+- **Entscheidung:** `src/cleaning.py` ersetzt `src/02_aufbereitung.py` (Schritt 02 in `run_all.py`, nach `02_synthetisch`). Jeder Schritt wird mit Zeilenzahl vorher/nachher in `reports/cleaning_log.md` protokolliert; Kennzahlen je Monat und Saison (Mittel, Median, IQR, Anteil negativ) und drei Grafiken in `reports/`; jede Spalte in `docs/codebook.md`; `data/raw/MANIFEST.md` je Rohdatei. Plausibilitätsgrenzen −500 bis +5 000 €/MWh (SDAC; das Maximum lag 2022–2026 zwischen +3 000 und +5 000, daher der weiteste Wert).
+- **Verworfen:** Bereinigung ohne Log (nicht nachvollziehbar, K2/K5); Plausibilitätsgrenze +4 000 (galt nicht im ganzen Zeitraum).
+- **Beleg:** `src/cleaning.py`, `reports/cleaning_log.md`, Commits `b6bdf86`, `461a29d`
+
+### E-028 · Aggregationsregel ab 01.10.2025: SMARD-Stundenwert
+- **Person:** Max (R2)
+- **Entscheidung:** Ab der Umstellung der Day-Ahead-Kopplung auf 15-Minuten-Produkte (Handelstag 30.09.2025, Lieferung ab 01.10.2025, NEMO Committee 2025) nutzen wir den Stundenwert, den SMARD veröffentlicht. Er entspricht dem Mittel der vier Viertelstunden (früher geprüft: höchstens 0,005 €/MWh Abweichung über 9 505 Stunden, Commit `b68dfdb`).
+- **Verworfen:** 15-min-Daten erneut laden und selbst mitteln (aufwendiger; bei Blöcken zur vollen Stunde kostengleich; Vereinfachung nach E-021).
+- **Beleg:** `reports/cleaning_log.md` Schritt 4, `docs/datenaufbereitung.md`
+
+### E-027 · Nur CSV, kein Parquet
+- **Person:** Max (R2)
+- **Entscheidung:** Alle bereinigten Dateien als CSV (`preise_clean.csv`, `last_synth.csv`, `reports/tables/*.csv`). Zeitstempel als Text mit UTC-Kennung (`ts_utc`) bzw. UTC-Versatz (`ts_lokal`).
+- **Verworfen:** Parquet (im Arbeitsauftrag vorgesehen; erhält Datentypen, ist aber nicht in Excel zu öffnen und für das Team eine Hürde, E-022).
+- **Beleg:** `docs/codebook.md`, Test `test_spalten_und_typen`
+
+### E-026 · UTC als Schlüssel, nichts mitteln (revidiert E-010 und E-011)
+- **Person:** Max (R2)
+- **Entscheidung:** Schlüssel ist `ts_utc`. In UTC gibt es keine doppelten oder fehlenden Stunden; die doppelte Oktober-Stunde sind zwei verschiedene UTC-Stunden und bleiben beide mit eigenem Preis erhalten. Lokale Zeit nur als Zusatzspalte; lokale Tage haben 23, 24 oder 25 Stunden.
+- **Verworfen:** die bisherige Lösung, die doppelte Stunde zu mitteln (E-010): Sie verwirft eine echte Beobachtung. Ortszeit als Schlüssel: mehrdeutig.
+- **Begründung:** keine stille Bereinigungsentscheidung; Umstellung liegt 02–03 Uhr, außerhalb der Betriebszeit 06–22 Uhr, ändert also keine Kosten.
+- **Beleg:** Tests `test_oktober_hat_25_lokale_stunden_ohne_mitteln`, `test_lokale_tage_23_24_25_stunden`
+
+### E-025 · Auffällige Preise nur markieren (`flag_outlier`), nie löschen
+- **Person:** Max (R2)
+- **Entscheidung:** Modifizierter z-Wert (Median, MAD; Iglewicz & Hoaglin 1993) innerhalb Jahr × Monat × Stunde, Betrag > 3,5 → `flag_outlier`. Ergebnis: 1 827 Stunden (4,3 %), rund 70 % davon ungewöhnlich niedrig (Wochenende, Nacht), die ungewöhnlich hohen vor allem mittags. Keine Zeile gelöscht oder verändert. Die Spalte ist nur zur Beschreibung; `src/datenzugriff.py` entfernt sie (Look-ahead).
+- **Verworfen:** ±3 Standardabweichungen oder IQR als Löschregel, Kappen/Winsorisieren: Day-Ahead-Preise sind Auktionsergebnisse; Extremwerte sind echt und gerade die günstigen Stunden tragen den Flexibilitätswert (Janczura et al. 2013; Weron 2014). Mittelwert und SD werden zudem von den Ausreißern selbst verschoben (Leys et al. 2013).
+- **Beleg:** `reports/tables/ausreisser.csv`, `docs/datenaufbereitung.md` Abschnitt 4, Test `test_ausreisser_nur_markiert_nichts_veraendert`
+
+### E-024 · Produktion an jedem Tag inkl. Feiertage, Betrieb 06–22 Uhr
+- **Person:** Max (R2), nach Interview K-005
+- **Entscheidung:** `last.produktionstage: taeglich`, Betriebszeit 06–22 Uhr, Verbrauch 50 MWh pro Tag. Der verschiebbare 6-Stunden-Block muss in der Betriebszeit liegen (Prüfung in `02_synthetisch`). Verschiebbarer Anteil bleibt Platzhalter (2,0 MWh), bis Prozess und Menge feststehen.
+- **Verworfen:** Produktion nur Mo–Fr ohne Feiertage (bisherige Annahme; bleibt als Sensitivitätsvariante V4).
+- **Beleg:** `config/params.yaml` (`last`), `data/processed/last_synth.csv`
+
+### A-008 · Arbeitsauftrag Datenbereinigung: Plan und Freigabe
+- **Von → an:** Max (R2) → Claude Code
+- **Was:** Auftrag „Datenbereinigung Strompreis-/Lastdaten“ (UTC, Auflösung, Vollständigkeit, Dubletten, Plausibilität, Beschreibung, Join, kein Look-ahead, Tests, Log, Berichte, Codebook, Manifest). Claude legte zuerst einen Plan mit sechs offenen Entscheidungen vor; Max gab frei: alles als CSV, Verbrauch 50 MWh täglich inkl. Feiertage, sonst wie empfohlen; Aggregation über den SMARD-Stundenwert (E-028).
+- **Kanal und Datum:** Chat mit Claude Code, 09.11.2026
+- **Änderung, nachgezogen von:** E-024 bis E-029, K-006
+
+### K-005 · Interview mit dem Praxiskontakt: Verbrauch, Betriebszeit, flexible Prozesse
+- **Gesprächspartner:** Kontakt beim Praxispartner, direktes Interview durch Max, 09.11.2026
+- **Aussagen:** Stromverbrauch des Werks rund **50 000 kWh (50 MWh) pro Tag**, **an jedem Tag, auch an Feiertagen**; Produktion **06–22 Uhr** (16 h). Gut verschiebbar („hochflexibel“): **Kälteerzeugung mit Eisspeicher** (Kompressoren bei billigem Strom, Eis auf Vorrat), **Becherherstellung** (Kunststoff-Tiefziehen, von der Milch entkoppelt, über Lager planbar), **Druckluft und Stickstoff** (Kompressoren mit Puffertanks), **Abwasserreinigung** (Belüftung und Pumpen einige Stunden drosseln oder hochfahren).
+- **Was wir geändert haben:** `params.yaml` und `last_synth.csv` (50 MWh täglich, 06–22 Uhr), E-024.
+- **Offen:** Welcher Prozess ist unser verschiebbarer Fall, mit welcher Menge pro Tag? Fachlich passt die **Becherherstellung** am besten zur Fragestellung (personalgebunden, wöchentlich planbar); Kälte, Druckluft und Abwasser laufen automatisch und täglich steuerbar, passen also eher zum Kontrastfall Tagessteuerung T (Kickoff). Entscheidung im Team.
+
 ### P-006 · PR #6 ohne Review gemergt (auf Anweisung von Max)
 - **Problem:** Laut P-003 wird nach `main` nur nach Review des Paarpartners gemergt; R3 ist noch nicht im Repo, das Review von PR #6 steht aus.
 - **Angesprochen von:** Max (R2), 09.11.2026
