@@ -1,6 +1,6 @@
 # Rollenbereiche
 
-Ein Ordner je Rolle mit Aufgabe, eigenen Dateien im Repo, Schnittstellen, offenen Aufgaben, Notizen und dem Entwurf des Verantwortungsnachweises. Code, Daten und Ergebnisse bleiben nach Arbeitsschritten in `src/`, `data/`, `results/` (Pipeline `01_` bis `05_`, K5); die Zuordnung zu Rollen steht hier und in `.github/CODEOWNERS`.
+Ein Ordner je Rolle mit **Aufgabenliste (Status, Termin, Beleg, Link zur Datei)**, Schnittstellen, offenen Aufgaben, Notizen und dem Entwurf des Verantwortungsnachweises. Code, Daten und Ergebnisse bleiben nach Arbeitsschritten in `src/`, `data/`, `results/` (Pipeline `01_` bis `05_`, K5); die Zuordnung zu Rollen steht hier und in `.github/CODEOWNERS`.
 
 | Rolle | Person | Ordner | Pipeline-Schritte | Review-Partner |
 | --- | --- | --- | --- | --- |

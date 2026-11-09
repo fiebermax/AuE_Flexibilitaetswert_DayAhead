@@ -21,6 +21,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Verworfen:** (a) Repo komplett nach Rollen gliedern (`R2/01_download.py` usw.): Die Pipeline läuft quer durch alle Rollen; Kickoff und Katalog (K5 Stufe 4: „klar getrennte Schritte `01_download` bis `05_bewertung`“) erwarten die Gliederung nach Arbeitsschritten; Umbau von `run_all.py`, Tests und Pfaden ohne Nutzen. (b) Nur Rollen-Präfix im Dateinamen (`01_download_R2.py`): macht den Eigenanteil sichtbar, gibt aber keinen Platz für Notizen und Verantwortungsnachweis.
 - **Begründung:** Jede Person findet ihren Anteil an einer Stelle (Eigenanteil sichtbar, Individualteil 60 %), ohne die Reproduzierbarkeit zu gefährden.
 - **Beleg:** `rollen/README.md`, `rollen/R1/` bis `rollen/R4/`, `.github/CODEOWNERS`
+- **Nachtrag 09.11.2026:** Auf Wunsch von Max je Rolle eine Aufgabenliste aus dem Kickoff-Plan mit Termin, Status, Beleg und Link zur Datei ergänzt (R2: 9 von 22 erledigt, u. a. Schritte 01, 02, 02b). Status wird von der jeweiligen Rolle gepflegt.
 
 ### A-005 · Rollenbereiche fürs Team
 - **Von → an:** R2 (Max) → R1, R3, R4

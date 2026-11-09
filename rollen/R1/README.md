@@ -1,6 +1,8 @@
 # R1 · Projektleitung & Controlling
 
-Arbeitsbereich der Rolle. **Code, Daten und Ergebnisse bleiben in `src/`, `data/`, `results/`**, damit die Pipeline mit einem Befehl läuft (K5). Hier steht, was davon zu dieser Rolle gehört, plus Notizen und der Entwurf des Verantwortungsnachweises.
+Arbeitsbereich der Rolle: alle Aufgaben mit Status und Beleg. **Code, Daten und Ergebnisse liegen in `src/`, `data/`, `results/`** (Pipeline mit einem Befehl, K5); die Links unten führen direkt zu den Dateien.
+
+Status: ✅ erledigt · 🟨 in Arbeit · ⬜ offen. Stand 09.11.2026.
 
 | | |
 | --- | --- |
@@ -10,33 +12,36 @@ Arbeitsbereich der Rolle. **Code, Daten und Ergebnisse bleiben in `src/`, `data/
 | Wirkt mit | Ergebnis & Verwertung (R4) |
 | Kriterien | K1, K8, K9, K10 |
 | Vertretung | R4 |
+| Review-Partner | R4 (kein Merge nach `main` ohne dessen Review) |
 
-## Meine Dateien im Repo
+## Aufgaben (0 von 14 erledigt)
 
-- `config/params.yaml` (Owner aller Annahmen; Review jeder Änderung)
-- `docs/belegmatrix.md`
-- `docs/kickoff.md`, `docs/projektanweisung.md`
-- Bericht (Redaktion), Folien, Grafikstandard; `results/kennzahlen.json` (geplant, Zahlen-Freeze `v1.0`)
+| # | Aufgabe | Ergebnis / Datei | Termin | Status | Beleg / Hinweis |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Rollen verteilen, Personen eintragen (alle) | Kickoff, Tagebuch E-001 | Sa 07.11. | 🟨 | R2 = Max; R1, R3, R4 offen |
+| 2 | Steckbrief festzurren; Problem Statement mit H0a, H0b (mit R4) | Folien 1 und 2 | So 08.11. | ⬜ |  |
+| 3 | Eigene Rolle im Format a) bis d) | Folie 5 | Mo 09.11. | ⬜ |  |
+| 4 | Probelauf Pitch moderieren; Meilensteinprotokoll | Tagebuch M-xxx | vor/am Pitch | ⬜ |  |
+| 5 | Review neuer Block `daten` in `params.yaml` | [`config/params.yaml`](../../config/params.yaml) | vor 13.11. | ⬜ | Tagebuch A-002 |
+| 6 | Prozessskizze der Freitagsplanung (wer, womit, wann) | Bericht Kap. 2 | vor 13.11. | ⬜ | K1 S3 |
+| 7 | 3–5 Literaturquellen zu Lastflexibilität (mit R4) | Quellenliste | vor 13.11. | ⬜ | K1 S5 |
+| 8 | Vorlage und Folienmaster, Grafikstandard | Vorlage | ab 12.11. | ⬜ | K8 |
+| 9 | Zwischenreview moderieren; Belegmatrix aktualisieren | [`docs/belegmatrix.md`](../../docs/belegmatrix.md) | Fr 13.11. | ⬜ |  |
+| 10 | Spot gegen Festpreis (mit R4) | Wirtschaftlichkeitsrechnung | So 15.11. | ⬜ | K7 |
+| 11 | Folien Endpräsentation | Folien | So 15.11. | ⬜ |  |
+| 12 | `results/kennzahlen.json`, Zahlen-Freeze Git-Tag `v1.0` | results/kennzahlen.json | vor dem Bericht | ⬜ | K5, Evidenzprinzip |
+| 13 | Bericht: Redaktion, Kap. 1 und 2 | Bericht | bis Abgabe | ⬜ |  |
+| 14 | Verantwortungsnachweis | diese Datei, Abschnitt unten | bis Abgabe | ⬜ |  |
 
 ## Schnittstellen (Details in `docs/schnittstellen.md`)
 
 **Erhält:**
-- Von allen: Ergebnisse, Grafiken, Tabellen in `results/` (Kennzahlen nur aus `results/kennzahlen.json`)
-- Von R4: `results/tables/wirtschaftlichkeit.csv` (`szenario`, `ersparnis_eur_jahr`, `umstellungskosten_eur`, `break_even`)
+- Von allen: Ergebnisse, Grafiken, Tabellen in `results/`
+- Von R4: `results/tables/wirtschaftlichkeit.csv`
 
 **Übergibt:**
 - An alle: `config/params.yaml` (Annahmen, Zeiträume, Kosten)
 - An die Prüfer: Bericht, Präsentation, Belegmatrix
-
-## Offene Aufgaben (Stand 09.11.2026)
-
-- [ ] Review des neuen Blocks `daten` in `params.yaml` (Tagebuch A-002)
-- [ ] Problem Statement mit H0a–H0c, Prozessskizze der Freitagsplanung
-- [ ] 3–5 Literaturquellen zu Lastflexibilität (mit R4)
-- [ ] Vorlage und Folienmaster festlegen (K8)
-- [ ] Meilensteinprotokolle moderieren (Pitch, Zwischenreview Fr 13.11.)
-
-**Review-Regel:** Kein Merge ohne Review durch R4 (Review-Paar R1 ↔ R4).
 
 ## Verantwortungsnachweis (2–3 Seiten, Gliederung laut Kickoff)
 
