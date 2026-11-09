@@ -2,9 +2,10 @@
 """Step 2: SMARD raw week files -> one clean hourly price table as CSV.
 
 Owner: R2. Input: data/raw/smard/ (from step 1). Output (columns see docs/schnittstellen.md):
-  data/processed/preise_h.csv          zeit, datum, stunde, preis_eur_mwh, regime, werktag   (hand-over to R3)
+  data/processed/preise_h.csv          zeit, datum, stunde, preis_eur_mwh, regime, werktag, auffaellig  (to R3)
   data/processed/zeitumstellung.csv    days with a clock change and how they were treated
   results/tables/datenqualitaet.csv    gaps, duplicates, negative prices per year
+  results/tables/ausreisser.csv        conspicuous prices per year: how many, how low/high, when
 
 Open the result with:  pd.read_csv("data/processed/preise_h.csv")   (or in Excel)
 
@@ -17,6 +18,10 @@ Rules (reasons in the project diary):
     Clock changes are always on a Sunday, when the plant has no load, so they do not affect costs (E-018).
   * Real gaps (SMARD delivers null) stay as a row with an empty price and are counted.
   * Negative prices are real market results and stay in.
+  * Outliers are FLAGGED, never removed (diary E-025, docs/datenaufbereitung.md): robust modified z-score
+    (median and MAD, Iglewicz & Hoaglin 1993) within year x month x hour, threshold in params.yaml.
+    Extreme day-ahead prices are real auction results; removing them would remove exactly the hours in
+    which shifting load saves money (Janczura et al. 2013, Weron 2014).
 """
 import csv
 import json
@@ -30,7 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from gemeinsam import lade_params, pfad, werktage  # noqa: E402
 
 # Column order of the hand-over file (must match docs/schnittstellen.md; a test checks it)
-SPALTEN = ["zeit", "datum", "stunde", "preis_eur_mwh", "regime", "werktag"]
+SPALTEN = ["zeit", "datum", "stunde", "preis_eur_mwh", "regime", "werktag", "auffaellig"]
 
 
 class AufbereitungsFehler(RuntimeError):
@@ -116,7 +121,62 @@ def baue_tabelle(s_ort: pd.Series, raster: pd.DatetimeIndex, wechsel: pd.Timesta
     df["stunde"] = df["zeit"].dt.hour
     df["regime"] = np.where(df["zeit"] >= wechsel, "viertel", "stunde")
     df["werktag"] = werktage(pd.DatetimeIndex(df["zeit"]), mariae)
+    df["auffaellig"] = False            # filled in by markiere_ausreisser()
     return df[SPALTEN]
+
+
+# ---------------------------------------------------------------------------------------------
+# 3b) Outliers: flag, explain, never delete
+# ---------------------------------------------------------------------------------------------
+def robuster_z(werte: pd.Series) -> pd.Series:
+    """Modified z-score (Iglewicz & Hoaglin 1993): 0.6745 * (x - median) / MAD.
+
+    Why not the usual (x - mean) / standard deviation: mean and standard deviation are themselves pulled
+    by the extreme values we are looking for, so big outliers hide each other (Leys et al. 2013).
+    Median and MAD (median absolute deviation) are hardly affected by them. 0.6745 scales the MAD so
+    that the value is comparable to a normal z-score. If MAD is 0 (all values equal), no z is defined.
+    """
+    median = werte.median()
+    mad = (werte - median).abs().median()
+    if not mad or np.isnan(mad):
+        return pd.Series(np.nan, index=werte.index)
+    return 0.6745 * (werte - median) / mad
+
+
+def markiere_ausreisser(df: pd.DataFrame, schwelle: float) -> tuple[pd.DataFrame, pd.Series]:
+    """Set `auffaellig` = True where |modified z| > schwelle, compared within the same year, month and hour.
+
+    Why this comparison group: prices differ strongly by year (2022 gas crisis), by season (solar in
+    summer) and by hour (midday dip). A price is only conspicuous compared with prices that SHOULD be
+    similar, e.g. 12:00 in May 2025 compared with all other 12:00 hours in May 2025.
+    """
+    gruppen = [df["zeit"].dt.year, df["zeit"].dt.month, df["stunde"]]
+    z = df.groupby(gruppen)["preis_eur_mwh"].transform(robuster_z)
+    out = df.copy()
+    out["auffaellig"] = (z.abs() > schwelle).fillna(False)
+    return out, z
+
+
+def ausreisser_tabelle(df: pd.DataFrame, z: pd.Series, start_h: int, ende_h: int) -> pd.DataFrame:
+    """Per year: how many conspicuous hours, how many unusually low / high, on Sundays, in operating hours."""
+    a = df[df["auffaellig"]].assign(z=z[df["auffaellig"]])
+    zeilen = []
+    for jahr, g in df.groupby(df["zeit"].dt.year):
+        aj = a[a["zeit"].dt.year == jahr]
+        zeilen.append({
+            "jahr": jahr,
+            "stunden": len(g),
+            "auffaellig": len(aj),
+            "anteil_pct": round(100 * len(aj) / len(g), 2),
+            "davon_ungewoehnlich_niedrig": int((aj["z"] < 0).sum()),
+            "davon_ungewoehnlich_hoch": int((aj["z"] > 0).sum()),
+            "davon_negativer_preis": int((aj["preis_eur_mwh"] < 0).sum()),
+            "davon_sonntag": int((aj["zeit"].dt.weekday == 6).sum()),
+            "davon_in_betriebszeit": int(((aj["stunde"] >= start_h) & (aj["stunde"] < ende_h)).sum()),
+            "niedrigster_preis": aj["preis_eur_mwh"].min() if len(aj) else np.nan,
+            "hoechster_preis": aj["preis_eur_mwh"].max() if len(aj) else np.nan,
+        })
+    return pd.DataFrame(zeilen)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -177,13 +237,17 @@ def main() -> None:
     preise = baue_tabelle(s_ort, erwartetes_raster(beginn, ende, tz), wechsel,
                           bool(p["last"]["feiertagsvariante_mariae_himmelfahrt"]))
 
+    preise, z = markiere_ausreisser(preise, float(p["daten"]["ausreisser_schwelle"]))
+
     # CSV with the time as text incl. UTC offset (e.g. 2025-10-26 02:00:00+02:00), readable everywhere
     preise.to_csv(processed / "preise_h.csv", index=False)
+    ausreisser_tabelle(preise, z, p["last"]["betrieb_start_h"], p["last"]["betrieb_ende_h"]).to_csv(
+        tables / "ausreisser.csv", index=False)
     zeitumstellungstage(s_utc, preise, tz).to_csv(processed / "zeitumstellung.csv", index=False)
     qualitaet(preise, n_doppelt).to_csv(tables / "datenqualitaet.csv", index=False)
 
-    print(f"Aufbereitung: {len(preise)} Stunden, {preise['preis_eur_mwh'].isna().sum()} Lücken "
-          f"-> {processed / 'preise_h.csv'}")
+    print(f"Aufbereitung: {len(preise)} Stunden, {preise['preis_eur_mwh'].isna().sum()} Lücken, "
+          f"{int(preise['auffaellig'].sum())} auffällige Preise markiert -> {processed / 'preise_h.csv'}")
 
 
 if __name__ == "__main__":

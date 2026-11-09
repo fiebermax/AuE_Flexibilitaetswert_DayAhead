@@ -25,16 +25,18 @@ daten:                           # R2: Download und Ablage (src/01, src/02)
     processed: "data/processed"
     tables: "results/tables"
   http_versuche: 5               # Retry bei Verbindungsfehlern
+  ausreisser_schwelle: 3.5       # modifizierter z-Wert (Iglewicz & Hoaglin 1993), je Jahr x Monat x Stunde; nur markieren
   http_timeout_s: 30
 
-last:                            # synthetisch, vom Praxiskontakt zu plausibilisieren
-  mwh_pro_werktag: 2.0
-  blocklaenge_h: 6
+last:                            # Praxiskontakt 09.11.2026 (Tagebuch K-003, K-005); flexibler Anteil noch Platzhalter
+  produktionstage: "taeglich"    # Produktion an 7 Tagen pro Woche (K-005); Alternative: "Mo-Fr ohne Feiertage Bayern"
+  betrieb_start_h: 6             # Betriebszeit 06-22 Uhr, 16 h am Tag (K-003, K-005)
+  betrieb_ende_h: 22
+  gesamtverbrauch_mwh_pro_tag: 50.0   # ganzes Werk, 50 000 kWh pro Tag (K-005); nur zur Einordnung
+  mwh_pro_tag: 2.0               # PLATZHALTER: verschiebbarer Anteil pro Tag, Prozess noch festzulegen (K-005)
+  blocklaenge_h: 6               # Block muss in der Betriebszeit liegen
   status_quo_start_h: 8          # Strategie A: fest 08-14 Uhr
-  werktage: "Mo-Fr ohne Feiertage Bayern"
-  feiertagsvariante_mariae_himmelfahrt: false   # Sensitivität: true
-  betrieb_h_pro_tag: 16          # Praxiskontakt 09.11.2026 (Tagebuch K-003): Produktion läuft 16 h am Tag
-  betrieb_start_h: null          # offen: Wann beginnen die 16 Stunden? Beim Kontakt erfragen
+  feiertagsvariante_mariae_himmelfahrt: false   # wirkt nur auf die Spalte werktag der Preise
 
 kosten:
   mitarbeiter: 3

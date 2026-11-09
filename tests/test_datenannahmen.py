@@ -79,21 +79,35 @@ def test_wochenanfaenge_bleiben_montag_mitternacht():
     assert all(w.weekday() == 0 and w.hour == 0 for w in wochen)
 
 
-def test_last_beispielwoche():
-    df = syn.erzeuge_last("2025-06-02", "2025-06-08", 2.0, mariae=False)
-    assert list(df.columns) == ["datum", "mwh"]
-    assert list(df["mwh"]) == [2.0, 2.0, 2.0, 2.0, 2.0, 0.0, 0.0]
-
-
-def test_last_feiertag_und_variante():
-    assert syn.erzeuge_last("2025-08-15", "2025-08-15", 2.0, mariae=False)["mwh"].iloc[0] == 2.0
-    assert syn.erzeuge_last("2025-08-15", "2025-08-15", 2.0, mariae=True)["mwh"].iloc[0] == 0.0
+def test_last_beispielwoche_taeglich_und_variante_werktage():
+    # Mo 02.06. bis So 08.06.2025: täglich = jeden Tag; Variante Mo-Fr = Wochenende 0
+    taeglich = syn.erzeuge_last("2025-06-02", "2025-06-08", 2.0, "taeglich")
+    assert list(taeglich.columns) == ["datum", "mwh"] and list(taeglich["mwh"]) == [2.0] * 7
+    werktags = syn.erzeuge_last("2025-06-02", "2025-06-08", 2.0, "Mo-Fr ohne Feiertage Bayern")
+    assert list(werktags["mwh"]) == [2.0, 2.0, 2.0, 2.0, 2.0, 0.0, 0.0]
+    # Feiertag (Fronleichnam 19.06.2025) nur in der Werktags-Variante ohne Produktion
+    assert syn.erzeuge_last("2025-06-19", "2025-06-19", 2.0, "Mo-Fr ohne Feiertage Bayern")["mwh"].iloc[0] == 0.0
+    assert syn.erzeuge_last("2025-06-19", "2025-06-19", 2.0, "taeglich")["mwh"].iloc[0] == 2.0
 
 
 def test_last_unsinnige_parameter_werden_abgelehnt():
-    for feld, wert in [("mwh_pro_werktag", 0), ("blocklaenge_h", 25), ("werktage", "Mo-Sa")]:
+    for feld, wert in [("mwh_pro_tag", 0), ("blocklaenge_h", 17), ("produktionstage", "Mo-Sa"),
+                       ("status_quo_start_h", 20), ("betrieb_ende_h", 5)]:
         with pytest.raises(syn.LastFehler):
             syn.pruefe_parameter({**PARAMS["last"], feld: wert})
+
+
+def test_robuster_z_und_ausreisser_werden_nur_markiert():
+    # 30 normale Preise um 50 und ein Ausreißer von 500: nur der Ausreißer wird markiert, keine Zeile fällt weg
+    werte = [50.0 + (i % 5) for i in range(30)] + [500.0]
+    zeiten = pd.date_range("2025-05-01 12:00", periods=31, freq="D", tz=TZ)[:31]
+    zeiten = pd.DatetimeIndex([z.replace(month=5, day=1 + i % 28) for i, z in enumerate(zeiten)])
+    df = pd.DataFrame({"zeit": zeiten, "stunde": 12, "preis_eur_mwh": werte, "auffaellig": False})
+    out, z = auf.markiere_ausreisser(df, 3.5)
+    assert len(out) == len(df) and out["preis_eur_mwh"].equals(df["preis_eur_mwh"])   # nichts gelöscht/verändert
+    assert out["auffaellig"].sum() == 1 and out["auffaellig"].iloc[-1]
+    # Mittelwert und Standardabweichung würden den Ausreißer selbst verschieben, Median und MAD kaum
+    assert auf.robuster_z(pd.Series(werte)).iloc[-1] > 3.5
 
 
 def test_bekannt_bis_haengt_an_der_planungsuhrzeit():
@@ -141,7 +155,7 @@ def last():
 
 @braucht_daten
 def test_spalten_laut_schnittstelle():
-    assert list(pd.read_csv(PREISE, nrows=1).columns) == ["zeit", "datum", "stunde", "preis_eur_mwh", "regime", "werktag"]
+    assert list(pd.read_csv(PREISE, nrows=1).columns) == ["zeit", "datum", "stunde", "preis_eur_mwh", "regime", "werktag", "auffaellig"]
     assert list(pd.read_csv(LAST, nrows=1).columns) == ["datum", "mwh"]
 
 
@@ -194,21 +208,26 @@ def test_werktag_nie_am_wochenende(preise):
 def test_last_laut_params(last):
     assert last["datum"].is_monotonic_increasing and not last["datum"].duplicated().any()
     assert len(last) == (last["datum"].max() - last["datum"].min()).days + 1
-    assert set(last["mwh"]) <= {PARAMS["last"]["mwh_pro_werktag"], 0.0}
+    assert set(last["mwh"]) <= {PARAMS["last"]["mwh_pro_tag"], 0.0}
+    if PARAMS["last"]["produktionstage"] == "taeglich":
+        assert (last["mwh"] == PARAMS["last"]["mwh_pro_tag"]).all()
 
 
 @braucht_daten
-def test_last_und_preise_gleiche_werktage(preise, last):
-    wt = preise.groupby("datum")["werktag"].first()
-    assert ((last["mwh"] > 0).to_numpy() == wt.reindex(last["datum"].dt.strftime("%Y-%m-%d")).to_numpy()).all()
-
-
-@braucht_daten
-def test_zeitumstellung_nur_an_lastfreien_tagen(last):
-    # Tagebuch E-018: Umstellungstage sind Sonntage ohne Last, die Behandlung ändert keine Kosten
+def test_zeitumstellung_liegt_ausserhalb_der_betriebszeit():
+    # Tagebuch E-024: Die Zeitumstellung betrifft 02:00-03:00 Uhr, die Produktion läuft 06-22 Uhr.
+    # Solange das gilt, ändert die Behandlung der Zeitumstellung keine Kosten.
     tage = pd.to_datetime(pd.read_csv(PROCESSED / "zeitumstellung.csv")["datum"])
     assert len(tage) > 0 and (tage.dt.weekday == 6).all()
-    assert (last[last["datum"].isin(tage)]["mwh"] == 0).all()
+    assert 3 <= PARAMS["last"]["betrieb_start_h"] and PARAMS["last"]["betrieb_ende_h"] <= 24
+
+
+@braucht_daten
+def test_ausreisser_markiert_aber_nicht_entfernt(preise):
+    # Ausreißer bleiben als Zeile mit Originalpreis drin (E-025); Anteil plausibel klein
+    assert preise["auffaellig"].dtype == bool
+    assert 0 < preise["auffaellig"].mean() < 0.10
+    assert preise["preis_eur_mwh"].notna().all()
 
 
 @braucht_daten
