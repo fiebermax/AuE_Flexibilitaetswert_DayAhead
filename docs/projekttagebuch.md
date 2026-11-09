@@ -6,6 +6,17 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ---
 
+## 09.11.2026
+
+### A-006 · Abgleich des Verständnisses von Fragestellung und Testdesign (Susan, Max)
+- **Von → an:** Susan Jaturat (Rolle noch nicht eingetragen) → Team, Antwort von Max (R2)
+- **Kanal und Datum:** WhatsApp, 09.11.2026, 20:59 und 21:04; Antwort von Max formuliert am 09.11.2026
+- **Was (Susans Zusammenfassung):** Produktion läuft 24/7, energieintensive Aufgaben werden auf wahrscheinlich günstige Zeiten gelegt; der Day-Ahead-Preis ist am Vortag bekannt, der Personalplan steht aber freitags für die ganze Woche, deshalb eine Prognose; Vergangenheit nachspielen; ein Monat ab einem Freitag, vier Wochenwerte aufaddieren und mit dem Festpreis vergleichen; „8–14 Uhr billigster Strom wegen Solar“.
+- **Bestätigt:** Kern des Testdesigns (Freitag nachspielen, nur Wissen bis zu diesem Freitag, mit echten Day-Ahead-Preisen nachrechnen); Grund für die Prognose (Wochenplanung des Personals); nur der energieintensive Prozess wird verschoben.
+- **Korrigiert:** (1) 08–14 Uhr ist der Status quo A (`last.status_quo_start_h: 8`), nicht die günstigste Zeit; dass mittags günstiger ist, ist eine Prototyp-Hypothese, kein Ergebnis. (2) Nicht ein Monat, sondern jeder Freitag in Test 1 (01–09/2025) und Test 2 (10/2025–09/2026); Kennzahl ist die mittlere Ersparnis pro Woche mit 95-%-Konfidenzintervall, keine Summe von vier Werten. (3) Hauptvergleich ist Status quo A mit denselben Day-Ahead-Preisen; Spot gegen Festpreis ist ein eigener Vergleich (R1, R4). (4) Strategie B nutzt die letzten 4 Wochen (`strategien.historie_wochen: 4`), nicht nur die Vorwoche.
+- **Antwort Susan:** offen
+- **Änderung, nachgezogen von:** keine Änderung an Code oder Annahmen. Hinweis für den Pitch (K9): Testdesign so erklären, dass diese Missverständnisse nicht entstehen.
+
 ## 07.11.2026
 
 ### A-004 · Regel: Kommunikation immer im Tagebuch dokumentieren
