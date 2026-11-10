@@ -22,13 +22,13 @@ daten:                           # R2: Download und Ablage (src/01, src/02)
     hour: "2022-01-01"
   pfade:                         # relativ zum Repo-Wurzelverzeichnis
     raw: "data/raw"
-    processed: "data/processed"
-    tables: "results/tables"
+    processed: "data"
+    tables: "ergebnisse"          # Ergebnisse des Backtests (R3, R4), Ordner entsteht beim ersten Lauf
   http_versuche: 5               # Retry bei Verbindungsfehlern
   http_timeout_s: 30
 
 cleaning:                        # R2: r2/src/cleaning.py (Tagebuch E-024 bis E-029)
-  reports: "r2/reports"
+  reports: "r2/ergebnisse"
   preis_min_eur_mwh: -500        # SDAC-Preisgrenzen; Minimum -500 im ganzen Zeitraum
   preis_max_eur_mwh: 5000        # Maximum war 2022-2026 zwischen +3000 und +5000; weitester Wert (Quellen: r2/docs/datenaufbereitung.md)
   ausreisser_schwelle: 3.5       # modifizierter z-Wert (Iglewicz & Hoaglin 1993), je Jahr x Monat x Stunde; nur markieren

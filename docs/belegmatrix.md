@@ -35,7 +35,7 @@ Mehr ist nicht verlangt. Codebook, Schnittstellen und Diagramme sind Belege für
 | Sperrkriterium | Wie wir es absichern | Stand |
 | --- | --- | --- |
 | Analyse nicht reproduzierbar, Grund nicht dokumentiert | ein Befehl `python src/run_all.py`, Prüfsummen, 51 Tests; Reproduktionstest durch eine Person außerhalb R2 | 🟨 Test durch Dritte offen |
-| Datenherkunft oder Datenschutz ungeklärt | SMARD CC BY 4.0 (`data/raw/MANIFEST.md`), Praxisangaben anonymisiert, keine personenbezogenen Daten | ✅ |
+| Datenherkunft oder Datenschutz ungeklärt | SMARD CC BY 4.0 (`data/raw/manifest.csv`), Praxisangaben anonymisiert, keine personenbezogenen Daten | ✅ |
 | Fremde Beiträge, Quellen, Werkzeugausgaben nicht gekennzeichnet | Dateikopf `# KI: …`, Commit-Trailer, K-Einträge im Tagebuch | ✅ laufend |
 | Person kann eigene Entscheidungen nicht erläutern | jeder erklärt seinen Code selbst; Probelauf mit Kreuzfragen | ⬜ |
 
@@ -52,7 +52,7 @@ Stufe 5 sinngemäß nach dem Katalog, jeweils **zusätzlich** zu allen Stufen da
 | K5 | Technische Umsetzung und Reproduzierbarkeit (10) | automatisierte Prüfungen der Datenannahmen, dokumentierte Schnittstellen, Dritte wenden die Analyse ohne Rückfragen auf neue Daten an | 51 Tests, `docs/schnittstellen.md`, fester Seed, ein Befehl | Reproduktionstest durch Dritte | R2 | 🟨 |
 | K6 | Ergebnisinterpretation und kritische Prüfung (12) | aktiv Gegenbelege suchen: Scheinkorrelation, zurückgehaltener Zeitraum, Kipppunkte; negatives Ergebnis genauso klar | Testzeiträume und Stresstest 2022 festgelegt | Ergebnisse, Kipppunkte | R4 | ⬜ |
 | K7 | Wirtschaftliche Verwertung und Empfehlung (10) | Empfehlung im Prozess: wer entscheidet, auf welcher Grundlage, was anders, welche Kennzahl, wann nachsteuern, wann zurücknehmen | Kostenannahmen in `params.yaml` (E-035) | Wirtschaftlichkeitsrechnung, Empfehlung | R4, R1 | ⬜ |
-| K8 | Visualisierung (8) | für den Adressaten ohne Vorlesungswissen verständlich; interaktiv nur mit Erkenntnisgewinn | Grafiken und Board R2 (`r2/reports/`) | Abbildungen für Bericht und Folien | R1 | 🟨 |
+| K8 | Visualisierung (8) | für den Adressaten ohne Vorlesungswissen verständlich; interaktiv nur mit Erkenntnisgewinn | Grafiken und Board R2 (`r2/ergebnisse/`) | Abbildungen für Bericht und Folien | R1 | 🟨 |
 | K9 | Kommunikation und Verteidigung (8) | Schnittstellen zu den Nachbarpaketen erklären, Team als Ganzes vertreten, Fehler und verworfene Wege offen darlegen | verworfene Alternativen in jedem E-Eintrag | Probelauf, Kapitel „Verworfene Wege“ | alle | ⬜ |
 | K10 | Teamarbeit (6, nur individuell) | Verantwortung über das eigene Paket hinaus: roter Faden, Zielkonflikte moderieren, einspringen, andere befähigen | Tagebuch, M-001, Reviews durch Susan (A-012), Preisabfrage für Susan (A-011) | Peer-Einschätzung; Beiträge der anderen im Git-Verlauf | jede Person | 🟨 |
 

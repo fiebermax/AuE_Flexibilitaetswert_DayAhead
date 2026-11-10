@@ -1,10 +1,10 @@
 # Cleaning-Log
 
-Erzeugt von `r2/src/cleaning.py`. Eingabe: `data/raw/smard/` (unverändert), `data/processed/last_synth.csv`. Ausgabe: `data/processed/preise_clean.csv`.
+Erzeugt von `r2/src/cleaning.py`. Eingabe: `data/raw/` (unverändert), `data/last_synth.csv`. Ausgabe: `data/preise_clean.csv`.
 
 | Schritt | Regel | N vorher | N nachher | betroffene Zeilen | Begründung |
 | --- | --- | --- | --- | --- | --- |
-| 0 Rohdaten prüfen | SHA-256 jeder Rohdatei = Wert im Manifest | 253 | 253 | 0 | Rohdaten unverändert, Herkunft belegt (data/raw/MANIFEST.md) |
+| 0 Rohdaten prüfen | SHA-256 jeder Rohdatei = Wert im Manifest | 253 | 253 | 0 | Rohdaten unverändert, Herkunft belegt (data/raw/manifest.csv) |
 | 1 Einlesen | alle Wochendateien untereinander, Zeitstempel UTC | 42504 | 42504 | 0 | Wochendateien von SMARD (Mo 00:00 bis So 24:00 deutscher Zeit) |
 | 2 Dubletten | exakt: einer bleibt; widersprüchlich: Abbruch | 42504 | 42504 | 0 | 0 exakte, 0 widersprüchliche Dubletten |
 | 3 Zeitraum | 01.01.2022 00:00 bis 31.10.2026 24:00 deutscher Zeit | 42504 | 42360 | 144 | Randtage der ersten und letzten Wochendatei liegen außerhalb des Untersuchungszeitraums |

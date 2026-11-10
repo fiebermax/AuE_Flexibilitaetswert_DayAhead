@@ -4,19 +4,19 @@ Jede Übergabe ist eine **CSV-Datei** mit festen Spalten und Einheiten (Details:
 
 | Von → an | Datei | Spalten (Einheit) | Prüfung |
 | --- | --- | --- | --- |
-| R1 → alle | `config/params.yaml` | Annahmen, Zeiträume, Kosten | Review im Team |
-| R2 → R3 | `data/processed/preise_clean.csv` | eine Zeile je UTC-Stunde; Schlüssel `ts_utc`; Spalten und Einheiten in `docs/codebook.md` | `tests/test_cleaning.py` grün |
-| R2 → R3 | `data/processed/last_synth.csv` | `datum`, `mwh_gesamt` (180 MWh/Tag, Praxiskontakt), `mwh_flexibel` (8 MWh Reinigung in der Nacht ab `datum` 22 Uhr) | `tests/test_pipeline.py` |
-| R2 → alle | `r2/reports/cleaning_log.md`, `r2/reports/data_quality.md`, `r2/reports/tables/*.csv` | Bereinigungsschritte mit Zählung, Kennzahlen, Grafiken | Grundlage Bericht Kap. 3 (K2) |
-| R3 → R4 | `results/tables/backtest_wochen.csv` | `woche`, `periode`, `kosten_A` … `kosten_T` (EUR), `oracle` (EUR) | Summen gegen Tageswerte geprüft |
-| R3 → R4 | `results/tables/ki_strategien.csv` | `strategie`, `periode`, `mittel_eur_woche`, `ki_unten`, `ki_oben`, `anteil_oracle` | Seed, Bootstrap-n |
-| R4 → R1 | `results/tables/wirtschaftlichkeit.csv` | `szenario`, `ersparnis_eur_jahr`, `umstellungskosten_eur`, `break_even` | Review R1 |
+| R1 → alle | `params.yaml` | Annahmen, Zeiträume, Kosten | Review im Team |
+| R2 → R3 | `data/preise_clean.csv` | eine Zeile je UTC-Stunde; Schlüssel `ts_utc`; Spalten und Einheiten in `docs/codebook.md` | `tests/test_cleaning.py` grün |
+| R2 → R3 | `data/last_synth.csv` | `datum`, `mwh_gesamt` (180 MWh/Tag, Praxiskontakt), `mwh_flexibel` (8 MWh Reinigung in der Nacht ab `datum` 22 Uhr) | `tests/test_pipeline.py` |
+| R2 → alle | `r2/ergebnisse/cleaning_log.md`, `r2/ergebnisse/data_quality.md`, `r2/ergebnisse/*.csv` | Bereinigungsschritte mit Zählung, Kennzahlen, Grafiken | Grundlage Bericht Kap. 3 (K2) |
+| R3 → R4 | `ergebnisse/backtest_wochen.csv` | `woche`, `periode`, `kosten_A` … `kosten_T` (EUR), `oracle` (EUR) | Summen gegen Tageswerte geprüft |
+| R3 → R4 | `ergebnisse/ki_strategien.csv` | `strategie`, `periode`, `mittel_eur_woche`, `ki_unten`, `ki_oben`, `anteil_oracle` | Seed, Bootstrap-n |
+| R4 → R1 | `ergebnisse/wirtschaftlichkeit.csv` | `szenario`, `ersparnis_eur_jahr`, `umstellungskosten_eur`, `break_even` | Review R1 |
 
 ## Schnellstart mit pandas
 
 ```python
 import pandas as pd
-preise = pd.read_csv("data/processed/preise_clean.csv")
+preise = pd.read_csv("data/preise_clean.csv")
 preise.groupby("stunde_lokal")["preis_eur_mwh"].median()                    # typischer Preis je Uhrzeit
 preise[preise["in_betriebszeit"]].groupby(["saison", "stunde_lokal"])["preis_eur_mwh"].median()
 ```
@@ -52,9 +52,7 @@ for w in dz.planungswochen(preise, last, "test_1_stunde", historie_wochen=4):   
 - Planung Freitagmorgen 08:00 (K-008 P11): bekannt sind Preise bis Freitag 23:00 (die Samstagspreise kommen erst gegen 12:45). Gegenüber 12:00 ändert sich die Datengrenze nicht.
 - Nur volle Wochen je Periode; bricht mit `LookAheadFehler` ab, wenn Zukunftsdaten in die Historie geraten.
 
-## Folien und Kennzahlen R2: `r2/src/build_presentation.py`
+## Rückblick-Kennzahl R2
 
-- `python r2/src/build_presentation.py` erzeugt `r2/output/R2_Datenanalyse.pptx` und `r2/pptx_kit/` (Kennzahlen, Grafiken, Prüferfragen, Quellen).
-- `r2/pptx_kit/key_figures.json` ist die einzige Quelle für Zahlen auf den Folien (je Kennzahl: Wert, Einheit, Zeitraum, Skript, Commit, Status ERGEBNIS / HYPOTHESE / ANNAHME).
-- Rückblick-Kennzahl „Mehrkosten Status quo A (Reinigung 22–24 Uhr) gegenüber billigstem 2-h-Fenster in 22–06 Uhr“ (`r2/src/fensteranalyse.py`, Tabellen `r2/reports/tables/reinigungsfenster_*.csv`): beschreibend, keine Strategie.
-- **Stand 10.11.2026:** Das Folienskript ist noch nicht auf den Reinigungsfall umgestellt und bricht mit den neuen Parametern ab; `r2/output/R2_Datenanalyse.pptx` und `r2/pptx_kit/` zeigen den alten Fall (08–14 Uhr). Folien werden erst am Ende neu gebaut, wenn der Code steht (E-037).
+- „Mehrkosten Status quo A (Reinigung 22–24 Uhr) gegenüber billigstem 2-h-Fenster in 22–06 Uhr“ (`r2/src/fensteranalyse.py`, Tabellen `r2/ergebnisse/reinigungsfenster_*.csv`): beschreibend, keine Strategie.
+- Präsentationsfolien entstehen am Ende mit Claude, nicht per Skript im Repo (E-039).

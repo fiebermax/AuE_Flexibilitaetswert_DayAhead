@@ -1,6 +1,6 @@
 # Datenaufbereitung und Datenqualität (R2)
 
-Stand 09.11.2026 · Owner R2 (Max) · Grundlage für Bericht Kapitel 3 (K2) und 4 (K3). Code: `r2/src/01_download.py`, `r2/src/02_synthetisch.py`, `r2/src/cleaning.py`. Zählungen je Schritt: `r2/reports/cleaning_log.md`; Kennzahlen und Grafiken: `r2/reports/data_quality.md`; Spalten: `docs/codebook.md`. Jede Entscheidung steht mit verworfener Alternative im Projekttagebuch (E-Nummer in Klammern).
+Stand 09.11.2026 · Owner R2 (Max) · Grundlage für Bericht Kapitel 3 (K2) und 4 (K3). Code: `r2/src/01_download.py`, `r2/src/02_synthetisch.py`, `r2/src/cleaning.py`. Zählungen je Schritt: `r2/ergebnisse/cleaning_log.md`; Kennzahlen und Grafiken: `r2/ergebnisse/data_quality.md`; Spalten: `docs/codebook.md`. Jede Entscheidung steht mit verworfener Alternative im Projekttagebuch (E-Nummer in Klammern).
 
 > Begriffe aus dem Kursmaterial (Statistik-Grundlagenwerk, Rheinlack-Fallstudie) haben Vorrang. Vor dem Bericht prüfen, ob dort andere Bezeichnungen für Skalenniveaus, Ausreißer oder Datenqualität verwendet werden, und angleichen.
 
@@ -23,14 +23,14 @@ Datenqualität wird nicht nur beschrieben, sondern je Dimension geprüft. Die Di
 
 | Dimension | Frage | Prüfung | Ergebnis (Abruf 07.11.2026) | Beleg |
 | --- | --- | --- | --- | --- |
-| **Herkunft / Integrität** | Stammen die Daten unverändert aus der Quelle? | SHA256-Prüfsumme je Rohdatei, Abrufzeitpunkt, URL | 253 Dateien, alle unverändert | `data/raw/smard/manifest.csv`, Test `test_rohdaten_unveraendert` (E-008, E-009) |
-| **Vollständigkeit** | Fehlen Stunden? | Abgleich gegen das erwartete UTC-Stundenraster, Lücken mit Beginn und Länge | 0 Lücken in 42 360 Stunden | `r2/reports/tables/luecken.csv`, Test `test_lueckenloses_stundenraster_eindeutig` |
+| **Herkunft / Integrität** | Stammen die Daten unverändert aus der Quelle? | SHA256-Prüfsumme je Rohdatei, Abrufzeitpunkt, URL | 253 Dateien, alle unverändert | `data/raw/manifest.csv`, Test `test_rohdaten_unveraendert` (E-008, E-009) |
+| **Vollständigkeit** | Fehlen Stunden? | Abgleich gegen das erwartete UTC-Stundenraster, Lücken mit Beginn und Länge | 0 Lücken in 42 360 Stunden | `r2/ergebnisse/luecken.csv`, Test `test_lueckenloses_stundenraster_eindeutig` |
 | **Eindeutigkeit** | Gibt es Stunden doppelt? | exakte und widersprüchliche Dubletten getrennt zählen; widersprüchliche → Abbruch | 0 / 0 | Tests `test_exakte_dublette_wird_einmal_behalten`, `test_lueckenloses_stundenraster_eindeutig` |
-| **Konsistenz** | Passt die Struktur? | Abstand aufeinanderfolgender Stunden = 60 min; lokale Tage 24 h, je 5 Tage mit 23 und 25 h (Zeitumstellung) | erfüllt | Tests `test_lokale_tage_23_24_25_stunden`, `r2/reports/tables/zeitumstellung.csv` |
+| **Konsistenz** | Passt die Struktur? | Abstand aufeinanderfolgender Stunden = 60 min; lokale Tage 24 h, je 5 Tage mit 23 und 25 h (Zeitumstellung) | erfüllt | Tests `test_lokale_tage_23_24_25_stunden`, `r2/ergebnisse/zeitumstellung.csv` |
 | **Plausibilität** | Liegen die Werte im möglichen Bereich? | harmonisierte Preisgrenzen der Day-Ahead-Kopplung SDAC: Minimum −500 €/MWh, Maximum im Zeitraum zwischen +3 000 und +5 000 €/MWh → geprüft −500 bis +5 000 | erfüllt; Minimum −500 (2023), Maximum 936 €/MWh (2024) | Test `test_wertebereich` |
 | **Genauigkeit** | Wie genau sind die Werte? | Quelle und Rundung prüfen | Auktionsergebnisse, kein Mess- oder Schätzwert; auf 0,01 €/MWh gerundet. Ab 10/2025 Stundenwert = Mittel aus 4 Viertelstunden (SMARD) | E-012, E-021 |
 | **Aktualität** | Wie aktuell, und ändern sich Werte nachträglich? | Datenstand in `params.yaml`; Erstellzeitpunkt je Datei | Datenstand 31.10.2026; nachträgliche Korrekturen durch eingefrorene Rohdaten abgefangen | `manifest.csv` (Spalte `smard_created_utc`) |
-| **Ausreißer** | Gibt es auffällige Werte, und was bedeuten sie? | robuster z-Wert je Jahr × Monat × Stunde (Abschnitt 4) | 1 827 Stunden (4,3 %) markiert, keine gelöscht | `r2/reports/tables/ausreisser.csv`, Spalte `flag_outlier` (E-025) |
+| **Ausreißer** | Gibt es auffällige Werte, und was bedeuten sie? | robuster z-Wert je Jahr × Monat × Stunde (Abschnitt 4) | 1 827 Stunden (4,3 %) markiert, keine gelöscht | `r2/ergebnisse/ausreisser.csv`, Spalte `flag_outlier` (E-025) |
 
 **Unabhängige zweite Quelle:** bewusst nicht. SMARD bezieht die Day-Ahead-Preise von ENTSO-E; ein Abgleich wäre keine unabhängige Prüfung (E-015). Die aktive Prüfung der Datenqualität für K2 Stufe 5 erfolgt über die Sensitivitätsrechnung (`r2/docs/sensitivitaet_plan.md`).
 
@@ -64,7 +64,7 @@ Verglichen wird jede Stunde nur mit vergleichbaren Stunden: **gleiches Jahr, gle
 - *Vergleich innerhalb Jahr × Monat × Stunde.* Strompreise haben starke Saison-, Tages- und Niveaumuster (Weron 2014). 50 €/MWh sind um 19 Uhr im Winter normal, mittags an einem sonnigen Maisonntag aber auffällig hoch. Ein Vergleich über alle Stunden hinweg würde vor allem das Krisenjahr 2022 markieren.
 - *Klassische Boxplot-Regel (Tukey 1977) als Alternative:* ebenfalls robust und gut erklärbar; nicht gewählt, weil sie bei schiefen Verteilungen (Strompreise) einseitig viele Werte markiert. Kann im Bericht als Vergleich gezeigt werden.
 
-**Ergebnis** (`r2/reports/tables/ausreisser.csv`):
+**Ergebnis** (`r2/ergebnisse/ausreisser.csv`):
 
 | Jahr | auffällig | Anteil | davon ungewöhnlich niedrig | davon ungewöhnlich hoch | davon negativer Preis | davon in Betriebszeit 06–22 |
 | --- | --- | --- | --- | --- | --- | --- |

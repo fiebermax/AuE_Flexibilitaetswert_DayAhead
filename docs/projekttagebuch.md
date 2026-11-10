@@ -8,6 +8,17 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 10.11.2026
 
+### E-039 · Repo radikal vereinfacht: weniger Dateien, flache Ordner, keine Folien per Skript
+- **Person:** Max (R2), nach Rückmeldung von Susan und A-013 (Umfang wird nicht bewertet)
+- **Entscheidung:**
+  - **Gelöscht:** `docs/ki-nutzung.md` (KI-Einsatz steht laut Katalog 6.5 im Projekttagebuch, die K-Einträge reichen; Regel in `CLAUDE.md` angepasst), `docs/projektanweisung.md` (steht am Ende von `docs/kickoff.md`), `docs/gespraech-praxispartner.md` (leerer Leitfaden, Antworten in K-005, K-008); aus dem Kickoff der 1,0-Blueprint, die Abgabeübersicht und die Sperrkriterien (jetzt kurz in `docs/belegmatrix.md`, 635 → 333 Zeilen).
+  - **PowerPoint raus:** `r2/src/build_presentation.py`, `r2/output/`, `r2/pptx_kit/`, Paket `python-pptx`. Folien macht das Team am Ende mit Claude.
+  - **Flache Ordner:** `config/params.yaml` → `params.yaml`; `data/processed/*.csv` → `data/*.csv`; `data/raw/smard/4169/hour/*.json` → `data/raw/*.json`, Manifest → `data/raw/manifest.csv` (`SOURCES.md` und `MANIFEST.md` entfallen, doppelt zum Manifest); `r2/reports/{tables,figures}` → `r2/ergebnisse/`; leere Ordner `results/`, `notebooks/` weg.
+  - **Endergebnis:** eine einzige Analyseseite wie der Notebook-Prototyp von Max (linear von Parametern über Daten, Backtest, Tests, Sensitivität bis zur Empfehlung an die Betriebsleitung).
+- **Verworfen:** tiefe Ordner nach SMARD-Filter und Auflösung (es gibt nur einen Filter und nur Stundenwerte, E-021); Folien per Skript (606 Zeilen Code für etwas, das am Ende einmal gebraucht wird); eigene KI-Liste neben dem Tagebuch.
+- **Hinweis:** Ältere Einträge nennen die alten Pfade; gemeint sind die gleichnamigen Dateien an den neuen Orten (Tabelle oben).
+- **Beleg:** `README.md` („Wo was liegt“); nach dem Umzug: Download offline ohne neue Dateien, Manifest unverändert, `preise_clean.csv` und `last_synth.csv` bitgleich, 51 Tests grün.
+
 ### A-013 · Prof: Umfang und Werkzeug sind frei, auch eine Excel-Liste ist gleichwertig
 - **Von → an:** Prof → Team; weitergegeben von Max (R2) an Claude Code, 10.11.2026
 - **Was:** Laut Prof gibt eine Lösung als Excel-Liste theoretisch dieselbe Note. Das deckt sich mit dem Kriterienkatalog (7.3: nicht bewertet werden der Umfang der Abgabe und die Schwierigkeit der Werkzeugwahl; 1.4: begründete, einfache Verfahren stehen über komplexen).

@@ -1,5 +1,5 @@
 # GitHub-Namen eintragen, sobald die Rollen feststehen
-/config/            @R1-github-name
+/params.yaml        @R1-github-name
 /docs/belegmatrix.md @R1-github-name
 /r2/                @R2-github-name
 /tests/             @R2-github-name

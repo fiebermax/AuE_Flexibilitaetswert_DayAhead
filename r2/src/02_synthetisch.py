@@ -1,5 +1,5 @@
 # KI: Claude, Zweck: synthetischer Lastgang (deterministisch) aus params.yaml, Reinigungsfenster über Mitternacht (E-033), geprüft von <Name R2> durch Review und pytest
-"""Step 2b: synthetic load profile of the shiftable process -> data/processed/last_synth.csv.
+"""Step 2b: synthetic load profile of the shiftable process -> data/last_synth.csv.
 
 Owner: R2. Output columns exactly as in docs/schnittstellen.md: `datum`, `mwh_gesamt`, `mwh_flexibel`.
 

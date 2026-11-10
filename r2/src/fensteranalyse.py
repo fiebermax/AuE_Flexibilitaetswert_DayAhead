@@ -22,7 +22,7 @@ Why real hours: blocks are consecutive UTC hours (E-026, E-036). In the October 
 02:00 twice; a 2-hour cleaning is still 2 hours of work and 8 MWh, so a block may cover both "02:00".
 Window boundaries are LOCAL hours (stunde_lokal), never UTC: shifts follow the clock in the plant.
 
-Run directly (`python r2/src/fensteranalyse.py`) to write the tables in r2/reports/tables/ (diary E-037).
+Run directly (`python r2/src/fensteranalyse.py`) to write the tables in r2/ergebnisse/ (diary E-037).
 """
 import sys
 from pathlib import Path
@@ -126,7 +126,7 @@ def main() -> None:
     last = p["last"]
     d = pd.read_csv(pfad(p, "processed") / "preise_clean.csv")
     tage = fenster_je_tag(d, last["fenster_start_h"], last["fenster_ende_h"], last["blocklaenge_h"], last["status_quo_start_h"])
-    ziel = ROOT / p["cleaning"]["reports"] / "tables"             # next to the other R2 report tables
+    ziel = ROOT / p["cleaning"]["reports"]                        # next to the other R2 results
     ziel.mkdir(parents=True, exist_ok=True)
     js = kennzahlen_je_saison(tage, last["status_quo_start_h"])
     jj = kennzahlen_je_jahr(tage, last["mwh_pro_tag"])

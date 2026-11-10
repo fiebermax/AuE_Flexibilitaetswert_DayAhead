@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
-CLEAN = ROOT / "data" / "processed" / "preise_clean.csv"
+CLEAN = ROOT / "data" / "preise_clean.csv"
 pytestmark = pytest.mark.skipif(not CLEAN.exists(), reason="Pipeline noch nicht gelaufen")
 
 spec = importlib.util.spec_from_file_location("preisabfrage", ROOT / "src" / "preisabfrage.py")

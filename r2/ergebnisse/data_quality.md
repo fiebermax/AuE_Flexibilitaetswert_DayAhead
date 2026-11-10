@@ -19,14 +19,14 @@ Erzeugt von `r2/src/cleaning.py`. Methode und Begründung: `r2/docs/datenaufbere
 | 2025 | 8760 | 89.32 | 92.43 | 71.09 | 114.14 | -250.32 | 583.4 | 6.54 | 43.05 |
 | 2026 | 7296 | 114.0 | 115.76 | 82.83 | 151.12 | -499.0 | 697.31 | 6.33 | 68.29 |
 
-Je Monat und Saison: `tables/kennzahlen_monat.csv`, `tables/kennzahlen_saison.csv`; Tagesprofil: `tables/tagesprofil_saison.csv`.
+Je Monat und Saison: `kennzahlen_monat.csv`, `kennzahlen_saison.csv`; Tagesprofil: `tagesprofil_saison.csv`.
 
 ## Grafiken
 
-![zeitreihe.png](figures/zeitreihe.png)
+![zeitreihe.png](zeitreihe.png)
 
-![boxplot_monat.png](figures/boxplot_monat.png)
+![boxplot_monat.png](boxplot_monat.png)
 
-![tagesprofil_saison.png](figures/tagesprofil_saison.png)
+![tagesprofil_saison.png](tagesprofil_saison.png)
 
 Quelle der Preise: Bundesnetzagentur | SMARD.de, CC BY 4.0. Grafiken zeigen Rohwerte, nichts geglättet.

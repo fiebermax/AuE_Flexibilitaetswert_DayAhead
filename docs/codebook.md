@@ -2,7 +2,7 @@
 
 Alle Spalten der bereinigten Dateien. Erzeugt von `r2/src/cleaning.py` bzw. `r2/src/02_synthetisch.py`. Öffnen mit `pd.read_csv(...)` oder Excel.
 
-## `data/processed/preise_clean.csv` (eine Zeile je UTC-Stunde, 42 360 Zeilen)
+## `data/preise_clean.csv` (eine Zeile je UTC-Stunde, 42 360 Zeilen)
 
 | Spalte | Bedeutung | Einheit / Format | Quelle | Typ | Wertebereich |
 | --- | --- | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ Alle Spalten der bereinigten Dateien. Erzeugt von `r2/src/cleaning.py` bzw. `r2/
 
 **Achtung `flag_outlier`:** nur zur Beschreibung. Der Vergleich nutzt den ganzen Monat, also auch spätere Stunden. Eine Planungsstrategie darf die Spalte nie verwenden (Look-ahead); `src/datenzugriff.py` entfernt sie deshalb.
 
-## `data/processed/last_synth.csv` (eine Zeile je Kalendertag, 1 765 Zeilen)
+## `data/last_synth.csv` (eine Zeile je Kalendertag, 1 765 Zeilen)
 
 | Spalte | Bedeutung | Einheit | Quelle | Typ | Wertebereich |
 | --- | --- | --- | --- | --- | --- |
@@ -31,7 +31,7 @@ Alle Spalten der bereinigten Dateien. Erzeugt von `r2/src/cleaning.py` bzw. `r2/
 | `mwh_gesamt` | Stromverbrauch des Werks | MWh pro Tag | Praxiskontakt (K-008) | Kommazahl | 180,0 an jedem Tag |
 | `mwh_flexibel` | davon verschiebbar: Reinigung in der Nacht, die an diesem Tag um 22 Uhr beginnt | MWh pro Tag | Praxiskontakt (K-008), `last.mwh_pro_tag` | Kommazahl | 8,0 |
 
-## Berichtstabellen `r2/reports/tables/`
+## Berichtstabellen `r2/ergebnisse/`
 
 | Datei | Inhalt |
 | --- | --- |

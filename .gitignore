@@ -2,14 +2,5 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .venv/
-data/interim/*
-data/processed/*
-!data/processed/*.csv
-results/figures/*
-results/tables/*
-!results/tables/*.csv
-!**/.gitkeep
 # Partnerdaten nie ins Repo
 partner/
-# gerenderte Prüfbilder der Folien (werden mit --render neu erzeugt)
-r2/output/render/

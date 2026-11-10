@@ -1,7 +1,7 @@
 """Schritt 5: Stresstest, Kipppunkte, Break-even, Spot gegen Festpreis, Grafiken.
 
 Owner: R4. Eingabe und Ausgabe siehe docs/schnittstellen.md.
-KI-Kennzeichnung: Kopfzeile ergänzen, sobald KI-Code enthalten ist (siehe docs/ki-nutzung.md).
+KI-Kennzeichnung: Kopfzeile ergänzen, sobald KI-Code enthalten ist, und K-Eintrag im Projekttagebuch.
 """
 
 

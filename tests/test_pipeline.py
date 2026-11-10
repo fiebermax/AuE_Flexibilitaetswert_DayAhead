@@ -10,12 +10,12 @@ import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-PARAMS = yaml.safe_load((ROOT / "config" / "params.yaml").read_text(encoding="utf-8"))
+PARAMS = yaml.safe_load((ROOT / "params.yaml").read_text(encoding="utf-8"))
 TZ = PARAMS["markt"]["zeitzone"]
 PROCESSED = ROOT / PARAMS["daten"]["pfade"]["processed"]
 CLEAN = PROCESSED / "preise_clean.csv"
 LAST = PROCESSED / "last_synth.csv"
-MANIFEST = ROOT / PARAMS["daten"]["pfade"]["raw"] / "smard" / "manifest.csv"
+MANIFEST = ROOT / PARAMS["daten"]["pfade"]["raw"] / "manifest.csv"
 WECHSEL = pd.Timestamp(PARAMS["markt"]["regimewechsel"]).tz_localize(TZ)
 
 
@@ -130,4 +130,4 @@ def test_rohdaten_unveraendert():
         zeilen = [z for z in csv.DictReader(f) if z["status"] == "aktiv"]
     assert zeilen
     for z in zeilen:
-        assert hashlib.sha256((MANIFEST.parent.parent / z["datei"]).read_bytes()).hexdigest() == z["sha256"]
+        assert hashlib.sha256((MANIFEST.parent / z["datei"]).read_bytes()).hexdigest() == z["sha256"]

@@ -2,13 +2,13 @@
 """Step 02 (cleaning): SMARD raw week files -> one cleaned hourly table in UTC, plus log and reports.
 
 Owner: R2. Run: python r2/src/cleaning.py   (after r2/src/01_download.py and r2/src/02_synthetisch.py)
-Input (read-only):  data/raw/smard/... (JSON as delivered by SMARD), data/processed/last_synth.csv
+Input (read-only):  data/raw/... (JSON as delivered by SMARD), data/last_synth.csv
 Output:
-  data/processed/preise_clean.csv      one row per UTC hour, columns see docs/codebook.md
-  r2/reports/cleaning_log.md              step | rule | N before | N after | affected rows | reason
-  r2/reports/data_quality.md              key figures and figures (generated)
-  r2/reports/tables/*.csv                 monthly / seasonal figures, daily profile, clock changes, gaps, outliers
-  r2/reports/figures/*.png                time series, boxplot per month, daily profile per season
+  data/preise_clean.csv      one row per UTC hour, columns see docs/codebook.md
+  r2/ergebnisse/cleaning_log.md              step | rule | N before | N after | affected rows | reason
+  r2/ergebnisse/data_quality.md              key figures and figures (generated)
+  r2/ergebnisse/*.csv                 monthly / seasonal figures, daily profile, clock changes, gaps, outliers
+  r2/ergebnisse/*.png                time series, boxplot per month, daily profile per season
 
 Principles (diary E-024 to E-029):
   * data/raw/ is never written. Every change happens here, in code, is counted and justified.
@@ -49,7 +49,7 @@ class CleaningFehler(RuntimeError):
 
 
 class Log:
-    """Collects one row per cleaning step for r2/reports/cleaning_log.md.
+    """Collects one row per cleaning step for r2/ergebnisse/cleaning_log.md.
 
     Why: every step must be traceable for K2/K5 ("how many rows before and after, and why?").
     The log is the evidence that nothing was removed or changed silently.
@@ -72,7 +72,7 @@ class Log:
 # ---------------------------------------------------------------------------------------------
 def pruefe_rohdaten(raw: Path) -> list[dict]:
     """Integrity check: every active raw file must still have the SHA-256 from the time of download."""
-    with open(raw / "smard" / "manifest.csv", newline="", encoding="utf-8") as f:
+    with open(raw / "manifest.csv", newline="", encoding="utf-8") as f:
         zeilen = [z for z in csv.DictReader(f) if z["status"] == "aktiv" and z["aufloesung"] == "hour"]
     for z in zeilen:
         datei = raw / z["datei"]
@@ -268,7 +268,7 @@ def main() -> pd.DataFrame:
     tz, c = p["markt"]["zeitzone"], p["cleaning"]
     raw, processed = pfad(p, "raw"), pfad(p, "processed")
     reports = ROOT / c["reports"]
-    (reports / "tables").mkdir(parents=True, exist_ok=True)
+    reports.mkdir(parents=True, exist_ok=True)               # one flat folder for all R2 results
     log = Log()
 
     # Period as half-open interval [beginn, ende) in German time: ende = 00:00 on the day after the
@@ -280,7 +280,7 @@ def main() -> pd.DataFrame:
     # 0 Integrity of the raw data
     dateien = pruefe_rohdaten(raw)
     log.schritt("0 Rohdaten prüfen", "SHA-256 jeder Rohdatei = Wert im Manifest", len(dateien), len(dateien), 0,
-                "Rohdaten unverändert, Herkunft belegt (data/raw/MANIFEST.md)")
+                "Rohdaten unverändert, Herkunft belegt (data/raw/manifest.csv)")
 
     # 1 Read
     df = lies_roh(raw, dateien)
@@ -314,12 +314,12 @@ def main() -> pd.DataFrame:
     log.schritt("5 Vollständigkeit", "erwartetes UTC-Stundenraster; fehlende Stunden als leere Zeile, Flag imputed",
                 vorher, len(df), int(df["preis_eur_mwh"].isna().sum()),
                 f"{len(luecken)} Lücken; keine Imputation ohne Rückfrage")
-    luecken.to_csv(reports / "tables" / "luecken.csv", index=False)
+    luecken.to_csv(reports / "luecken.csv", index=False)
 
     # 6 Time columns and clock changes
     df = zeitspalten(df, tz, wechsel, bool(p["last"]["feiertagsvariante_mariae_himmelfahrt"]))
     zu = zeitumstellungstage(df)
-    zu.to_csv(reports / "tables" / "zeitumstellung.csv", index=False)
+    zu.to_csv(reports / "zeitumstellung.csv", index=False)
     log.schritt("6 Zeitumstellung", "lokale Zeit aus UTC; 23-/25-Stunden-Tage auflisten, nichts mitteln", len(df), len(df),
                 int(len(zu)), "die doppelte Oktober-Stunde sind zwei verschiedene UTC-Stunden, keine Dubletten")
 
@@ -336,7 +336,7 @@ def main() -> pd.DataFrame:
                 len(df), len(df), int(df["flag_outlier"].sum()),
                 "nur markiert (flag_outlier), nichts gelöscht; nur zur Beschreibung, nicht für die Planung")
     au = df[df["flag_outlier"]].assign(z=z[df["flag_outlier"]].round(2))
-    au[["ts_utc", "ts_lokal", "preis_eur_mwh", "z"]].to_csv(reports / "tables" / "ausreisser.csv", index=False)
+    au[["ts_utc", "ts_lokal", "preis_eur_mwh", "z"]].to_csv(reports / "ausreisser.csv", index=False)
 
     # 9 Join synthetic load
     last = pd.read_csv(processed / "last_synth.csv")
@@ -357,14 +357,14 @@ def main() -> pd.DataFrame:
     monat = kennzahlen(df.assign(jahr=df["ts_lokal"].dt.year, monat=df["ts_lokal"].dt.month), ["jahr", "monat"])
     saison = kennzahlen(df.assign(jahr=df["ts_lokal"].dt.year), ["jahr", "saison"])
     profil = kennzahlen(df, ["saison", "stunde_lokal"])
-    monat.to_csv(reports / "tables" / "kennzahlen_monat.csv", index=False)
-    saison.to_csv(reports / "tables" / "kennzahlen_saison.csv", index=False)
-    profil.to_csv(reports / "tables" / "tagesprofil_saison.csv", index=False)
-    figuren = grafiken(df, reports / "figures")
+    monat.to_csv(reports / "kennzahlen_monat.csv", index=False)
+    saison.to_csv(reports / "kennzahlen_saison.csv", index=False)
+    profil.to_csv(reports / "tagesprofil_saison.csv", index=False)
+    figuren = grafiken(df, reports)
 
     (reports / "cleaning_log.md").write_text(
-        "# Cleaning-Log\n\nErzeugt von `r2/src/cleaning.py`. Eingabe: `data/raw/smard/` (unverändert), "
-        "`data/processed/last_synth.csv`. Ausgabe: `data/processed/preise_clean.csv`.\n\n" + log.markdown(), encoding="utf-8")
+        "# Cleaning-Log\n\nErzeugt von `r2/src/cleaning.py`. Eingabe: `data/raw/` (unverändert), "
+        "`data/last_synth.csv`. Ausgabe: `data/preise_clean.csv`.\n\n" + log.markdown(), encoding="utf-8")
     schreibe_qualitaetsbericht(reports, df, zu, luecken, figuren, jahr=kennzahlen(df.assign(jahr=df["ts_lokal"].dt.year), ["jahr"]))
     print(f"Cleaning: {len(df)} Stunden -> {processed / 'preise_clean.csv'}; Berichte in {reports}")
     return df
@@ -390,11 +390,11 @@ Erzeugt von `r2/src/cleaning.py`. Methode und Begründung: `r2/docs/datenaufbere
 ## Kennzahlen je Jahr (EUR/MWh)
 
 {tabelle(jahr)}
-Je Monat und Saison: `tables/kennzahlen_monat.csv`, `tables/kennzahlen_saison.csv`; Tagesprofil: `tables/tagesprofil_saison.csv`.
+Je Monat und Saison: `kennzahlen_monat.csv`, `kennzahlen_saison.csv`; Tagesprofil: `tagesprofil_saison.csv`.
 
 ## Grafiken
 
-""" + "".join(f"![{f}](figures/{f})\n\n" for f in figuren) + \
+""" + "".join(f"![{f}]({f})\n\n" for f in figuren) + \
         "Quelle der Preise: Bundesnetzagentur | SMARD.de, CC BY 4.0. Grafiken zeigen Rohwerte, nichts geglättet.\n"
     (reports / "data_quality.md").write_text(text, encoding="utf-8")
 

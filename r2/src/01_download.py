@@ -2,9 +2,8 @@
 """Step 1: download SMARD raw data (only if not yet in data/raw) and store it unchanged.
 
 Owner: R2. Output:
-  data/raw/smard/<filter>/<resolution>/<filter>_<region>_<resolution>_<ts>.json   (original bytes from SMARD)
-  data/raw/smard/manifest.csv   (per file: URL, retrieval time, SHA256, size, SMARD creation time)
-  data/raw/SOURCES.md           (summary, automatically generated section)
+  data/raw/<filter>_<region>_<resolution>_<ts>.json   (original bytes from SMARD, one file per week)
+  data/raw/manifest.csv   (per file: URL, retrieval time, SHA256, size, SMARD creation time, licence via source)
 
 How SMARD organises its data:
   SMARD serves one JSON file per week. A week starts Monday 00:00 German time. <ts> is that moment as
@@ -22,7 +21,6 @@ Flow of main():
 import csv
 import hashlib
 import json
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,12 +42,6 @@ MANIFEST_SPALTEN = [
     "datei", "quelle", "filter", "region", "aufloesung", "woche_start_utc_ms", "woche_start_berlin",
     "url", "abgerufen_am_utc", "smard_created_utc", "bytes", "sha256", "status",
 ]
-# The script rewrites only the text between these two markers in SOURCES.md; everything else
-# in that file (written by hand) stays untouched.
-MARKER_START = "<!-- manifest:start (automatisch von r2/src/01_download.py erzeugt, nicht von Hand ändern) -->"
-MARKER_ENDE = "<!-- manifest:ende -->"
-
-
 class DownloadFehler(RuntimeError):
     """Our own error type. At the bottom of the file it is caught and printed as a readable message
     (which file, what to do) instead of a long Python traceback."""
@@ -134,7 +126,7 @@ def lade_url(session: requests.Session, url: str, timeout: int) -> bytes:
         ) from e
     if r.status_code == 404:
         raise DownloadFehler(f"SMARD kennt diese Datei nicht (404): {url}\n"
-                             "  Prüfen: Filter, Region und Auflösung in config/params.yaml.")
+                             "  Prüfen: Filter, Region und Auflösung in params.yaml.")
     if r.status_code != 200:
         raise DownloadFehler(f"SMARD antwortet mit HTTP {r.status_code}: {url}")
     # r.content = bytes exactly as sent by SMARD (r.json() would parse and re-format them)
@@ -148,7 +140,7 @@ def fehlende_werte_im_zeitraum(inhalt: bytes, beginn_ms: int, ende_ms: int) -> i
 
 
 # ---------------------------------------------------------------------------------------------
-# Manifest (list of all raw files) and SOURCES.md
+# Manifest (list of all raw files; licence of all: CC BY 4.0, "Bundesnetzagentur | SMARD.de")
 # ---------------------------------------------------------------------------------------------
 def lies_manifest(datei: Path) -> list[dict]:
     """Read manifest.csv as a list of rows; each row is a dict {column name: value}."""
@@ -185,43 +177,6 @@ def pruefe_integritaet(raw: Path, manifest: list[dict]) -> None:
             )
 
 
-def aktualisiere_sources(sources: Path, manifest: list[dict], manifest_datei: Path) -> None:
-    """Write a summary per resolution (number of files, first/last week, retrieval dates) into
-    SOURCES.md, between the two markers."""
-    df = pd.DataFrame([z for z in manifest if z["status"] == "aktiv"])
-    zeilen = [MARKER_START, "",
-              "### SMARD-Abrufe (Stand dieses Laufs)", "",
-              f"Je Datei URL, Abrufzeitpunkt und SHA256 in `{manifest_datei.relative_to(sources.parent).as_posix()}` "
-              f"(SHA256 des Manifests: `{sha256(manifest_datei.read_bytes())}`).", "",
-              "| Filter | Region | Auflösung | Dateien (Wochen) | erste Woche ab | letzte Woche ab | Abruf von | Abruf bis |",
-              "| --- | --- | --- | --- | --- | --- | --- | --- |"]
-    if not df.empty:
-        # groupby: one table row per combination of filter, region and resolution
-        for (fi, reg, aufl), g in df.groupby(["filter", "region", "aufloesung"]):
-            zeilen.append(f"| {fi} | {reg} | {aufl} | {len(g)} | {g['woche_start_berlin'].min()} | "
-                          f"{g['woche_start_berlin'].max()} | {g['abgerufen_am_utc'].min()} | {g['abgerufen_am_utc'].max()} |")
-    zeilen += ["", MARKER_ENDE]
-    block = "\n".join(zeilen)
-
-    # Regular expression: find "MARKER_START ... MARKER_ENDE" (re.S lets "." also match line breaks)
-    # and replace it. If the markers are not there yet, append the block at the end of the file.
-    text = sources.read_text(encoding="utf-8") if sources.exists() else "# Datenherkunft\n"
-    muster = re.compile(re.escape(MARKER_START) + r".*?" + re.escape(MARKER_ENDE), re.S)
-    text = muster.sub(lambda _: block, text) if muster.search(text) else text.rstrip() + "\n\n" + block + "\n"
-    sources.write_text(text, encoding="utf-8")
-
-
-def schreibe_manifest_md(ziel: Path, manifest: list[dict]) -> None:
-    """Human-readable list of every raw file: file, source, URL, retrieval date, licence, SHA-256."""
-    zeilen = ["# Manifest der Rohdaten", "",
-              "Automatisch erzeugt von `r2/src/01_download.py` aus `smard/manifest.csv`. `data/raw/` wird nur gelesen, nie überschrieben.",
-              "Lizenz aller Dateien: CC BY 4.0, Namensnennung „Bundesnetzagentur | SMARD.de“.", "",
-              "| Datei | Quelle | URL | Abrufdatum (UTC) | Lizenz | SHA-256 |", "| --- | --- | --- | --- | --- | --- |"]
-    for z in sorted((z for z in manifest if z["status"] == "aktiv"), key=lambda z: z["datei"]):
-        zeilen.append(f"| `{z['datei']}` | {z['quelle']} | {z['url']} | {z['abgerufen_am_utc']} | CC BY 4.0 | `{z['sha256']}` |")
-    ziel.write_text("\n".join(zeilen) + "\n", encoding="utf-8")
-
-
 # ---------------------------------------------------------------------------------------------
 # Main flow
 # ---------------------------------------------------------------------------------------------
@@ -237,7 +192,7 @@ def main() -> None:
 
     # --- Load the manifest and check that existing raw files are unchanged --------------------
     raw = pfad(p, "raw")
-    manifest_datei = raw / "smard" / "manifest.csv"
+    manifest_datei = raw / "manifest.csv"
     manifest_datei.parent.mkdir(parents=True, exist_ok=True)
     manifest = lies_manifest(manifest_datei)
     pruefe_integritaet(raw, manifest)
@@ -245,7 +200,7 @@ def main() -> None:
     # A cut-off date in the future would give incomplete weeks -> stop with a clear message.
     if benoetigter_zeitraum(datenstand, datenstand, tz)[1] > pd.Timestamp.now(tz=tz):
         raise DownloadFehler(f"Datenstand {datenstand} liegt nicht vollständig in der Vergangenheit. "
-                             "zeitraeume.datenstand in config/params.yaml prüfen.")
+                             "zeitraeume.datenstand in params.yaml prüfen.")
 
     # The internet connection is only opened when a file is actually missing.
     # If all files are present, session stays None and the step never touches the network.
@@ -256,7 +211,7 @@ def main() -> None:
     #     the quarter-hour files are no longer downloaded). The loop stays so a resolution can be added back.
     for aufl, von in p["daten"]["aufloesungen"].items():
         beginn, ende = benoetigter_zeitraum(von, datenstand, tz)
-        ordner = raw / "smard" / str(filt) / aufl
+        ordner = raw                                   # all weekly files side by side in data/raw/
         ordner.mkdir(parents=True, exist_ok=True)
         index = None   # SMARD's list of available weeks; fetched only if we need to download
 
@@ -313,7 +268,7 @@ def main() -> None:
                 index = set(json.loads(lade_url(session, f"{basis}/{filt}/{region}/index_{aufl}.json", timeout))["timestamps"])
             if ts not in index:
                 raise DownloadFehler(f"SMARD bietet für {aufl} keine Woche ab {woche:%Y-%m-%d} an (Zeitstempel {ts}). "
-                                     "Zeitraum in config/params.yaml prüfen.")
+                                     "Zeitraum in params.yaml prüfen.")
             url = f"{basis}/{filt}/{region}/{name}"
             inhalt = lade_url(session, url, timeout)
             try:
@@ -332,10 +287,8 @@ def main() -> None:
                 print(f"  ... {neu} Dateien geladen")
                 schreibe_manifest(manifest_datei, manifest)
 
-    # --- Finish: write manifest and summary in SOURCES.md -----------------------------------
+    # --- Finish: write the manifest -------------------------------------------------------------
     schreibe_manifest(manifest_datei, manifest)
-    aktualisiere_sources(raw / "SOURCES.md", manifest, manifest_datei)
-    schreibe_manifest_md(raw / "MANIFEST.md", manifest)
     print(f"Download: {neu} neu geladen, {vorhanden} bereits vorhanden ({'offline' if session is None else 'online'}).")
 
 

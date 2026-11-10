@@ -2,7 +2,7 @@
 
 <!-- KI: Claude, Zweck: Diagramme und Erklärung der R2-Pipeline für Verteidigung und Team, geprüft von Max (R2) durch Nachvollziehen am Code -->
 
-Stand 10.11.2026, Owner R2 (Max). Die Diagramme zeigt GitHub direkt als Grafik an; `python r2/src/build_board.py` übernimmt sie ins Board `r2/reports/board.html`. Jeder Kasten nennt die Datei, in der es passiert, damit man vom Bild direkt in den Code springen kann.
+Stand 10.11.2026, Owner R2 (Max). Die Diagramme zeigt GitHub direkt als Grafik an; `python r2/src/build_board.py` übernimmt sie ins Board `r2/ergebnisse/board.html`. Jeder Kasten nennt die Datei, in der es passiert, damit man vom Bild direkt in den Code springen kann.
 
 **Einordnung nach Kursmaterial (Statistisches Grundlagenwerk Teil 4):** R2 ist die Stufe **deskriptiv** („Was ist passiert, und warum?“) und im DMAIC-Zyklus die Phase **Measure** (Daten sammeln, Baseline festlegen). Prädiktiv wird es mit den Prognose-Strategien von R3, präskriptiv mit der Empfehlung von R4. Leitsatz aus dem Kurs: „ohne saubere Beschreibung keine belastbare Prognose“. Die Pipeline folgt dem Prinzip „Workflow statt Formelkette: jeder Schritt ist ein Knoten“.
 
@@ -20,10 +20,10 @@ flowchart LR
     end
     subgraph E["Einlesen"]
         DL["01_download.py<br/>Wochendateien laden,<br/>SHA-256 je Datei"]
-        RAW[("data/raw/smard/<br/>unverändert, nur lesen")]
+        RAW[("data/raw/<br/>unverändert, nur lesen")]
     end
     subgraph A["Annahmen"]
-        PAR["config/params.yaml<br/>alle Zahlen an einer Stelle"]
+        PAR["params.yaml<br/>alle Zahlen an einer Stelle"]
         SYN["02_synthetisch.py<br/>Lastgang je Tag"]
         LAST[("last_synth.csv<br/>180 MWh, davon 8 MWh Reinigung")]
     end
@@ -35,7 +35,7 @@ flowchart LR
         FA["fensteranalyse.py<br/>Mehrkosten je Nacht"]
         DZ["datenzugriff.py<br/>je Freitag nur Bekanntes"]
         PA["preisabfrage.py<br/>Tage und Monate ansehen"]
-        REP[("r2/reports/<br/>Log, Qualität, Tabellen, Grafiken")]
+        REP[("r2/ergebnisse/<br/>Log, Qualität, Tabellen, Grafiken")]
     end
     R3["R3: Backtest"]
     TEAM["Team: Grafiken, Exploration"]
@@ -56,7 +56,7 @@ flowchart LR
 
 ## 2. Die Bereinigung Schritt für Schritt (`r2/src/cleaning.py`)
 
-Jeder Schritt schreibt eine Zeile in `r2/reports/cleaning_log.md`: Regel, Zeilen vorher, Zeilen nachher, betroffene Zeilen, Begründung. Die Rauten sind Prüfungen, die den Lauf **abbrechen**, statt still etwas zu reparieren.
+Jeder Schritt schreibt eine Zeile in `r2/ergebnisse/cleaning_log.md`: Regel, Zeilen vorher, Zeilen nachher, betroffene Zeilen, Begründung. Die Rauten sind Prüfungen, die den Lauf **abbrechen**, statt still etwas zu reparieren.
 
 ```mermaid
 flowchart TD
@@ -84,10 +84,10 @@ flowchart TD
 
 | Schritt | Regel | Warum so | Verworfen | Beleg |
 | --- | --- | --- | --- | --- |
-| 0 | SHA-256 jeder Rohdatei muss zum Manifest passen | beweist, dass niemand die Rohdaten verändert hat (Datenherkunft, Sperrkriterium) | Rohdaten ungeprüft lesen | E-009, `data/raw/MANIFEST.md`, Test `test_rohdaten_unveraendert` |
+| 0 | SHA-256 jeder Rohdatei muss zum Manifest passen | beweist, dass niemand die Rohdaten verändert hat (Datenherkunft, Sperrkriterium) | Rohdaten ungeprüft lesen | E-009, `data/raw/manifest.csv`, Test `test_rohdaten_unveraendert` |
 | 1 | Zeitstempel als UTC aus SMARDs Millisekunden | in UTC hat jede Stunde genau einen Namen, auch bei der Zeitumstellung | Ortszeit als Schlüssel (mehrdeutig) | E-026 |
 | 2 | exakte Dubletten: eine bleibt; widersprüchliche: Abbruch | eine Kopie ist harmlos, zwei verschiedene Preise für dieselbe Stunde kann man nicht auflösen | stillschweigend den ersten Wert nehmen | E-029, Test in `tests/test_cleaning.py` |
-| 3 | Zeitraum 01.01.2022 bis 31.10.2026 (deutsche Zeit), halboffen | SMARD liefert ganze Wochen; die Randtage gehören nicht zum Untersuchungszeitraum | — | `r2/reports/cleaning_log.md` Schritt 3 |
+| 3 | Zeitraum 01.01.2022 bis 31.10.2026 (deutsche Zeit), halboffen | SMARD liefert ganze Wochen; die Randtage gehören nicht zum Untersuchungszeitraum | — | `r2/ergebnisse/cleaning_log.md` Schritt 3 |
 | 4 | Abstand zweier Zeitstempel immer 60 min | nur Stundenwerte; ab 01.10.2025 der SMARD-Stundenwert (Mittel der 4 Viertelstunden) | eigene Mittel aus 15-min-Daten | E-021, E-028 |
 | 5 | erwartetes UTC-Stundenraster, fehlende Stunden als leere Zeile, `imputed` = False | Lücken sollen sichtbar sein, nicht erfunden; Ergebnis: 0 Lücken | Lücken interpolieren | E-013 |
 | 6 | Ortszeit, Datum, Wochentag, Saison, Werktag (Feiertage Bayern), Regime aus UTC abgeleitet | Schichten folgen der Uhr im Werk; März-Tage haben 23, Oktober-Tage 25 Stunden, nichts wird gemittelt | doppelte Oktober-Stunde mitteln | E-026 (revidiert E-010, E-011), E-014 |

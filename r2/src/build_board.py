@@ -1,14 +1,14 @@
-# KI: Claude, Zweck: scrollbares HTML-Board R2 (Daten, Bereinigung, Reinigungsfenster) aus den Repo-Daten erzeugen, geprüft von <Name R2> durch Sichtprüfung im Browser und Abgleich mit r2/reports/
-"""Builds r2/reports/board.html: one scrollable page with everything R2 did. One command:
+# KI: Claude, Zweck: scrollbares HTML-Board R2 (Daten, Bereinigung, Reinigungsfenster) aus den Repo-Daten erzeugen, geprüft von <Name R2> durch Sichtprüfung im Browser und Abgleich mit r2/ergebnisse/
+"""Builds r2/ergebnisse/board.html: one scrollable page with everything R2 did. One command:
 
     python r2/src/build_board.py
 
 Why a generated page and not a hand-made one: every number on the board is read from the files in
-the repo (preise_clean.csv, r2/reports/, the diary), so the board can never disagree with the code.
+the repo (preise_clean.csv, r2/ergebnisse/, the diary), so the board can never disagree with the code.
 Run it again after any change and the board is up to date.
 
 Sources of the content:
-  * numbers and charts:   data/processed/preise_clean.csv, r2/reports/tables/*.csv, r2/reports/cleaning_log.md
+  * numbers and charts:   data/preise_clean.csv, r2/ergebnisse/*.csv, r2/ergebnisse/cleaning_log.md
   * diagrams:             the ```mermaid blocks in r2/docs/architektur.md (single source, also shown on GitHub)
   * decisions:            the "### E-xxx" headings in docs/projekttagebuch.md
   * test count:           pytest --collect-only
@@ -31,7 +31,7 @@ sys.path[:0] = [str(_HIER), str(_HIER.parents[1] / "src")]
 from gemeinsam import ROOT, lade_params, pfad      # noqa: E402
 import fensteranalyse as fa                        # noqa: E402
 
-ZIEL = ROOT / "r2" / "reports" / "board.html"
+ZIEL = ROOT / "r2" / "ergebnisse" / "board.html"
 SAISONS = {"Winter": "Winter", "Fruehling": "Frühling", "Sommer": "Sommer", "Herbst": "Herbst"}
 
 
@@ -57,7 +57,7 @@ def entscheidungen() -> list[tuple[str, str]]:
 
 
 def cleaning_log() -> pd.DataFrame:
-    zeilen = [z for z in (ROOT / "r2" / "reports" / "cleaning_log.md").read_text(encoding="utf-8").splitlines()
+    zeilen = [z for z in (ROOT / "r2" / "ergebnisse" / "cleaning_log.md").read_text(encoding="utf-8").splitlines()
               if re.match(r"\| \d+ ", z)]
     teile = [[t.strip() for t in z.strip("|").split(" | ")] for z in zeilen]
     return pd.DataFrame(teile, columns=["Schritt", "Regel", "vorher", "nachher", "betroffen", "Begründung"])
@@ -235,7 +235,7 @@ Ein Befehl (<code>python src/run_all.py</code>) führt alles aus. <code>data/raw
 <p class="lead">Jeder Schritt zählt Zeilen vorher und nachher und begründet, was er tut. Wo etwas nicht stimmt, bricht der Lauf ab, statt still zu reparieren.
 Nichts wird gelöscht, gekappt oder erfunden; auffällige Preise werden nur markiert.</p>
 <div class="grid2"><div class="card">{dg(1)}</div>
-<div class="card"><h3>Protokoll aus <code>r2/reports/cleaning_log.md</code></h3>{tabelle(log[["Schritt", "Regel", "vorher", "nachher", "betroffen"]], ("vorher", "nachher", "betroffen"))}
+<div class="card"><h3>Protokoll aus <code>r2/ergebnisse/cleaning_log.md</code></h3>{tabelle(log[["Schritt", "Regel", "vorher", "nachher", "betroffen"]], ("vorher", "nachher", "betroffen"))}
 <p class="note">Begründung je Schritt und verworfene Alternativen: <code>r2/docs/architektur.md</code> Abschnitt 2, Tagebuch E-024 bis E-029.</p></div></div>
 </section>
 
@@ -262,7 +262,7 @@ mit den echten Preisen dieser Nacht. Das ist die Obergrenze des Flexibilitätswe
 <div class="card"><h3>Obergrenze in T€ je Jahr bei 8 MWh je Nacht</h3><div class="chart"><canvas id="cJahr"></canvas></div>
 <p class="note">* Jahr unvollständig, auf 365 Nächte hochgerechnet. Ohne Personal und Zuschläge; verschobene Menge voll zum Spotpreis (Annahme A3 „Band“). Bei „proportional“ rund 30 % davon.</p></div>
 </div>
-<div class="card"><h3>Je Jahr, aus <code>r2/reports/tables/reinigungsfenster_jahr.csv</code></h3>{tabelle(jahr_tab, tuple(jahr_tab.columns[1:]))}</div>
+<div class="card"><h3>Je Jahr, aus <code>r2/ergebnisse/reinigungsfenster_jahr.csv</code></h3>{tabelle(jahr_tab, tuple(jahr_tab.columns[1:]))}</div>
 </section>
 
 <section id="backtest"><h2>Ein Planungsfreitag im Backtest</h2>
@@ -278,7 +278,7 @@ Gerät etwas aus der Zukunft in die Historie, bricht der Lauf ab. <code>preisabf
 <p class="lead">Alle E-Einträge, neueste zuerst. Jeder Eintrag nennt die verworfene Alternative und den Beleg.</p>
 <div class="card"><ul class="dec">{dec}</ul></div></section>
 
-<footer>Stand der Daten {x['bis']}. Neu erzeugen: <code>python r2/src/build_board.py</code>. KI-Einsatz gekennzeichnet in <code>docs/ki-nutzung.md</code>.</footer>
+<footer>Stand der Daten {x['bis']}. Neu erzeugen: <code>python r2/src/build_board.py</code>. KI-Einsatz gekennzeichnet im Projekttagebuch (K-Einträge).</footer>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>

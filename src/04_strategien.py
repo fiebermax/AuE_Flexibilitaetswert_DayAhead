@@ -1,7 +1,7 @@
 """Schritt 4: Backtest der Strategien A, B, B', C, D, T; Look-ahead-Asserts; gepaarter Test; Block-Bootstrap.
 
 Owner: R3. Eingabe und Ausgabe siehe docs/schnittstellen.md.
-KI-Kennzeichnung: Kopfzeile ergänzen, sobald KI-Code enthalten ist (siehe docs/ki-nutzung.md).
+KI-Kennzeichnung: Kopfzeile ergänzen, sobald KI-Code enthalten ist, und K-Eintrag im Projekttagebuch.
 """
 
 

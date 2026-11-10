@@ -1,7 +1,7 @@
 """Schritt 3: Blockkosten-Matrix, saisonaler Block, Kalendermerkmale.
 
 Owner: R3. Eingabe und Ausgabe siehe docs/schnittstellen.md.
-KI-Kennzeichnung: Kopfzeile ergänzen, sobald KI-Code enthalten ist (siehe docs/ki-nutzung.md).
+KI-Kennzeichnung: Kopfzeile ergänzen, sobald KI-Code enthalten ist, und K-Eintrag im Projekttagebuch.
 """
 
 

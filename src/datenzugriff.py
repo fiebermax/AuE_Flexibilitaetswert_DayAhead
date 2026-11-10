@@ -17,7 +17,7 @@ Typical use (R3):
         plan = meine_strategie(w.historie)          # only data known on w.freitag
         kosten = bewerte(plan, w.zielwoche, w.last)  # real prices of the planned week
 
-Rules (all switches in config/params.yaml, block `planung`):
+Rules (all switches in params.yaml, block `planung`):
   * Planning happens on Friday at `planungsuhrzeit` (08:00, Friday morning; practice contact K-008).
   * Known at that moment: all prices up to and including Friday 23:00. Saturday's prices come out of the
     day-ahead auction only around `day_ahead_veroeffentlichung` (12:45). If someone moves the planning
