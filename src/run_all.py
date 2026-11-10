@@ -2,7 +2,7 @@
 import importlib.util
 from pathlib import Path
 
-SCHRITTE = ["01_download", "02_synthetisch", "cleaning", "03_merkmale", "04_strategien", "05_bewertung"]
+SCHRITTE = ["01_download", "02_synthetisch", "cleaning", "fensteranalyse", "03_merkmale", "04_strategien", "05_bewertung"]
 
 for name in SCHRITTE:
     pfad = Path(__file__).parent / f"{name}.py"
