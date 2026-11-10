@@ -8,6 +8,13 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 10.11.2026
 
+### A-012 · Review durch Susan: PR #6 bis #8 und Branch vom 10.11.2026
+- **Von → an:** Susan → Max (R2); weitergegeben von Max im Chat mit Claude Code
+- **Was:** Susan hat die ohne Review gemergten PRs #6, #7 und #8 nachträglich geprüft und den aktuellen Stand des Branches `claude/friendly-ramanujan-6ej4do` (Reinigungsfall, Preisabfrage, Commits `a57ec82` bis `a0185cb`) gegengeprüft („double checked“). Damit sind die offenen Reviews aus P-006, P-007 und P-008 erledigt.
+- **Kanal und Datum:** mündlich bzw. Chat Susan → Max, 10.11.2026
+- **Beleg:** bisher nur diese Angabe von Max. Damit das Review belegt ist (Kickoff: „Was nur im Chat steht, ist kein Beleg“), hinterlässt Susan auf dem Pull Request des Branches ein Approve bzw. einen Kommentar; Funde und Änderungen trägt sie hier nach.
+- **Offen:** Susans Rolle ist noch nicht in der Rollentabelle eingetragen (P-003 verlangt das Review des Paarpartners); Funde aus dem Review: keine genannt.
+
 ### K-010 · KI-Einsatz: einfache Preisabfrage
 - **Werkzeug:** Claude Code
 - **Zweck:** `src/preisabfrage.py` (`tag`, `tage`, `letzte_monate`, Aufruf im Terminal), `tests/test_preisabfrage.py` (9 Tests), Abschnitte in `README.md` und `docs/schnittstellen.md`, Einträge A-011 und K-010 im Auftrag von Max.
@@ -109,7 +116,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; R3 ist noch nicht im Repo.
 - **Angesprochen von:** Max (R2), 09.11.2026
 - **Entscheidung:** Max verlangt den Merge ausdrücklich, damit die Folien R2 und `pptx_kit/` auf `main` liegen. Weiterarbeit mit Susan am 10.11.2026.
-- **Ergebnis:** PR #8 am 09.11.2026 gemergt; nachträgliches Review offen.
+- **Ergebnis:** PR #8 am 09.11.2026 gemergt; nachträgliches Review durch Susan am 10.11.2026 erledigt (A-012).
 
 ### K-007 · KI-Einsatz Folien R2
 - **Werkzeug:** Claude Code
@@ -134,7 +141,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; R3 ist noch nicht im Repo.
 - **Angesprochen von:** Max (R2), 09.11.2026
 - **Entscheidung:** Max verlangt den Merge ausdrücklich, damit das Team die bereinigten Daten auf `main` hat. Review durch R3 nachträglich.
-- **Ergebnis:** PR #7 am 09.11.2026 gemergt; nachträgliches Review offen.
+- **Ergebnis:** PR #7 am 09.11.2026 gemergt; nachträgliches Review durch Susan am 10.11.2026 erledigt (A-012).
 
 ### K-006 · KI-Einsatz Datenbereinigung
 - **Werkzeug:** Claude Code
@@ -195,7 +202,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Problem:** Laut P-003 wird nach `main` nur nach Review des Paarpartners gemergt; R3 ist noch nicht im Repo, das Review von PR #6 steht aus.
 - **Angesprochen von:** Max (R2), 09.11.2026
 - **Entscheidung:** Max verlangt den Merge ausdrücklich, damit das Team die CSV-Daten auf `main` hat. Review durch R3 nachträglich.
-- **Ergebnis:** PR #6 am 09.11.2026 gemergt; nachträgliches Review offen.
+- **Ergebnis:** PR #6 am 09.11.2026 gemergt; nachträgliches Review durch Susan am 10.11.2026 erledigt (A-012).
 
 ### M-001 · Teamtreffen: gemeinsame Einrichtung und Durchsprache, 09.11.2026
 - **Teilnehmende:** alle vier Teammitglieder (u. a. Max, Susan)
