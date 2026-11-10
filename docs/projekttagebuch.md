@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 10.11.2026
 
+### A-013 · Prof: Umfang und Werkzeug sind frei, auch eine Excel-Liste ist gleichwertig
+- **Von → an:** Prof → Team; weitergegeben von Max (R2) an Claude Code, 10.11.2026
+- **Was:** Laut Prof gibt eine Lösung als Excel-Liste theoretisch dieselbe Note. Das deckt sich mit dem Kriterienkatalog (7.3: nicht bewertet werden der Umfang der Abgabe und die Schwierigkeit der Werkzeugwahl; 1.4: begründete, einfache Verfahren stehen über komplexen).
+- **Folge:** So wenig Dokumente wie nötig. `docs/belegmatrix.md` ist jetzt die eine Übersicht nach dem Original-Katalog: Pflichtabgaben (1.3), Bewertungsmodell und Sperrkriterien (2), Stufe 5 je Kriterium mit unserem Stand. Weitere Zusammenlegungen von Dokumenten entscheidet das Team (Vorschlag offen).
+- **Beleg:** `docs/belegmatrix.md`; Kriterienkatalog Stand 28.09.2026 (nicht im Repo)
+
 ### E-038 · Eigener Ordner `r2/` für alles, was nur R2 betrifft (revidiert E-023)
 - **Person:** Max (R2), auf Rückmeldung von Susan („viel zu unübersichtlich, zu komplex“)
 - **Entscheidung:** Nur R2-eigene Dateien wandern nach `r2/`: `r2/src/` (`01_download.py`, `02_synthetisch.py`, `cleaning.py`, `fensteranalyse.py`, `build_board.py`, `build_presentation.py`), `r2/reports/` (vorher `reports/`), `r2/docs/` (`architektur.md`, `datenaufbereitung.md`, `datenkatalog.md`, `sensitivitaet_plan.md`), `r2/output/`, `r2/pptx_kit/`. Für alle bleiben oben: `data/processed/`, `config/`, `src/` (`preisabfrage.py`, `datenzugriff.py`, `gemeinsam.py`, `run_all.py`, Gerüste R3/R4), `docs/` (Tagebuch, Schnittstellen, Codebook, Kickoff, Belegmatrix, KI-Nutzung), `tests/`. Leere Platzhalter (`notebooks/`, `.gitkeep` in `data/`) entfernt. README beginnt jetzt mit einer Tabelle „welche Datei, was steht drin, wer braucht sie“.
