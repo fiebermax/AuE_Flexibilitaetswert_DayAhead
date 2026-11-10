@@ -6,13 +6,153 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ---
 
+## 10.11.2026
+
+### P-010 · PR #9 auf Anweisung von Max gemergt, spätere Commits ohne Review
+- **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners. Susan hat den Branch bis Commit `a0185cb` geprüft (A-012); die späteren Commits (Kommentare, Diagramme, Board, Umzug nach `r2/`, Vereinfachung E-038, E-039) hat sie nicht gesehen.
+- **Angesprochen von:** Claude, 10.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich. Vorher geprüft: jeder in Doku und Code genannte Pfad existiert (automatische Prüfung; offen sind nur geplante Ergebnisdateien von R2 bis R4), `python src/run_all.py` läuft für alle R2-Schritte durch (Abbruch erst im leeren Gerüst `03_merkmale.py` von R3, gewollt), 51 Tests grün, Daten bitgleich.
+- **Ergebnis:** PR #9 am 10.11.2026 gemergt; nachträgliches Review der Commits nach `a0185cb` durch Susan offen.
+
+### E-039 · Repo radikal vereinfacht: weniger Dateien, flache Ordner, keine Folien per Skript
+- **Person:** Max (R2), nach Rückmeldung von Susan und A-013 (Umfang wird nicht bewertet)
+- **Entscheidung:**
+  - **Gelöscht:** `docs/ki-nutzung.md` (KI-Einsatz steht laut Katalog 6.5 im Projekttagebuch, die K-Einträge reichen; Regel in `CLAUDE.md` angepasst), `docs/projektanweisung.md` (steht am Ende von `docs/kickoff.md`), `docs/gespraech-praxispartner.md` (leerer Leitfaden, Antworten in K-005, K-008); aus dem Kickoff der 1,0-Blueprint, die Abgabeübersicht und die Sperrkriterien (jetzt kurz in `docs/belegmatrix.md`, 635 → 333 Zeilen).
+  - **PowerPoint raus:** `r2/src/build_presentation.py`, `r2/output/`, `r2/pptx_kit/`, Paket `python-pptx`. Folien macht das Team am Ende mit Claude.
+  - **Flache Ordner:** `config/params.yaml` → `params.yaml`; `data/processed/*.csv` → `data/*.csv`; `data/raw/smard/4169/hour/*.json` → `data/raw/*.json`, Manifest → `data/raw/manifest.csv` (`SOURCES.md` und `MANIFEST.md` entfallen, doppelt zum Manifest); `r2/reports/{tables,figures}` → `r2/ergebnisse/`; leere Ordner `results/`, `notebooks/` weg.
+  - **Endergebnis:** eine einzige Analyseseite wie der Notebook-Prototyp von Max (linear von Parametern über Daten, Backtest, Tests, Sensitivität bis zur Empfehlung an die Betriebsleitung).
+- **Verworfen:** tiefe Ordner nach SMARD-Filter und Auflösung (es gibt nur einen Filter und nur Stundenwerte, E-021); Folien per Skript (606 Zeilen Code für etwas, das am Ende einmal gebraucht wird); eigene KI-Liste neben dem Tagebuch.
+- **Hinweis:** Ältere Einträge nennen die alten Pfade; gemeint sind die gleichnamigen Dateien an den neuen Orten (Tabelle oben).
+- **Beleg:** `README.md` („Wo was liegt“); nach dem Umzug: Download offline ohne neue Dateien, Manifest unverändert, `preise_clean.csv` und `last_synth.csv` bitgleich, 51 Tests grün.
+
+### A-013 · Prof: Umfang und Werkzeug sind frei, auch eine Excel-Liste ist gleichwertig
+- **Von → an:** Prof → Team; weitergegeben von Max (R2) an Claude Code, 10.11.2026
+- **Was:** Laut Prof gibt eine Lösung als Excel-Liste theoretisch dieselbe Note. Das deckt sich mit dem Kriterienkatalog (7.3: nicht bewertet werden der Umfang der Abgabe und die Schwierigkeit der Werkzeugwahl; 1.4: begründete, einfache Verfahren stehen über komplexen).
+- **Folge:** So wenig Dokumente wie nötig. `docs/belegmatrix.md` ist jetzt die eine Übersicht nach dem Original-Katalog: Pflichtabgaben (1.3), Bewertungsmodell und Sperrkriterien (2), Stufe 5 je Kriterium mit unserem Stand. Weitere Zusammenlegungen von Dokumenten entscheidet das Team (Vorschlag offen).
+- **Beleg:** `docs/belegmatrix.md`; Kriterienkatalog Stand 28.09.2026 (nicht im Repo)
+
+### E-038 · Eigener Ordner `r2/` für alles, was nur R2 betrifft (revidiert E-023)
+- **Person:** Max (R2), auf Rückmeldung von Susan („viel zu unübersichtlich, zu komplex“)
+- **Entscheidung:** Nur R2-eigene Dateien wandern nach `r2/`: `r2/src/` (`01_download.py`, `02_synthetisch.py`, `cleaning.py`, `fensteranalyse.py`, `build_board.py`, `build_presentation.py`), `r2/reports/` (vorher `reports/`), `r2/docs/` (`architektur.md`, `datenaufbereitung.md`, `datenkatalog.md`, `sensitivitaet_plan.md`), `r2/output/`, `r2/pptx_kit/`. Für alle bleiben oben: `data/processed/`, `config/`, `src/` (`preisabfrage.py`, `datenzugriff.py`, `gemeinsam.py`, `run_all.py`, Gerüste R3/R4), `docs/` (Tagebuch, Schnittstellen, Codebook, Kickoff, Belegmatrix, KI-Nutzung), `tests/`. Leere Platzhalter (`notebooks/`, `.gitkeep` in `data/`) entfernt. README beginnt jetzt mit einer Tabelle „welche Datei, was steht drin, wer braucht sie“.
+- **Verworfen:** alles in `src/` und `docs/` lassen (für das Team nicht zu überblicken); Rollenordner für alle vier Rollen (Grund aus E-023 gilt weiter: zusätzliche Struktur ohne Nutzen für die anderen).
+- **Hinweis:** Ältere Tagebucheinträge nennen die alten Pfade (`src/cleaning.py`, `reports/…`, `docs/datenaufbereitung.md`); gemeint sind jetzt die gleichnamigen Dateien unter `r2/`.
+- **Beleg:** `README.md` (Abschnitt „Wo was liegt“), `src/run_all.py`, `config/params.yaml` (`cleaning.reports: r2/reports`); 51 Tests grün nach dem Umzug; `preise_clean.csv` unverändert.
+
+### K-011 · KI-Einsatz: Kommentare, Diagramme, Board, Aufräumen
+- **Werkzeug:** Claude Code
+- **Zweck:** Erklärende Kommentare an den schwierigen Stellen in `cleaning.py`, `datenzugriff.py`, `fensteranalyse.py`, `01_download.py` (Verhalten unverändert); Diagramm-Dokument `r2/docs/architektur.md` (Workflow, Bereinigung, Reinigungsfenster, Planungsfreitag, Dateien; Begriffe aus dem Statistischen Grundlagenwerk Teil 4: deskriptive Analytik, DMAIC-Phase Measure, Workflow-Knoten); Board `r2/reports/board.html`, erzeugt von `r2/src/build_board.py` aus den Repo-Daten; Umzug nach `r2/` (E-038).
+- **Wie geprüft:** `pytest tests/`: 51 grün nach jedem Schritt; `preise_clean.csv` nach dem erneuten Lauf bitgleich; Pipeline-Schritte aus den neuen Pfaden ausgeführt.
+- **Offen:** Max geht `r2/docs/architektur.md` mit dem Code durch (Sperrkriterium Erklärbarkeit); `r2/src/build_presentation.py` nur bei den Pfaden angepasst, inhaltlich weiter alter Stand.
+
+### A-012 · Review durch Susan: PR #6 bis #8 und Branch vom 10.11.2026
+- **Von → an:** Susan → Max (R2); weitergegeben von Max im Chat mit Claude Code
+- **Was:** Susan hat die ohne Review gemergten PRs #6, #7 und #8 nachträglich geprüft und den aktuellen Stand des Branches `claude/friendly-ramanujan-6ej4do` (Reinigungsfall, Preisabfrage, Commits `a57ec82` bis `a0185cb`) gegengeprüft („double checked“). Damit sind die offenen Reviews aus P-006, P-007 und P-008 erledigt.
+- **Kanal und Datum:** mündlich bzw. Chat Susan → Max, 10.11.2026
+- **Beleg:** bisher nur diese Angabe von Max. Damit das Review belegt ist (Kickoff: „Was nur im Chat steht, ist kein Beleg“), hinterlässt Susan auf dem Pull Request des Branches ein Approve bzw. einen Kommentar; Funde und Änderungen trägt sie hier nach.
+- **Offen:** Susans Rolle ist noch nicht in der Rollentabelle eingetragen (P-003 verlangt das Review des Paarpartners); Funde aus dem Review: keine genannt.
+
+### K-010 · KI-Einsatz: einfache Preisabfrage
+- **Werkzeug:** Claude Code
+- **Zweck:** `src/preisabfrage.py` (`tag`, `tage`, `letzte_monate`, Aufruf im Terminal), `tests/test_preisabfrage.py` (9 Tests), Abschnitte in `README.md` und `docs/schnittstellen.md`, Einträge A-011 und K-010 im Auftrag von Max.
+- **Wie geprüft:** `pytest tests/`: 51 Tests grün; Preis einer Stunde gegen `preise_clean.csv` verglichen (Test); Umstellungstage mit 23 und 25 Stunden; Wochentag gegen `datum.dt.weekday`; Stichprobe `python src/preisabfrage.py 2026-10-15` (Donnerstag, 24 Zeilen).
+- **Offen:** Susan probiert die Abfrage aus und meldet, ob Spalten oder Aufruf fehlen.
+
+### A-011 · Wunsch Susan: einfacher Zugriff auf einzelne Tage und die letzten Monate
+- **Von → an:** Susan (über Max, R2) → R2
+- **Was (Datei, Spalten, Einheit):** Methode, um auf die letzten Monate bzw. einzelne Tage zuzugreifen und direkt mit Variablen wie Preis, Uhrzeit, Datum und Wochentag zu arbeiten. Umgesetzt als `src/preisabfrage.py`: `tag("JJJJ-MM-TT")`, `tage(von, bis)`, `letzte_monate(n, wochentag=...)`; Spalten `datum`, `wochentag` (deutsch), `uhrzeit` ("14:00"), `stunde`, `preis` (€/MWh), `saison`, `werktag`, `zeit`. Bewusst getrennt von `datenzugriff.py`: freie Sicht auf die Vergangenheit, deshalb nicht für Strategien (Look-ahead).
+- **Verworfen:** Funktion in `datenzugriff.py` (würde den Look-ahead-Schutz verwässern); nur README-Beispiele mit `preise_clean.csv` (Spaltennamen wie `stunde_lokal`, Wochentag als Zahl 0–6 sind für das Team umständlicher).
+- **Kanal und Datum:** Wunsch von Susan an Max, weitergegeben im Chat mit Claude Code, 10.11.2026
+- **Bis:** erledigt 10.11.2026; Rückmeldung Susan offen
+- **Nachricht an Susan:** WhatsApp, formuliert am 10.11.2026, Versand durch Max: Funktionen `tag`, `tage`, `letzte_monate`, `alle_preise` mit Beispielen; Code liegt auf dem Branch `claude/friendly-ramanujan-6ej4do` (noch nicht auf `main`); Hinweis: nur zum Anschauen, nicht für Strategien; Bitte um Rückmeldung.
+- **Änderung, nachgezogen von:** `README.md`, `docs/schnittstellen.md`, K-010
+
+### K-009 · KI-Einsatz: Umstellung auf den Reinigungsfall
+- **Werkzeug:** Claude Code
+- **Zweck:** Prüfung der Praxisangaben aus K-008 (Widerspruch P-009, Ortsname des zentralen Einkaufs, der den Praxispartner identifiziert, Konflikt D1 mit E-021, Zeitumstellung im Nachtfenster); erste Schätzung im Rückblick; Umstellung von `config/params.yaml`, `src/02_synthetisch.py`, `src/gemeinsam.py` (`fensterstunden`), `src/fensteranalyse.py` (Fenster über Mitternacht, echte Stunden, Jahrestabellen, eigener Aufruf), `src/run_all.py`; 7 neue bzw. geänderte Tests; Doku (README, Kickoff, Codebook, Schnittstellen, Datenaufbereitung, Sensitivitätsplan, `docs/ki-nutzung.md`); diese Einträge im Auftrag von Max.
+- **Wie geprüft:** Entscheidungen vorab von Max (E-031 bis E-034); `pytest tests/`: 42 Tests grün; Gegenprobe: Zuordnung der Nacht zum Vortag absichtlich entfernt → 4 Tests rot; erste Schätzung (Scratchpad-Skript `nacht.py`) mit dem Repo-Code nachgerechnet, Abweichungen nur in den Umstellungsnächten (das Skript hatte sie falsch gruppiert); `preise_clean.csv` gegen den letzten Commit verglichen: nur `last_mwh_tag` und `last_mwh_flexibel_tag` geändert.
+- **Was wir geändert haben:** In der ersten Schätzung stand für 2026 eine Jahressumme, obwohl 2026 nur 303 Nächte hat (bis 31.10.); jetzt eigene Spalte `vollstaendig` und Hochrechnung auf 365 Nächte. `src/build_presentation.py` auf Anweisung von Max nicht angefasst: Folien erst am Ende, zuerst muss der Code stehen.
+- **Offen:** Max erklärt `fenster_je_tag` (Nacht über Mitternacht, echte Stunden) selbst.
+
+### A-010 · Schnittstelle R2 → R3: Reinigungsfall, Nacht über die Wochengrenze
+- **Von → an:** R2 (Max) → R3
+- **Was (Datei, Spalten, Einheit):** `last_synth.csv`: `mwh_gesamt` jetzt 180 MWh, `mwh_flexibel` 8 MWh; der Wert am Datum d gilt für die Reinigung in der Nacht d 22:00 bis d+1 06:00. Neue Schalter in `params.yaml`: `last.fenster_start_h` 22, `last.fenster_ende_h` 6, `last.status_quo_start_h` 22, `last.blocklaenge_h` 2, Block `kaelte` für T, Block `vertrag`, neue Zuschläge. Zum Wiederverwenden: `fensteranalyse.fenster_je_tag(df, 22, 6, 2, 22)` bewertet jede Nacht mit echten Stunden. **Achtung:** Die Sonntagsnacht der Zielwoche reicht bis Montag 06:00 der Folgewoche; diese Stunden fehlen in `w.zielwoche`. R3 entscheidet: mitwerten (Preise bis Montag 06:00 nachladen) oder Sonntagsnacht weglassen. Dazu die drei offenen Fragen aus A-007.
+- **Kanal und Datum:** Nachricht vorbereitet am 10.11.2026, Versand durch Max
+- **Bis:** Fr 13.11.2026
+- **Antwort R3:** offen
+- **Änderung, nachgezogen von:** `docs/schnittstellen.md`
+
+### E-037 · R2-Kennzahl neu: Mehrkosten der Reinigung 22–24 Uhr gegenüber dem billigsten 2-h-Fenster der Nacht (revidiert E-030)
+- **Person:** Max (R2), umgesetzt von Claude
+- **Entscheidung:** Je Nacht (benannt nach dem Tag, an dem sie um 22 Uhr beginnt): Mittelpreis des Status quo 22–24 Uhr minus Mittelpreis des billigsten 2-h-Blocks in 22–06 Uhr, je Saison Median und IQR in €/MWh und %, häufigste Startzeit; je Jahr Mittel, Median und € bei 8 MWh je Nacht (Summe und Hochrechnung auf 365 Nächte). Das Scratchpad-Skript `nacht.py` aus der ersten Schätzung ist als getestete Funktion in `src/fensteranalyse.py` aufgegangen (Aufruf `python src/fensteranalyse.py`, Schritt in `run_all.py`), statt als zweites Skript mit derselben Logik. Kennzeichnung: Rückblick mit bekannten Preisen, keine Strategie; € sind eine Obergrenze ohne Personal und Zuschläge und mit Annahme A3 „Band“.
+- **Verworfen:** E-030 (08–14 Uhr gegen billigstes 6-h-Fenster am Tag) passt nicht mehr zum Fall; `nacht.py` als eigenes Skript (doppelte Logik, ungetestet, falsche Gruppierung in den Umstellungsnächten, Teiljahr 2026 als Jahressumme).
+- **Ergebnis (Hypothese, kein Strategieergebnis):** 1 764 Nächte. Mehrkosten im Median Winter 16,2, Frühling 19,6, Sommer 29,6, Herbst 20,7 €/MWh; billigstes Fenster beginnt meist um 3 Uhr (38 %, 2 Uhr 27 %); genau 22–24 Uhr ist höchstens in 2,9 % der Nächte am billigsten. Obergrenze in €: 2023 rund 71 T€, 2024 58 T€, 2025 59 T€, 2026 hochgerechnet 78 T€, Krisenjahr 2022 163 T€. Bei proportionaler Bewertung (A3) rund 30 % davon.
+- **Offen:** Folien und `pptx_kit/` zeigen noch E-030; `src/build_presentation.py` bricht mit den neuen Parametern ab. Umstellung erst am Ende, wenn der Code steht (Anweisung Max).
+- **Beleg:** `src/fensteranalyse.py`, `reports/tables/reinigungsfenster_saison.csv`, `reports/tables/reinigungsfenster_jahr.csv`, Tests in `tests/test_fensteranalyse.py`
+
+### E-036 · Zeitumstellung liegt jetzt im Reinigungsfenster (revidiert E-018 und Sensitivitätsvariante V1)
+- **Person:** Max (R2), Hinweis von Claude
+- **Entscheidung:** Die Umstellung (02–03 Uhr) liegt nicht mehr außerhalb des Falls, sondern mitten im Reinigungsfenster 22–06 Uhr. Gerechnet wird mit echten Stunden (UTC, E-026): Die März-Nacht hat 7, die Oktober-Nacht 9 Stunden; ein 2-h-Block sind immer 2 echte Stunden und 8 MWh und darf in der Oktober-Nacht beide „02:00“-Stunden nutzen. Das betrifft 10 von 1 764 Nächten.
+- **Verworfen:** E-018 („kostenneutral, weil außerhalb der Betriebszeit“) gilt für die Reinigung nicht mehr; nach Ortszeit rechnen (die doppelte Stunde wäre mehrdeutig, die fehlende ein Loch im Block).
+- **Beleg:** Tests `test_umstellungsnaechte_mit_echten_stunden`, `test_block_darf_beide_oktober_zwei_uhr_stunden_nutzen`; `docs/sensitivitaet_plan.md` (V1)
+
+### E-035 · Weitere Parameter aus dem Termin vom 10.11.: Zuschläge, Stundensatz, Vertrag, Planungszeit
+- **Person:** Max (R2), nach K-008
+- **Entscheidung:** In `config/params.yaml`: Sonntagszuschlag 50 % (Bandbreite 30–50 %) und Feiertagszuschlag 100 % (geschätzt, P14, P15); Nachtzuschlag 25 % (P13, Bandbreite 25–30 %); Stundensatz 35 €/h (A7, 30–45 €/h, statt 30 €/h); 3 Personen (A6, 2–4); Festpreis 85 €/MWh (P4, statt `null`); neuer Block `vertrag` mit Spot-Anteil 30 % und Bewertung `band` (A3, Alternative `proportional` als Sensitivität V8); Planung Freitag 08:00 statt 12:00 (P11; die Datengrenze bleibt Freitag 23:00, weil die Samstagspreise erst gegen 12:45 kommen). E-021 bleibt: nur Stundenwerte; Zeile D1 der Praxistabelle („15-min ab 01.10.2025“) ist damit korrigiert. Der Standort des zentralen Einkaufs (P16) wird als „zentraler Einkauf des Konzerns“ anonymisiert.
+- **Verworfen:** 15-min-Preise für Blockstarts in Viertelstunden (E-021, Zeit); Ortsnamen im Repo (identifiziert den Praxispartner).
+- **Offen:** `kosten.nachtstunden` unverändert 23–06 Uhr. Gilt schon 22–23 Uhr als Nacht, hätte der Status quo zwei statt einer zuschlagspflichtigen Stunde (Sensitivität V9). Beim Kontakt klären.
+- **Beleg:** `config/params.yaml` (`kosten`, `vertrag`, `planung`), `docs/sensitivitaet_plan.md` (V8, V9)
+
+### E-034 · Fragestellung: „verschiebbarer Last“ statt „verschiebbarer Produktionslast“
+- **Person:** Max (R2)
+- **Entscheidung:** Neue Formulierung: „Inwiefern lässt sich der Flexibilitätswert verschiebbarer Last eines bayerischen Werks einer international tätigen Großmolkerei am Day-Ahead-Strommarkt DE-LU durch eine wöchentliche Schichtplanung realisieren, und wie verändert die Umstellung auf den Viertelstundenhandel im Oktober 2025 diesen Wert?“ Die Reinigung ist keine Produktion, aber personalgebunden und wöchentlich geplant. H0a, H0b, H0c und Bonferroni (E-005, E-006) bleiben unverändert.
+- **Verworfen:** „Produktionslast“ beibehalten (fachlich falsch für die Reinigung).
+- **Begründung:** Die Änderung erfolgt vor jeder Auswertung (es gibt noch keinen Backtest), sie passt die Frage nicht an ein Ergebnis an.
+- **Beleg:** `README.md`, `docs/kickoff.md`
+
+### E-033 · Fälle: Reinigung S1 als Hauptfall, Kälte als Kontrastfall T, S2 nur Ausblick
+- **Person:** Max (R2), nach K-008
+- **Entscheidung:** Hauptfall S1 ist die Reinigung (CIP): 4 MW für 2 h = 8 MWh pro Nacht, verschiebbar innerhalb der Nebenzeit 22–06 Uhr, an jedem Tag. Kontrastfall T ist die Kälteversorgung (1 MW, Vorkühlung 2 h, Annahme A1), die automatisch läuft und täglich mit bekannten Day-Ahead-Preisen gesteuert werden kann. S2 (Produktionsblock verschieben) nur als Ausblick, wegen der Grenze Rohmilch (P9) und der Zuschläge. In `params.yaml`: `last.mwh_pro_tag` 8,0 (statt Platzhalter 2,0), `last.blocklaenge_h` 2 (statt 6), neu `last.prozess`, `last.fenster_start_h` 22, `last.fenster_ende_h` 6; neuer Block `kaelte`. `02_synthetisch` prüft, dass das Fenster nicht in der Produktion liegt und der Block hineinpasst.
+- **Verworfen:** 2 MWh im 6-h-Block am Tag (Platzhalter ohne Praxisbezug); S2 als Hauptfall (größerer Hebel, aber Rohmilch, Lastspitze A4 und Zuschläge nicht in der Zeit zu modellieren); Kälte als Hauptfall (nicht personalgebunden, passt nicht zur wöchentlichen Schichtplanung).
+- **Beleg:** `config/params.yaml` (`last`, `kaelte`), `src/02_synthetisch.py`, Tests `test_last_unsinnige_parameter_werden_abgelehnt`, `test_basisfall_reinigung_ist_gueltig`
+
+### E-032 · Tagesverbrauch 180 MWh (löst P-009)
+- **Person:** Max (R2)
+- **Entscheidung:** `last.gesamtverbrauch_mwh_pro_tag` 180,0 (Praxiskontakt 10.11.2026, 65 GWh/a). Die 50 MWh aus K-005 waren ein Platzhalter und sind ersetzt.
+- **Verworfen:** 50 MWh beibehalten (passt nicht zu 65 GWh/a).
+- **Beleg:** `config/params.yaml`, `data/processed/last_synth.csv`, Spalte `last_mwh_tag` in `preise_clean.csv`
+
+### E-031 · Status quo A: Reinigung 22–24 Uhr
+- **Person:** Max (R2)
+- **Entscheidung:** Status quo A ist die Reinigung direkt nach Produktionsende, 22–24 Uhr (`last.status_quo_start_h: 22`). **Annahme**, vom Praxiskontakt nicht bestätigt.
+- **Verworfen:** 08–14 Uhr (Status quo des alten Falls, E-030); ein Status quo später in der Nacht (ohne Beleg; je später, desto kleiner der Flexibilitätswert).
+- **Begründung:** Naheliegender Ablauf nach Produktionsende; Kipp-Annahme: Läuft die Reinigung heute schon um 2–4 Uhr, ist der Flexibilitätswert von S1 fast null. Beim Kontakt bestätigen lassen.
+- **Beleg:** `config/params.yaml`, `src/02_synthetisch.py` (Prüfung Status quo im Fenster)
+
+### P-009 · Widerspruch Tagesverbrauch: 50 MWh (K-005) gegen 180 MWh (K-008)
+- **Problem:** Am 09.11. wurden 50 MWh pro Tag genannt (K-005), am 10.11. 180 MWh pro Tag bzw. 65 GWh pro Jahr (K-008). 65 GWh ÷ 365 = 178 MWh, der neue Wert ist also in sich stimmig. Der Spot-Anteil von 53 MWh pro Tag liegt nahe am alten Wert; vermutlich war am 09.11. der Spot-Anteil gemeint (Annahme, nicht bestätigt).
+- **Angesprochen von:** Claude bei der Prüfung von K-008, 10.11.2026
+- **Lösungsvorschlag:** 180 MWh pro Tag als Basis übernehmen; beim Kontakt kurz bestätigen lassen, ob 50 MWh der Spot-Anteil war.
+- **Entscheidung:** Max, 10.11.2026: 180 MWh gelten (Praxiskontakt); die 50 MWh waren ein Platzhalter und werden ersetzt (E-032).
+- **Ergebnis:** `config/params.yaml` und `last_synth.csv` umgestellt (E-032).
+
+### K-008 · Termin mit dem Praxiskontakt: Zahlen, verschiebbare Lasten, Vertrag (ganzes Team)
+- **Gesprächspartner:** Kontakt beim Praxispartner; Termin von ca. 15 Minuten mit dem ganzen Team, 10.11.2026
+- **Aussagen (genannt):** Jahresverbrauch des Werks 65 GWh (P1); Tagesverbrauch 180 MWh (P2); davon rund 53 MWh pro Tag (ca. 30 %) am Day-Ahead-Markt (P3), rund 70 % zum Festpreis von 85 €/MWh, eingekauft im Januar für das Folgejahr (P4); Produktion 16 h pro Tag, 06–22 Uhr, nachts keine Volllast (P5); Reinigung (CIP) 4 MW für ca. 2 h, voll elektrisch (P6); Kälteversorgung 1 MW (P7); verschiebbar sind Kälte und Reinigung (P8); Rohmilch höchstens 36–48 h lagerfähig, muss sofort gekühlt werden (P9); nach höchstens 24 h Produktion muss gereinigt werden, laut Kontakt gesetzlich (P10); Schichtplanung Freitagmorgen für die Folgewoche (P11); Personal überwiegend Zeitarbeit, flexibel (P12); Entscheider sind der zentrale Einkauf des Konzerns und die Werksleitung (P16).
+- **Aussagen (vom Kontakt geschätzt):** Nachtzuschlag 25 % (25–30 %) (P13); Sonntagszuschlag 50 % (30–50 %) (P14); Feiertagszuschlag bis 100 % (P15).
+- **Abgeleitet (Team):** mittlere Last ca. 7,4 MW (B1); Spot-Volumen ca. 19 GWh pro Jahr (B2); Reinigungsenergie ca. 8 MWh pro Tag (B3); Prognosehorizont 3–9 Tage, weil am Freitagmorgen nur die Freitagspreise bekannt sind (B4); Nebenzeit 22–06 Uhr, davon 2 h Reinigung (B5).
+- **Annahmen des Teams (noch zu belegen):** Kälteverschiebung (Vorkühlung) 2 h, Bandbreite 0–4 h (A1); Festpreis als Forward mit Abnahmepflicht (A2); Festanteil als Band, verschobene MWh also zu 100 % am Spot bewertet, Alternative proportional × 30 % (A3, Kipp-Annahme, beide Fälle rechnen); Jahreshöchstlast darf nicht steigen (A4); §19 StromNEV als Nichtziel (A5); 3 Personen an der Reinigung, 2–4 (A6); Zeitarbeit 35 €/h, 30–45 €/h (A7).
+- **Szenarien:** S1 Basis: die Reinigung wandert innerhalb 22–06 Uhr. S2 Ausbau: der Produktionsblock verschiebt sich, z. B. in die Mittagsstunden (Grenze P9).
+- **Was sich ändert (Vorschlag, noch nicht umgesetzt):** verschiebbarer Prozess und Menge (Reinigung 8 MWh pro Tag, 2-h-Block in der Nacht statt 2 MWh im 6-h-Block am Tag); Status quo A muss neu festgelegt werden; Planung Freitagmorgen statt Freitagmittag (ändert die Datengrenze nicht, die Samstagspreise kommen erst gegen 12:45); Zuschläge für Sonntag und Feiertag neu; Stundensatz 35 statt 30 €/h; Festpreis 85 €/MWh statt `null`. Kipp-Annahme Vertrag (Kickoff) ist damit teilweise geklärt: Das Werk kauft zu 30 % spot.
+- **Offen:** Wann läuft die Reinigung heute (Status quo A)? Ist die Kälte personalgebunden oder automatisch (dann eher Tagessteuerung T)? Wie ist der Festpreisanteil vertraglich gestaltet (Band oder Profil, A3)? Bestätigung 50 gegen 180 MWh (P-009).
+- **Hinweis:** Der Standort des zentralen Einkaufs wird im Repo nicht genannt, weil er den Praxispartner identifiziert (CLAUDE.md, Kickoff).
+
 ## 09.11.2026
 
 ### P-008 · PR #8 ohne Review gemergt (auf Anweisung von Max)
 - **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; R3 ist noch nicht im Repo.
 - **Angesprochen von:** Max (R2), 09.11.2026
 - **Entscheidung:** Max verlangt den Merge ausdrücklich, damit die Folien R2 und `pptx_kit/` auf `main` liegen. Weiterarbeit mit Susan am 10.11.2026.
-- **Ergebnis:** PR #8 am 09.11.2026 gemergt; nachträgliches Review offen.
+- **Ergebnis:** PR #8 am 09.11.2026 gemergt; nachträgliches Review durch Susan am 10.11.2026 erledigt (A-012).
 
 ### K-007 · KI-Einsatz Folien R2
 - **Werkzeug:** Claude Code
@@ -37,7 +177,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; R3 ist noch nicht im Repo.
 - **Angesprochen von:** Max (R2), 09.11.2026
 - **Entscheidung:** Max verlangt den Merge ausdrücklich, damit das Team die bereinigten Daten auf `main` hat. Review durch R3 nachträglich.
-- **Ergebnis:** PR #7 am 09.11.2026 gemergt; nachträgliches Review offen.
+- **Ergebnis:** PR #7 am 09.11.2026 gemergt; nachträgliches Review durch Susan am 10.11.2026 erledigt (A-012).
 
 ### K-006 · KI-Einsatz Datenbereinigung
 - **Werkzeug:** Claude Code
@@ -98,7 +238,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Problem:** Laut P-003 wird nach `main` nur nach Review des Paarpartners gemergt; R3 ist noch nicht im Repo, das Review von PR #6 steht aus.
 - **Angesprochen von:** Max (R2), 09.11.2026
 - **Entscheidung:** Max verlangt den Merge ausdrücklich, damit das Team die CSV-Daten auf `main` hat. Review durch R3 nachträglich.
-- **Ergebnis:** PR #6 am 09.11.2026 gemergt; nachträgliches Review offen.
+- **Ergebnis:** PR #6 am 09.11.2026 gemergt; nachträgliches Review durch Susan am 10.11.2026 erledigt (A-012).
 
 ### M-001 · Teamtreffen: gemeinsame Einrichtung und Durchsprache, 09.11.2026
 - **Teilnehmende:** alle vier Teammitglieder (u. a. Max, Susan)

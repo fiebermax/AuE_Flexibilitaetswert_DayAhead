@@ -1,5 +1,5 @@
-# KI: Claude, Zweck: Tests der Datenbereinigung (src/cleaning.py), geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
-"""Tests für src/cleaning.py: Logik an kleinen Beispielen und Annahmen über data/processed/preise_clean.csv.
+# KI: Claude, Zweck: Tests der Datenbereinigung (r2/src/cleaning.py), geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
+"""Tests für r2/src/cleaning.py: Logik an kleinen Beispielen und Annahmen über data/preise_clean.csv.
 
 Pflicht laut Auftrag: lückenloses Raster, eindeutiger Index, tz=UTC, Spalten und Typen, Wertebereich, Flags vorhanden.
 Laufen mit `pytest tests/`.
@@ -13,13 +13,13 @@ import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-PARAMS = yaml.safe_load((ROOT / "config" / "params.yaml").read_text(encoding="utf-8"))
+PARAMS = yaml.safe_load((ROOT / "params.yaml").read_text(encoding="utf-8"))
 TZ = PARAMS["markt"]["zeitzone"]
 CLEAN = ROOT / PARAMS["daten"]["pfade"]["processed"] / "preise_clean.csv"
 SPALTEN = ["ts_utc", "ts_lokal", "datum_lokal", "stunde_lokal", "wochentag", "saison", "preis_eur_mwh", "regime",
            "werktag", "in_betriebszeit", "last_mwh_tag", "last_mwh_flexibel_tag", "imputed", "flag_outlier"]
 
-spec = importlib.util.spec_from_file_location("cleaning", ROOT / "src" / "cleaning.py")
+spec = importlib.util.spec_from_file_location("cleaning", ROOT / "r2" / "src" / "cleaning.py")
 cl = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cl)
 
@@ -92,7 +92,7 @@ def test_join_zaehlt_nicht_gematchte():
 # ---------------------------------------------------------------------------------------------
 # Annahmen über die bereinigte Datei
 # ---------------------------------------------------------------------------------------------
-braucht_daten = pytest.mark.skipif(not CLEAN.exists(), reason="src/cleaning.py noch nicht gelaufen")
+braucht_daten = pytest.mark.skipif(not CLEAN.exists(), reason="r2/src/cleaning.py noch nicht gelaufen")
 
 
 @pytest.fixture(scope="module")

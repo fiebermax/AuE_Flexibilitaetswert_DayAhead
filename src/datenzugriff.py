@@ -1,7 +1,7 @@
 # KI: Claude, Zweck: Datenzugriff für den Backtest (rollierender Ursprung, Look-ahead-Schutz), geprüft von <Name R2> durch Review und pytest
 """Data access for the backtest: what was known on a given Friday, and which week is being planned.
 
-Owner: R2. Used by: R3 (src/03_merkmale.py, src/04_strategien.py), later src/06_sensitivitaet.py.
+Owner: R2. Used by: R3 (src/03_merkmale.py, src/04_strategien.py), later r2/src/06_sensitivitaet.py (sensitivity analysis R2).
 
 The backtest replays every Friday of a period ("rolling origin"). On each Friday a strategy may only
 use prices that were already published at planning time; afterwards the plan is evaluated with the
@@ -17,8 +17,8 @@ Typical use (R3):
         plan = meine_strategie(w.historie)          # only data known on w.freitag
         kosten = bewerte(plan, w.zielwoche, w.last)  # real prices of the planned week
 
-Rules (all switches in config/params.yaml, block `planung`):
-  * Planning happens on Friday at `planungsuhrzeit` (assumption: 12:00).
+Rules (all switches in params.yaml, block `planung`):
+  * Planning happens on Friday at `planungsuhrzeit` (08:00, Friday morning; practice contact K-008).
   * Known at that moment: all prices up to and including Friday 23:00. Saturday's prices come out of the
     day-ahead auction only around `day_ahead_veroeffentlichung` (12:45). If someone moves the planning
     time after that, Saturday becomes known as well; the code handles both cases.
@@ -54,7 +54,7 @@ class Planungswoche:
 # Loading (thin wrappers, so R3 never has to know paths)
 # ---------------------------------------------------------------------------------------------
 def lade_preise(params: dict | None = None) -> pd.DataFrame:
-    """Load preise_clean.csv (src/cleaning.py) and add `zeit` = the UTC hour in German time.
+    """Load preise_clean.csv (r2/src/cleaning.py) and add `zeit` = the UTC hour in German time.
 
     Key of the file is ts_utc. `zeit` is only a convenience for date logic in local time; it stays
     unique because it keeps the UTC offset (the two October 02:00 hours are +02:00 and +01:00).
@@ -106,7 +106,9 @@ def bekannt_bis(freitag: pd.Timestamp, params: dict | None = None) -> pd.Timesta
     params = params or lade_params()
     p, tz = params["planung"], params["markt"]["zeitzone"]
     tag = _kalendertag(freitag)
+    # Compare two clock times of the same (today's) date: "08:00" >= "12:45"? -> False -> only Friday known.
     nach_veroeffentlichung = pd.Timestamp(p["planungsuhrzeit"]) >= pd.Timestamp(p["day_ahead_veroeffentlichung"])
+    # Known up to Saturday 00:00 (= Friday complete), or up to Sunday 00:00 if Saturday's auction is out.
     tage = 2 if nach_veroeffentlichung else 1
     return (tag + pd.Timedelta(days=tage)).tz_localize(tz)
 
@@ -145,6 +147,9 @@ def planungswoche(preise: pd.DataFrame, last: pd.DataFrame, freitag: pd.Timestam
     folge_montag_tag = montag_tag + pd.Timedelta(days=7)
     montag, naechster_montag = montag_tag.tz_localize(tz), folge_montag_tag.tz_localize(tz)   # ... then 00:00 local
 
+    # History = everything strictly before the limit; target week = Mon 00:00 to next Mon 00:00.
+    # Note for case S1: the Sunday night (Sun 22:00 to Mon 06:00) ends in the FOLLOWING week, so its
+    # hours after midnight are not in `ziel` (diary A-010, R3 decides how to handle it).
     hist = preise[preise["zeit"] < grenze]
     if historie_wochen is not None:
         fenster_start = (_kalendertag(grenze) - pd.Timedelta(weeks=historie_wochen)).tz_localize(tz)
@@ -152,6 +157,8 @@ def planungswoche(preise: pd.DataFrame, last: pd.DataFrame, freitag: pd.Timestam
     ziel = preise[(preise["zeit"] >= montag) & (preise["zeit"] < naechster_montag)]
     tage = last[(last["datum"] >= montag_tag) & (last["datum"] < folge_montag_tag)]
 
+    # Safety net: these checks should never fire. If they do, someone broke the slicing above, and we
+    # stop rather than let a strategy see the future (results would look too good).
     if len(hist) and hist["zeit"].max() >= grenze:
         raise LookAheadFehler(f"Historie für {freitag:%d.%m.%Y} enthält Daten ab {grenze}.")
     if len(hist) and len(ziel) and hist["zeit"].max() >= ziel["zeit"].min():

@@ -1,5 +1,5 @@
 # KI: Claude, Zweck: Tests für Download, synthetischen Lastgang und Datenzugriff, geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
-"""Tests für src/01_download.py, src/02_synthetisch.py und src/datenzugriff.py (Bereinigung: tests/test_cleaning.py)."""
+"""Tests für r2/src/01_download.py, r2/src/02_synthetisch.py und src/datenzugriff.py (Bereinigung: tests/test_cleaning.py)."""
 import csv
 import hashlib
 import importlib.util
@@ -10,17 +10,19 @@ import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-PARAMS = yaml.safe_load((ROOT / "config" / "params.yaml").read_text(encoding="utf-8"))
+PARAMS = yaml.safe_load((ROOT / "params.yaml").read_text(encoding="utf-8"))
 TZ = PARAMS["markt"]["zeitzone"]
 PROCESSED = ROOT / PARAMS["daten"]["pfade"]["processed"]
 CLEAN = PROCESSED / "preise_clean.csv"
 LAST = PROCESSED / "last_synth.csv"
-MANIFEST = ROOT / PARAMS["daten"]["pfade"]["raw"] / "smard" / "manifest.csv"
+MANIFEST = ROOT / PARAMS["daten"]["pfade"]["raw"] / "manifest.csv"
 WECHSEL = pd.Timestamp(PARAMS["markt"]["regimewechsel"]).tz_localize(TZ)
 
 
 def _lade_modul(name):
-    spec = importlib.util.spec_from_file_location(name, ROOT / "src" / f"{name}.py")
+    # R2's pipeline steps live in r2/src/, shared modules in src/ (diary E-038)
+    ordner = ROOT / "src" if (ROOT / "src" / f"{name}.py").exists() else ROOT / "r2" / "src"
+    spec = importlib.util.spec_from_file_location(name, ordner / f"{name}.py")
     modul = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(modul)
     return modul
@@ -52,10 +54,18 @@ def test_last_taeglich_inklusive_feiertage_und_variante():
 
 
 def test_last_unsinnige_parameter_werden_abgelehnt():
-    for feld, wert in [("mwh_pro_tag", 0), ("mwh_pro_tag", 60), ("blocklaenge_h", 17), ("produktionstage", "Mo-Sa"),
-                       ("status_quo_start_h", 20), ("betrieb_ende_h", 5)]:
+    # 200 MWh > 180 MWh plant; 9 h > 8-h window; 12 Uhr is production time; 05-07 Uhr runs past 06 Uhr;
+    # window 20-06 Uhr overlaps production until 22 Uhr
+    for feld, wert in [("mwh_pro_tag", 0), ("mwh_pro_tag", 200), ("blocklaenge_h", 9), ("produktionstage", "Mo-Sa"),
+                       ("status_quo_start_h", 12), ("status_quo_start_h", 5), ("fenster_start_h", 20),
+                       ("fenster_ende_h", 24), ("betrieb_ende_h", 5)]:
         with pytest.raises(syn.LastFehler):
             syn.pruefe_parameter({**PARAMS["last"], feld: wert})
+
+
+def test_basisfall_reinigung_ist_gueltig():
+    syn.pruefe_parameter(PARAMS["last"])                                   # must not raise
+    assert syn.fensterstunden(22, 6) == [22, 23, 0, 1, 2, 3, 4, 5]
 
 
 def test_bekannt_bis_haengt_an_der_planungsuhrzeit():
@@ -120,4 +130,4 @@ def test_rohdaten_unveraendert():
         zeilen = [z for z in csv.DictReader(f) if z["status"] == "aktiv"]
     assert zeilen
     for z in zeilen:
-        assert hashlib.sha256((MANIFEST.parent.parent / z["datei"]).read_bytes()).hexdigest() == z["sha256"]
+        assert hashlib.sha256((MANIFEST.parent / z["datei"]).read_bytes()).hexdigest() == z["sha256"]

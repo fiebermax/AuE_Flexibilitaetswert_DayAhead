@@ -1,4 +1,4 @@
-# KI: Claude, Zweck: Hilfsfunktionen für Konfiguration und Pfade, geprüft von <Name R2> durch Review und pytest
+# KI: Claude, Zweck: Hilfsfunktionen für Konfiguration, Pfade und Uhrzeitfenster, geprüft von <Name R2> durch Review und pytest
 """Shared helpers for all pipeline steps: load params.yaml, resolve folders, working-day rule.
 
 Why a separate file: every step needs the same settings and folders. Defining this once avoids
@@ -14,11 +14,11 @@ import yaml
 # Repo root folder, derived from where THIS file lives (src/gemeinsam.py -> one level up).
 # So the scripts work no matter from which folder they are started or on whose computer.
 ROOT = Path(__file__).resolve().parent.parent
-PARAMS_DATEI = ROOT / "config" / "params.yaml"
+PARAMS_DATEI = ROOT / "params.yaml"
 
 
 def lade_params(pfad: Path = PARAMS_DATEI) -> dict:
-    """Read config/params.yaml into a nested dict, e.g. p["markt"]["zeitzone"] -> "Europe/Berlin".
+    """Read params.yaml into a nested dict, e.g. p["markt"]["zeitzone"] -> "Europe/Berlin".
     safe_load only reads plain data (no code execution from the YAML file)."""
     if not pfad.exists():
         raise FileNotFoundError(f"Konfiguration fehlt: {pfad}. Bitte aus dem Repo wiederherstellen.")
@@ -46,3 +46,12 @@ def werktage(daten: pd.DatetimeIndex, mariae_himmelfahrt: bool) -> np.ndarray:
     tage = daten.tz_localize(None).normalize()
     ist_feiertag = np.array([t.date() in feiertage for t in tage])
     return (tage.weekday < 5) & ~ist_feiertag      # weekday < 5 = Mon..Fri; "&" = and; "~" = not
+
+
+def fensterstunden(start_h: int, ende_h: int) -> list[int]:
+    """Local clock hours of a window in order; works across midnight: (22, 6) -> [22, 23, 0, 1, ..., 5].
+
+    Lives here because the load check (02_synthetisch) and the board (build_board) must agree on
+    which hours the cleaning window 22-06 Uhr contains (diary E-033)."""
+    laenge = (ende_h - start_h) % 24 or 24
+    return [(start_h + i) % 24 for i in range(laenge)]
