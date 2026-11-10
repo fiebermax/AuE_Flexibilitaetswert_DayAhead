@@ -1,5 +1,5 @@
 # KI: Claude, Zweck: Tests Ortszeit und Fenster-Kennzahl (Tag und Nacht über Mitternacht, E-036), geprüft von <Name R2> durch Review und Nachrechnen
-"""Ortszeit-Umrechnung (Sommer- und Winterzeit) und Fenster-Kennzahl (src/fensteranalyse.py)."""
+"""Ortszeit-Umrechnung (Sommer- und Winterzeit) und Fenster-Kennzahl (r2/src/fensteranalyse.py)."""
 import importlib.util
 from pathlib import Path
 

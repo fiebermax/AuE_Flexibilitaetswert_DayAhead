@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 10.11.2026
 
+### P-010 · PR #9 auf Anweisung von Max gemergt, spätere Commits ohne Review
+- **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners. Susan hat den Branch bis Commit `a0185cb` geprüft (A-012); die späteren Commits (Kommentare, Diagramme, Board, Umzug nach `r2/`, Vereinfachung E-038, E-039) hat sie nicht gesehen.
+- **Angesprochen von:** Claude, 10.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich. Vorher geprüft: jeder in Doku und Code genannte Pfad existiert (automatische Prüfung; offen sind nur geplante Ergebnisdateien von R2 bis R4), `python src/run_all.py` läuft für alle R2-Schritte durch (Abbruch erst im leeren Gerüst `03_merkmale.py` von R3, gewollt), 51 Tests grün, Daten bitgleich.
+- **Ergebnis:** PR #9 am 10.11.2026 gemergt; nachträgliches Review der Commits nach `a0185cb` durch Susan offen.
+
 ### E-039 · Repo radikal vereinfacht: weniger Dateien, flache Ordner, keine Folien per Skript
 - **Person:** Max (R2), nach Rückmeldung von Susan und A-013 (Umfang wird nicht bewertet)
 - **Entscheidung:**

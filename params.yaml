@@ -16,7 +16,7 @@ markt:
   regimewechsel: "2025-10-01"    # erster Tag mit Viertelstundenprodukten (SDAC)
   zeitzone: "Europe/Berlin"
 
-daten:                           # R2: Download und Ablage (src/01, src/02)
+daten:                           # R2: Download und Ablage (r2/src/01_download.py, r2/src/02_synthetisch.py)
   smard_basis_url: "https://www.smard.de/app/chart_data"
   aufloesungen:                  # Download ab "von" bis zeitraeume.datenstand; nur Stundenwerte (Tagebuch E-021)
     hour: "2022-01-01"

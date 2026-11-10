@@ -6,7 +6,7 @@ Stand 07.11.2026, aktualisiert 10.11.2026 auf den Reinigungsfall (E-033), Owner 
 
 K2 Stufe 5 verlangt, die Datenqualität aktiv zu prüfen statt sie nur zu beschreiben. Wir zeigen das mit einer Sensitivitätsrechnung: Wie stark hängt das Ergebnis von unseren Aufbereitungsentscheidungen und den synthetischen Annahmen ab? Zielaussage je Variante: „Die mittlere Ersparnis ändert sich um weniger als x %“ oder eben nicht.
 
-**Kein Abgleich mit ENTSO-E.** SMARD bezieht die Day-Ahead-Preise von ENTSO-E. Ein Abgleich beider wäre keine unabhängige Quelle und würde nur Übertragungsfehler finden. Den Rechen- und Übertragungsfehler-Check innerhalb von SMARD haben wir schon: das eigene Stundenmittel gegen SMARDs Stundenwert, maximal 0,005 €/MWh Abweichung (`ergebnisse/datenqualitaet.csv`).
+**Kein Abgleich mit ENTSO-E.** SMARD bezieht die Day-Ahead-Preise von ENTSO-E. Ein Abgleich beider wäre keine unabhängige Quelle und würde nur Übertragungsfehler finden. Den Rechen- und Übertragungsfehler-Check innerhalb von SMARD haben wir schon: das eigene Stundenmittel gegen SMARDs Stundenwert, maximal 0,005 €/MWh Abweichung (Commit `b68dfdb`, Tagebuch E-028).
 
 ## Vorab festlegen (vor dem ersten Rechenlauf, mit Datum ins Tagebuch)
 
@@ -60,8 +60,8 @@ Nur Stundenpreise (Tagebuch E-021). Bei Blöcken zur vollen Stunde wären 15-min
        V8:  {vertrag.bewertung_verschiebung: "proportional"}
        V9:  {kosten.nachtstunden: [22, 23, 0, 1, 2, 3, 4, 5]}
    ```
-3. **Umbau der Schritte, damit Varianten nichts überschreiben:** `cleaning.main()` und `02_synthetisch.main()` bekommen die optionalen Argumente `params` und `ausgabe_ordner`. Ohne Argumente verhalten sie sich wie heute. Varianten schreiben nach `data/sensitivitaet/<ID>/` (in `.gitignore`).
-4. **Neues Skript `src/06_sensitivitaet.py` (R2):** je Variante Parameter kopieren, Schalter setzen, Schritte 02 und 02b ausführen, R3s Backtest aufrufen, Kennzahlen sammeln. Ausgabe `ergebnisse/sensitivitaet.csv` mit den Spalten `variante`, `schalter`, `wert`, `strategie`, `periode`, `mittel_eur_woche`, `delta_eur`, `delta_pct`, `anteil_oracle`, `h0_entscheidung_gleich`, `relevant`. Der Bootstrap braucht denselben Seed wie die Basis, damit Unterschiede nicht vom Zufall kommen.
+3. **Umbau der Schritte, damit Varianten nichts überschreiben:** `cleaning.main()` und `02_synthetisch.main()` bekommen die optionalen Argumente `params` und `ausgabe_ordner`. Ohne Argumente verhalten sie sich wie heute. Varianten schreiben nach `r2/ergebnisse/sensitivitaet/<ID>/` (nicht ins Repo).gitignore`).
+4. **Neues Skript `r2/src/06_sensitivitaet.py` (R2):** je Variante Parameter kopieren, Schalter setzen, Schritte 02 und 02b ausführen, R3s Backtest aufrufen, Kennzahlen sammeln. Ausgabe `r2/ergebnisse/sensitivitaet.csv` mit den Spalten `variante`, `schalter`, `wert`, `strategie`, `periode`, `mittel_eur_woche`, `delta_eur`, `delta_pct`, `anteil_oracle`, `h0_entscheidung_gleich`, `relevant`. Der Bootstrap braucht denselben Seed wie die Basis, damit Unterschiede nicht vom Zufall kommen.
 5. **Absprache mit R3 (A-xxx, jetzt nötig):** Der Backtest muss als Funktion aufrufbar sein, z. B. `backtest(preise: DataFrame, last: DataFrame, params: dict) -> DataFrame`. Er darf selbst keine Dateien lesen, sonst kann `06_sensitivitaet.py` keine Varianten einspeisen.
 6. **Tests:**
    - Die Basis-Variante reproduziert die Basis-Ergebnisse exakt.

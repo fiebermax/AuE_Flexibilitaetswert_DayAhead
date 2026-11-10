@@ -1,5 +1,5 @@
-# KI: Claude, Zweck: Tests der Datenbereinigung (src/cleaning.py), geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
-"""Tests für src/cleaning.py: Logik an kleinen Beispielen und Annahmen über data/preise_clean.csv.
+# KI: Claude, Zweck: Tests der Datenbereinigung (r2/src/cleaning.py), geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
+"""Tests für r2/src/cleaning.py: Logik an kleinen Beispielen und Annahmen über data/preise_clean.csv.
 
 Pflicht laut Auftrag: lückenloses Raster, eindeutiger Index, tz=UTC, Spalten und Typen, Wertebereich, Flags vorhanden.
 Laufen mit `pytest tests/`.
@@ -92,7 +92,7 @@ def test_join_zaehlt_nicht_gematchte():
 # ---------------------------------------------------------------------------------------------
 # Annahmen über die bereinigte Datei
 # ---------------------------------------------------------------------------------------------
-braucht_daten = pytest.mark.skipif(not CLEAN.exists(), reason="src/cleaning.py noch nicht gelaufen")
+braucht_daten = pytest.mark.skipif(not CLEAN.exists(), reason="r2/src/cleaning.py noch nicht gelaufen")
 
 
 @pytest.fixture(scope="module")

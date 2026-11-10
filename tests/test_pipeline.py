@@ -1,5 +1,5 @@
 # KI: Claude, Zweck: Tests für Download, synthetischen Lastgang und Datenzugriff, geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
-"""Tests für src/01_download.py, src/02_synthetisch.py und src/datenzugriff.py (Bereinigung: tests/test_cleaning.py)."""
+"""Tests für r2/src/01_download.py, r2/src/02_synthetisch.py und src/datenzugriff.py (Bereinigung: tests/test_cleaning.py)."""
 import csv
 import hashlib
 import importlib.util
