@@ -1,12 +1,13 @@
 # KI: Claude, Zweck: synthetischer Lastgang (deterministisch) aus params.yaml, Reinigungsfenster über Mitternacht (E-033), geprüft von <Name R2> durch Review und pytest
 """Step 2b: synthetic load profile of the shiftable process -> data/processed/last_synth.csv.
 
-Owner: R2. Output columns exactly as in docs/schnittstellen.md: `datum`, `mwh`.
+Owner: R2. Output columns exactly as in docs/schnittstellen.md: `datum`, `mwh_gesamt`, `mwh_flexibel`.
 
 What the file says: on which calendar day the shiftable process needs how much energy.
   * Production days (last.produktionstage):
-      "taeglich"                    -> every day of the week (practice contact, diary K-005)
-      "Mo-Fr ohne Feiertage Bayern" -> only working days (earlier assumption, kept as a variant)
+      "taeglich"                    -> BASE CASE: Monday to Sunday, public holidays included
+                                       (practice contact, diary K-005, E-024)
+      "Mo-Fr ohne Feiertage Bayern" -> sensitivity variant V4 only, never the base case
   * On a production day: last.mwh_pro_tag = 8 MWh for the cleaning (CIP, 4 MW for 2 h; diary K-008, E-033).
     The value on date d belongs to the cleaning AFTER production on d, i.e. in the night d 22:00 to d+1 06:00.
 WHEN during that night the cleaning runs is NOT decided here: that is the strategies' job (R3). The block
