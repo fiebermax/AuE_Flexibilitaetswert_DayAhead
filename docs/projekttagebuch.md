@@ -6,6 +6,26 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ---
 
+## 10.11.2026
+
+### P-009 · Widerspruch Tagesverbrauch: 50 MWh (K-005) gegen 180 MWh (K-008)
+- **Problem:** Am 09.11. wurden 50 MWh pro Tag genannt (K-005), am 10.11. 180 MWh pro Tag bzw. 65 GWh pro Jahr (K-008). 65 GWh ÷ 365 = 178 MWh, der neue Wert ist also in sich stimmig. Der Spot-Anteil von 53 MWh pro Tag liegt nahe am alten Wert; vermutlich war am 09.11. der Spot-Anteil gemeint (Annahme, nicht bestätigt).
+- **Angesprochen von:** Claude bei der Prüfung von K-008, 10.11.2026
+- **Lösungsvorschlag:** 180 MWh pro Tag als Basis übernehmen; beim Kontakt kurz bestätigen lassen, ob 50 MWh der Spot-Anteil war.
+- **Entscheidung:** offen (Max)
+- **Ergebnis:** offen; `config/params.yaml` (`last.gesamtverbrauch_mwh_pro_tag: 50.0`) und `last_synth.csv` noch nicht geändert
+
+### K-008 · Termin mit dem Praxiskontakt: Zahlen, verschiebbare Lasten, Vertrag (ganzes Team)
+- **Gesprächspartner:** Kontakt beim Praxispartner; Termin von ca. 15 Minuten mit dem ganzen Team, 10.11.2026
+- **Aussagen (genannt):** Jahresverbrauch des Werks 65 GWh (P1); Tagesverbrauch 180 MWh (P2); davon rund 53 MWh pro Tag (ca. 30 %) am Day-Ahead-Markt (P3), rund 70 % zum Festpreis von 85 €/MWh, eingekauft im Januar für das Folgejahr (P4); Produktion 16 h pro Tag, 06–22 Uhr, nachts keine Volllast (P5); Reinigung (CIP) 4 MW für ca. 2 h, voll elektrisch (P6); Kälteversorgung 1 MW (P7); verschiebbar sind Kälte und Reinigung (P8); Rohmilch höchstens 36–48 h lagerfähig, muss sofort gekühlt werden (P9); nach höchstens 24 h Produktion muss gereinigt werden, laut Kontakt gesetzlich (P10); Schichtplanung Freitagmorgen für die Folgewoche (P11); Personal überwiegend Zeitarbeit, flexibel (P12); Entscheider sind der zentrale Einkauf des Konzerns und die Werksleitung (P16).
+- **Aussagen (vom Kontakt geschätzt):** Nachtzuschlag 25 % (25–30 %) (P13); Sonntagszuschlag 50 % (30–50 %) (P14); Feiertagszuschlag bis 100 % (P15).
+- **Abgeleitet (Team):** mittlere Last ca. 7,4 MW (B1); Spot-Volumen ca. 19 GWh pro Jahr (B2); Reinigungsenergie ca. 8 MWh pro Tag (B3); Prognosehorizont 3–9 Tage, weil am Freitagmorgen nur die Freitagspreise bekannt sind (B4); Nebenzeit 22–06 Uhr, davon 2 h Reinigung (B5).
+- **Annahmen des Teams (noch zu belegen):** Kälteverschiebung (Vorkühlung) 2 h, Bandbreite 0–4 h (A1); Festpreis als Forward mit Abnahmepflicht (A2); Festanteil als Band, verschobene MWh also zu 100 % am Spot bewertet, Alternative proportional × 30 % (A3, Kipp-Annahme, beide Fälle rechnen); Jahreshöchstlast darf nicht steigen (A4); §19 StromNEV als Nichtziel (A5); 3 Personen an der Reinigung, 2–4 (A6); Zeitarbeit 35 €/h, 30–45 €/h (A7).
+- **Szenarien:** S1 Basis: die Reinigung wandert innerhalb 22–06 Uhr. S2 Ausbau: der Produktionsblock verschiebt sich, z. B. in die Mittagsstunden (Grenze P9).
+- **Was sich ändert (Vorschlag, noch nicht umgesetzt):** verschiebbarer Prozess und Menge (Reinigung 8 MWh pro Tag, 2-h-Block in der Nacht statt 2 MWh im 6-h-Block am Tag); Status quo A muss neu festgelegt werden; Planung Freitagmorgen statt Freitagmittag (ändert die Datengrenze nicht, die Samstagspreise kommen erst gegen 12:45); Zuschläge für Sonntag und Feiertag neu; Stundensatz 35 statt 30 €/h; Festpreis 85 €/MWh statt `null`. Kipp-Annahme Vertrag (Kickoff) ist damit teilweise geklärt: Das Werk kauft zu 30 % spot.
+- **Offen:** Wann läuft die Reinigung heute (Status quo A)? Ist die Kälte personalgebunden oder automatisch (dann eher Tagessteuerung T)? Wie ist der Festpreisanteil vertraglich gestaltet (Band oder Profil, A3)? Bestätigung 50 gegen 180 MWh (P-009).
+- **Hinweis:** Der Standort des zentralen Einkaufs wird im Repo nicht genannt, weil er den Praxispartner identifiziert (CLAUDE.md, Kickoff).
+
 ## 09.11.2026
 
 ### P-008 · PR #8 ohne Review gemergt (auf Anweisung von Max)
