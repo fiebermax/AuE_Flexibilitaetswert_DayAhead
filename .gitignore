@@ -4,3 +4,4 @@ __pycache__/
 .venv/
 # Partnerdaten nie ins Repo
 partner/
+.pytest_cache/
