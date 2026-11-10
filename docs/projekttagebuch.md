@@ -8,12 +8,74 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 10.11.2026
 
+### K-009 · KI-Einsatz: Umstellung auf den Reinigungsfall
+- **Werkzeug:** Claude Code
+- **Zweck:** Prüfung der Praxisangaben aus K-008 (Widerspruch P-009, Ortsname des zentralen Einkaufs, der den Praxispartner identifiziert, Konflikt D1 mit E-021, Zeitumstellung im Nachtfenster); erste Schätzung im Rückblick; Umstellung von `config/params.yaml`, `src/02_synthetisch.py`, `src/gemeinsam.py` (`fensterstunden`), `src/fensteranalyse.py` (Fenster über Mitternacht, echte Stunden, Jahrestabellen, eigener Aufruf), `src/run_all.py`; 7 neue bzw. geänderte Tests; Doku (README, Kickoff, Codebook, Schnittstellen, Datenaufbereitung, Sensitivitätsplan, `docs/ki-nutzung.md`); diese Einträge im Auftrag von Max.
+- **Wie geprüft:** Entscheidungen vorab von Max (E-031 bis E-034); `pytest tests/`: 42 Tests grün; Gegenprobe: Zuordnung der Nacht zum Vortag absichtlich entfernt → 4 Tests rot; erste Schätzung (Scratchpad-Skript `nacht.py`) mit dem Repo-Code nachgerechnet, Abweichungen nur in den Umstellungsnächten (das Skript hatte sie falsch gruppiert); `preise_clean.csv` gegen den letzten Commit verglichen: nur `last_mwh_tag` und `last_mwh_flexibel_tag` geändert.
+- **Was wir geändert haben:** In der ersten Schätzung stand für 2026 eine Jahressumme, obwohl 2026 nur 303 Nächte hat (bis 31.10.); jetzt eigene Spalte `vollstaendig` und Hochrechnung auf 365 Nächte. `src/build_presentation.py` auf Anweisung von Max nicht angefasst: Folien erst am Ende, zuerst muss der Code stehen.
+- **Offen:** Max erklärt `fenster_je_tag` (Nacht über Mitternacht, echte Stunden) selbst.
+
+### A-010 · Schnittstelle R2 → R3: Reinigungsfall, Nacht über die Wochengrenze
+- **Von → an:** R2 (Max) → R3
+- **Was (Datei, Spalten, Einheit):** `last_synth.csv`: `mwh_gesamt` jetzt 180 MWh, `mwh_flexibel` 8 MWh; der Wert am Datum d gilt für die Reinigung in der Nacht d 22:00 bis d+1 06:00. Neue Schalter in `params.yaml`: `last.fenster_start_h` 22, `last.fenster_ende_h` 6, `last.status_quo_start_h` 22, `last.blocklaenge_h` 2, Block `kaelte` für T, Block `vertrag`, neue Zuschläge. Zum Wiederverwenden: `fensteranalyse.fenster_je_tag(df, 22, 6, 2, 22)` bewertet jede Nacht mit echten Stunden. **Achtung:** Die Sonntagsnacht der Zielwoche reicht bis Montag 06:00 der Folgewoche; diese Stunden fehlen in `w.zielwoche`. R3 entscheidet: mitwerten (Preise bis Montag 06:00 nachladen) oder Sonntagsnacht weglassen. Dazu die drei offenen Fragen aus A-007.
+- **Kanal und Datum:** Nachricht vorbereitet am 10.11.2026, Versand durch Max
+- **Bis:** Fr 13.11.2026
+- **Antwort R3:** offen
+- **Änderung, nachgezogen von:** `docs/schnittstellen.md`
+
+### E-037 · R2-Kennzahl neu: Mehrkosten der Reinigung 22–24 Uhr gegenüber dem billigsten 2-h-Fenster der Nacht (revidiert E-030)
+- **Person:** Max (R2), umgesetzt von Claude
+- **Entscheidung:** Je Nacht (benannt nach dem Tag, an dem sie um 22 Uhr beginnt): Mittelpreis des Status quo 22–24 Uhr minus Mittelpreis des billigsten 2-h-Blocks in 22–06 Uhr, je Saison Median und IQR in €/MWh und %, häufigste Startzeit; je Jahr Mittel, Median und € bei 8 MWh je Nacht (Summe und Hochrechnung auf 365 Nächte). Das Scratchpad-Skript `nacht.py` aus der ersten Schätzung ist als getestete Funktion in `src/fensteranalyse.py` aufgegangen (Aufruf `python src/fensteranalyse.py`, Schritt in `run_all.py`), statt als zweites Skript mit derselben Logik. Kennzeichnung: Rückblick mit bekannten Preisen, keine Strategie; € sind eine Obergrenze ohne Personal und Zuschläge und mit Annahme A3 „Band“.
+- **Verworfen:** E-030 (08–14 Uhr gegen billigstes 6-h-Fenster am Tag) passt nicht mehr zum Fall; `nacht.py` als eigenes Skript (doppelte Logik, ungetestet, falsche Gruppierung in den Umstellungsnächten, Teiljahr 2026 als Jahressumme).
+- **Ergebnis (Hypothese, kein Strategieergebnis):** 1 764 Nächte. Mehrkosten im Median Winter 16,2, Frühling 19,6, Sommer 29,6, Herbst 20,7 €/MWh; billigstes Fenster beginnt meist um 3 Uhr (38 %, 2 Uhr 27 %); genau 22–24 Uhr ist höchstens in 2,9 % der Nächte am billigsten. Obergrenze in €: 2023 rund 71 T€, 2024 58 T€, 2025 59 T€, 2026 hochgerechnet 78 T€, Krisenjahr 2022 163 T€. Bei proportionaler Bewertung (A3) rund 30 % davon.
+- **Offen:** Folien und `pptx_kit/` zeigen noch E-030; `src/build_presentation.py` bricht mit den neuen Parametern ab. Umstellung erst am Ende, wenn der Code steht (Anweisung Max).
+- **Beleg:** `src/fensteranalyse.py`, `reports/tables/reinigungsfenster_saison.csv`, `reports/tables/reinigungsfenster_jahr.csv`, Tests in `tests/test_fensteranalyse.py`
+
+### E-036 · Zeitumstellung liegt jetzt im Reinigungsfenster (revidiert E-018 und Sensitivitätsvariante V1)
+- **Person:** Max (R2), Hinweis von Claude
+- **Entscheidung:** Die Umstellung (02–03 Uhr) liegt nicht mehr außerhalb des Falls, sondern mitten im Reinigungsfenster 22–06 Uhr. Gerechnet wird mit echten Stunden (UTC, E-026): Die März-Nacht hat 7, die Oktober-Nacht 9 Stunden; ein 2-h-Block sind immer 2 echte Stunden und 8 MWh und darf in der Oktober-Nacht beide „02:00“-Stunden nutzen. Das betrifft 10 von 1 764 Nächten.
+- **Verworfen:** E-018 („kostenneutral, weil außerhalb der Betriebszeit“) gilt für die Reinigung nicht mehr; nach Ortszeit rechnen (die doppelte Stunde wäre mehrdeutig, die fehlende ein Loch im Block).
+- **Beleg:** Tests `test_umstellungsnaechte_mit_echten_stunden`, `test_block_darf_beide_oktober_zwei_uhr_stunden_nutzen`; `docs/sensitivitaet_plan.md` (V1)
+
+### E-035 · Weitere Parameter aus dem Termin vom 10.11.: Zuschläge, Stundensatz, Vertrag, Planungszeit
+- **Person:** Max (R2), nach K-008
+- **Entscheidung:** In `config/params.yaml`: Sonntagszuschlag 50 % (Bandbreite 30–50 %) und Feiertagszuschlag 100 % (geschätzt, P14, P15); Nachtzuschlag 25 % (P13, Bandbreite 25–30 %); Stundensatz 35 €/h (A7, 30–45 €/h, statt 30 €/h); 3 Personen (A6, 2–4); Festpreis 85 €/MWh (P4, statt `null`); neuer Block `vertrag` mit Spot-Anteil 30 % und Bewertung `band` (A3, Alternative `proportional` als Sensitivität V8); Planung Freitag 08:00 statt 12:00 (P11; die Datengrenze bleibt Freitag 23:00, weil die Samstagspreise erst gegen 12:45 kommen). E-021 bleibt: nur Stundenwerte; Zeile D1 der Praxistabelle („15-min ab 01.10.2025“) ist damit korrigiert. Der Standort des zentralen Einkaufs (P16) wird als „zentraler Einkauf des Konzerns“ anonymisiert.
+- **Verworfen:** 15-min-Preise für Blockstarts in Viertelstunden (E-021, Zeit); Ortsnamen im Repo (identifiziert den Praxispartner).
+- **Offen:** `kosten.nachtstunden` unverändert 23–06 Uhr. Gilt schon 22–23 Uhr als Nacht, hätte der Status quo zwei statt einer zuschlagspflichtigen Stunde (Sensitivität V9). Beim Kontakt klären.
+- **Beleg:** `config/params.yaml` (`kosten`, `vertrag`, `planung`), `docs/sensitivitaet_plan.md` (V8, V9)
+
+### E-034 · Fragestellung: „verschiebbarer Last“ statt „verschiebbarer Produktionslast“
+- **Person:** Max (R2)
+- **Entscheidung:** Neue Formulierung: „Inwiefern lässt sich der Flexibilitätswert verschiebbarer Last eines bayerischen Werks einer international tätigen Großmolkerei am Day-Ahead-Strommarkt DE-LU durch eine wöchentliche Schichtplanung realisieren, und wie verändert die Umstellung auf den Viertelstundenhandel im Oktober 2025 diesen Wert?“ Die Reinigung ist keine Produktion, aber personalgebunden und wöchentlich geplant. H0a, H0b, H0c und Bonferroni (E-005, E-006) bleiben unverändert.
+- **Verworfen:** „Produktionslast“ beibehalten (fachlich falsch für die Reinigung).
+- **Begründung:** Die Änderung erfolgt vor jeder Auswertung (es gibt noch keinen Backtest), sie passt die Frage nicht an ein Ergebnis an.
+- **Beleg:** `README.md`, `docs/kickoff.md`
+
+### E-033 · Fälle: Reinigung S1 als Hauptfall, Kälte als Kontrastfall T, S2 nur Ausblick
+- **Person:** Max (R2), nach K-008
+- **Entscheidung:** Hauptfall S1 ist die Reinigung (CIP): 4 MW für 2 h = 8 MWh pro Nacht, verschiebbar innerhalb der Nebenzeit 22–06 Uhr, an jedem Tag. Kontrastfall T ist die Kälteversorgung (1 MW, Vorkühlung 2 h, Annahme A1), die automatisch läuft und täglich mit bekannten Day-Ahead-Preisen gesteuert werden kann. S2 (Produktionsblock verschieben) nur als Ausblick, wegen der Grenze Rohmilch (P9) und der Zuschläge. In `params.yaml`: `last.mwh_pro_tag` 8,0 (statt Platzhalter 2,0), `last.blocklaenge_h` 2 (statt 6), neu `last.prozess`, `last.fenster_start_h` 22, `last.fenster_ende_h` 6; neuer Block `kaelte`. `02_synthetisch` prüft, dass das Fenster nicht in der Produktion liegt und der Block hineinpasst.
+- **Verworfen:** 2 MWh im 6-h-Block am Tag (Platzhalter ohne Praxisbezug); S2 als Hauptfall (größerer Hebel, aber Rohmilch, Lastspitze A4 und Zuschläge nicht in der Zeit zu modellieren); Kälte als Hauptfall (nicht personalgebunden, passt nicht zur wöchentlichen Schichtplanung).
+- **Beleg:** `config/params.yaml` (`last`, `kaelte`), `src/02_synthetisch.py`, Tests `test_last_unsinnige_parameter_werden_abgelehnt`, `test_basisfall_reinigung_ist_gueltig`
+
+### E-032 · Tagesverbrauch 180 MWh (löst P-009)
+- **Person:** Max (R2)
+- **Entscheidung:** `last.gesamtverbrauch_mwh_pro_tag` 180,0 (Praxiskontakt 10.11.2026, 65 GWh/a). Die 50 MWh aus K-005 waren ein Platzhalter und sind ersetzt.
+- **Verworfen:** 50 MWh beibehalten (passt nicht zu 65 GWh/a).
+- **Beleg:** `config/params.yaml`, `data/processed/last_synth.csv`, Spalte `last_mwh_tag` in `preise_clean.csv`
+
+### E-031 · Status quo A: Reinigung 22–24 Uhr
+- **Person:** Max (R2)
+- **Entscheidung:** Status quo A ist die Reinigung direkt nach Produktionsende, 22–24 Uhr (`last.status_quo_start_h: 22`). **Annahme**, vom Praxiskontakt nicht bestätigt.
+- **Verworfen:** 08–14 Uhr (Status quo des alten Falls, E-030); ein Status quo später in der Nacht (ohne Beleg; je später, desto kleiner der Flexibilitätswert).
+- **Begründung:** Naheliegender Ablauf nach Produktionsende; Kipp-Annahme: Läuft die Reinigung heute schon um 2–4 Uhr, ist der Flexibilitätswert von S1 fast null. Beim Kontakt bestätigen lassen.
+- **Beleg:** `config/params.yaml`, `src/02_synthetisch.py` (Prüfung Status quo im Fenster)
+
 ### P-009 · Widerspruch Tagesverbrauch: 50 MWh (K-005) gegen 180 MWh (K-008)
 - **Problem:** Am 09.11. wurden 50 MWh pro Tag genannt (K-005), am 10.11. 180 MWh pro Tag bzw. 65 GWh pro Jahr (K-008). 65 GWh ÷ 365 = 178 MWh, der neue Wert ist also in sich stimmig. Der Spot-Anteil von 53 MWh pro Tag liegt nahe am alten Wert; vermutlich war am 09.11. der Spot-Anteil gemeint (Annahme, nicht bestätigt).
 - **Angesprochen von:** Claude bei der Prüfung von K-008, 10.11.2026
 - **Lösungsvorschlag:** 180 MWh pro Tag als Basis übernehmen; beim Kontakt kurz bestätigen lassen, ob 50 MWh der Spot-Anteil war.
-- **Entscheidung:** offen (Max)
-- **Ergebnis:** offen; `config/params.yaml` (`last.gesamtverbrauch_mwh_pro_tag: 50.0`) und `last_synth.csv` noch nicht geändert
+- **Entscheidung:** Max, 10.11.2026: 180 MWh gelten (Praxiskontakt); die 50 MWh waren ein Platzhalter und werden ersetzt (E-032).
+- **Ergebnis:** `config/params.yaml` und `last_synth.csv` umgestellt (E-032).
 
 ### K-008 · Termin mit dem Praxiskontakt: Zahlen, verschiebbare Lasten, Vertrag (ganzes Team)
 - **Gesprächspartner:** Kontakt beim Praxispartner; Termin von ca. 15 Minuten mit dem ganzen Team, 10.11.2026
