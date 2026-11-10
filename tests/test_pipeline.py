@@ -52,10 +52,18 @@ def test_last_taeglich_inklusive_feiertage_und_variante():
 
 
 def test_last_unsinnige_parameter_werden_abgelehnt():
-    for feld, wert in [("mwh_pro_tag", 0), ("mwh_pro_tag", 60), ("blocklaenge_h", 17), ("produktionstage", "Mo-Sa"),
-                       ("status_quo_start_h", 20), ("betrieb_ende_h", 5)]:
+    # 200 MWh > 180 MWh plant; 9 h > 8-h window; 12 Uhr is production time; 05-07 Uhr runs past 06 Uhr;
+    # window 20-06 Uhr overlaps production until 22 Uhr
+    for feld, wert in [("mwh_pro_tag", 0), ("mwh_pro_tag", 200), ("blocklaenge_h", 9), ("produktionstage", "Mo-Sa"),
+                       ("status_quo_start_h", 12), ("status_quo_start_h", 5), ("fenster_start_h", 20),
+                       ("fenster_ende_h", 24), ("betrieb_ende_h", 5)]:
         with pytest.raises(syn.LastFehler):
             syn.pruefe_parameter({**PARAMS["last"], feld: wert})
+
+
+def test_basisfall_reinigung_ist_gueltig():
+    syn.pruefe_parameter(PARAMS["last"])                                   # must not raise
+    assert syn.fensterstunden(22, 6) == [22, 23, 0, 1, 2, 3, 4, 5]
 
 
 def test_bekannt_bis_haengt_an_der_planungsuhrzeit():
