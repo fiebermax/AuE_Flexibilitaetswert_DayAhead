@@ -1,6 +1,6 @@
 # Datenqualität (erzeugt)
 
-Erzeugt von `src/cleaning.py`. Methode und Begründung: `docs/datenaufbereitung.md`. Schritte und Zählungen: `cleaning_log.md`.
+Erzeugt von `r2/src/cleaning.py`. Methode und Begründung: `r2/docs/datenaufbereitung.md`. Schritte und Zählungen: `cleaning_log.md`.
 
 ## Überblick
 

@@ -8,6 +8,19 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 10.11.2026
 
+### E-038 · Eigener Ordner `r2/` für alles, was nur R2 betrifft (revidiert E-023)
+- **Person:** Max (R2), auf Rückmeldung von Susan („viel zu unübersichtlich, zu komplex“)
+- **Entscheidung:** Nur R2-eigene Dateien wandern nach `r2/`: `r2/src/` (`01_download.py`, `02_synthetisch.py`, `cleaning.py`, `fensteranalyse.py`, `build_board.py`, `build_presentation.py`), `r2/reports/` (vorher `reports/`), `r2/docs/` (`architektur.md`, `datenaufbereitung.md`, `datenkatalog.md`, `sensitivitaet_plan.md`), `r2/output/`, `r2/pptx_kit/`. Für alle bleiben oben: `data/processed/`, `config/`, `src/` (`preisabfrage.py`, `datenzugriff.py`, `gemeinsam.py`, `run_all.py`, Gerüste R3/R4), `docs/` (Tagebuch, Schnittstellen, Codebook, Kickoff, Belegmatrix, KI-Nutzung), `tests/`. Leere Platzhalter (`notebooks/`, `.gitkeep` in `data/`) entfernt. README beginnt jetzt mit einer Tabelle „welche Datei, was steht drin, wer braucht sie“.
+- **Verworfen:** alles in `src/` und `docs/` lassen (für das Team nicht zu überblicken); Rollenordner für alle vier Rollen (Grund aus E-023 gilt weiter: zusätzliche Struktur ohne Nutzen für die anderen).
+- **Hinweis:** Ältere Tagebucheinträge nennen die alten Pfade (`src/cleaning.py`, `reports/…`, `docs/datenaufbereitung.md`); gemeint sind jetzt die gleichnamigen Dateien unter `r2/`.
+- **Beleg:** `README.md` (Abschnitt „Wo was liegt“), `src/run_all.py`, `config/params.yaml` (`cleaning.reports: r2/reports`); 51 Tests grün nach dem Umzug; `preise_clean.csv` unverändert.
+
+### K-011 · KI-Einsatz: Kommentare, Diagramme, Board, Aufräumen
+- **Werkzeug:** Claude Code
+- **Zweck:** Erklärende Kommentare an den schwierigen Stellen in `cleaning.py`, `datenzugriff.py`, `fensteranalyse.py`, `01_download.py` (Verhalten unverändert); Diagramm-Dokument `r2/docs/architektur.md` (Workflow, Bereinigung, Reinigungsfenster, Planungsfreitag, Dateien; Begriffe aus dem Statistischen Grundlagenwerk Teil 4: deskriptive Analytik, DMAIC-Phase Measure, Workflow-Knoten); Board `r2/reports/board.html`, erzeugt von `r2/src/build_board.py` aus den Repo-Daten; Umzug nach `r2/` (E-038).
+- **Wie geprüft:** `pytest tests/`: 51 grün nach jedem Schritt; `preise_clean.csv` nach dem erneuten Lauf bitgleich; Pipeline-Schritte aus den neuen Pfaden ausgeführt.
+- **Offen:** Max geht `r2/docs/architektur.md` mit dem Code durch (Sperrkriterium Erklärbarkeit); `r2/src/build_presentation.py` nur bei den Pfaden angepasst, inhaltlich weiter alter Stand.
+
 ### A-012 · Review durch Susan: PR #6 bis #8 und Branch vom 10.11.2026
 - **Von → an:** Susan → Max (R2); weitergegeben von Max im Chat mit Claude Code
 - **Was:** Susan hat die ohne Review gemergten PRs #6, #7 und #8 nachträglich geprüft und den aktuellen Stand des Branches `claude/friendly-ramanujan-6ej4do` (Reinigungsfall, Preisabfrage, Commits `a57ec82` bis `a0185cb`) gegengeprüft („double checked“). Damit sind die offenen Reviews aus P-006, P-007 und P-008 erledigt.

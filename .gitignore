@@ -12,4 +12,4 @@ results/tables/*
 # Partnerdaten nie ins Repo
 partner/
 # gerenderte Prüfbilder der Folien (werden mit --render neu erzeugt)
-output/render/
+r2/output/render/

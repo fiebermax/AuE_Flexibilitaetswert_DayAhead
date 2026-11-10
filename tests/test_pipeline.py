@@ -20,7 +20,9 @@ WECHSEL = pd.Timestamp(PARAMS["markt"]["regimewechsel"]).tz_localize(TZ)
 
 
 def _lade_modul(name):
-    spec = importlib.util.spec_from_file_location(name, ROOT / "src" / f"{name}.py")
+    # R2's pipeline steps live in r2/src/, shared modules in src/ (diary E-038)
+    ordner = ROOT / "src" if (ROOT / "src" / f"{name}.py").exists() else ROOT / "r2" / "src"
+    spec = importlib.util.spec_from_file_location(name, ordner / f"{name}.py")
     modul = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(modul)
     return modul

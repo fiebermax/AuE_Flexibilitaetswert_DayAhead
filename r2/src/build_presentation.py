@@ -1,11 +1,11 @@
 # KI: Claude, Zweck: Folien R2 und pptx_kit reproduzierbar aus dem Repo erzeugen, geprüft von <Name R2> durch Sichtprüfung der gerenderten Folien und Zahlenprüfung
-"""Builds output/R2_Datenanalyse.pptx and pptx_kit/ from the repository. One command:
+"""Builds r2/output/R2_Datenanalyse.pptx and r2/pptx_kit/ from the repository. One command:
 
-    python src/build_presentation.py            # build + number check
-    python src/build_presentation.py --render   # additionally render slides to PNG (needs LibreOffice)
+    python r2/src/build_presentation.py            # build + number check
+    python r2/src/build_presentation.py --render   # additionally render slides to PNG (needs LibreOffice)
 
-Every number on the slides and in the speaker notes comes from pptx_kit/key_figures.json, which this
-script computes from data/processed/, reports/ and config/params.yaml. A check at the end stops the
+Every number on the slides and in the speaker notes comes from r2/pptx_kit/key_figures.json, which this
+script computes from data/processed/, r2/reports/ and config/params.yaml. A check at the end stops the
 build if a slide contains a number that is not in key_figures.json (D5: labels such as R2, K5, H0c and
 the slide number are exempt).
 
@@ -26,7 +26,9 @@ from pptx.dml.color import RGBColor                  # noqa: E402
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR      # noqa: E402
 from pptx.util import Inches, Pt                     # noqa: E402
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+# R2's own scripts live in r2/src/, the shared helpers (gemeinsam.py) in src/ (diary E-038).
+_HIER = Path(__file__).resolve().parent
+sys.path[:0] = [str(_HIER), str(_HIER.parents[1] / "src")]
 from gemeinsam import ROOT, lade_params, pfad       # noqa: E402
 import fensteranalyse as fa                          # noqa: E402
 
@@ -45,8 +47,8 @@ SAISON_NAME = {"Winter": "Winter", "Fruehling": "Frühling", "Sommer": "Sommer",
 AUTOR = "Max · R2 Datenanalyse & IT"
 QUELLE_PREISE = "Quelle: Bundesnetzagentur | SMARD.de, Day-Ahead DE-LU, CC BY 4.0; eigene Berechnung"
 
-OUTPUT = ROOT / "output" / "R2_Datenanalyse.pptx"
-KIT = ROOT / "pptx_kit"
+OUTPUT = ROOT / "r2" / "output" / "R2_Datenanalyse.pptx"
+KIT = ROOT / "r2" / "pptx_kit"
 FIG = KIT / "figures"
 
 
@@ -70,7 +72,7 @@ def git_hash(datei: str) -> str:
 
 
 class Kennzahlen:
-    """The single source of all numbers (pptx_kit/key_figures.json)."""
+    """The single source of all numbers (r2/pptx_kit/key_figures.json)."""
 
     def __init__(self):
         self.daten = {}
@@ -92,7 +94,7 @@ class Kennzahlen:
 # 1) Key figures
 # ---------------------------------------------------------------------------------------------
 def lies_cleaning_log() -> pd.DataFrame:
-    zeilen = [z for z in (ROOT / "reports" / "cleaning_log.md").read_text(encoding="utf-8").splitlines()
+    zeilen = [z for z in (ROOT / "r2" / "reports" / "cleaning_log.md").read_text(encoding="utf-8").splitlines()
               if re.match(r"\| \d+ ", z)]
     teile = [[t.strip() for t in z.strip("|").split(" | ")] for z in zeilen]
     return pd.DataFrame(teile, columns=["schritt", "regel", "vorher", "nachher", "betroffen", "begruendung"])
@@ -106,7 +108,7 @@ def anzahl_tests() -> int:
 
 def berechne_kennzahlen(p: dict) -> tuple[Kennzahlen, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     k = Kennzahlen()
-    L, CL, PA, FA = "config/params.yaml", "src/cleaning.py", "src/01_download.py", "src/fensteranalyse.py"
+    L, CL, PA, FA = "config/params.yaml", "r2/src/cleaning.py", "r2/src/01_download.py", "r2/src/fensteranalyse.py"
     start = pd.Timestamp(p["daten"]["aufloesungen"]["hour"])
     ende = pd.Timestamp(p["zeitraeume"]["datenstand"])
     zr = f"{start:%d.%m.%Y}–{ende:%d.%m.%Y}"
@@ -245,7 +247,7 @@ def grafiken(k: Kennzahlen, d: pd.DataFrame, tage_f: pd.DataFrame, js: pd.DataFr
     ax.set_xlim(0, max(nachher[1:]) * 1.05); ax.set_xlabel("Anzahl Zeilen (Stunden)")
     ax.set_title("Bereinigung: Zeilen nach jedem Schritt (Achse ab 0)", fontsize=11, loc="left")
     ax.spines[["top", "right"]].set_visible(False)
-    fig.tight_layout(rect=(0, 0.04, 1, 1)); _speichern(fig, "bereinigung_trichter", "Quelle: reports/cleaning_log.md (src/cleaning.py); Preise: Bundesnetzagentur | SMARD.de, CC BY 4.0")
+    fig.tight_layout(rect=(0, 0.04, 1, 1)); _speichern(fig, "bereinigung_trichter", "Quelle: r2/reports/cleaning_log.md (r2/src/cleaning.py); Preise: Bundesnetzagentur | SMARD.de, CC BY 4.0")
 
     # Daily profile per season (local time)
     last = p["last"]
@@ -372,7 +374,7 @@ def folien(k: Kennzahlen) -> Presentation:
     # b) Problematik
     s = _rahmen(prs, 2, "R2 · b) Problematik",
                 "Die Rohdaten sind vollständig – die Fallstricke liegen in Zeit, Auflösung und Extremwerten",
-                QUELLE_PREISE + "; reports/cleaning_log.md")
+                QUELLE_PREISE + "; r2/reports/cleaning_log.md")
     _text(s, 0.5, 1.95, 5.9, 4.9, [
         f"{k('n_clean')} Stunden: {k('luecken')} Lücken, {k('dubletten')} Dubletten; {k('randstunden')} Randstunden außerhalb des Zeitraums entfernt",
         f"Zeitumstellung: {k('tage_23h')} Tage mit {k('stunden_23')}, {k('tage_25h')} mit {k('stunden_25')} – UTC als Schlüssel, nichts gemittelt",
@@ -395,7 +397,7 @@ def folien(k: Kennzahlen) -> Presentation:
     w = "Winter"; so = "Sommer"
     s = _rahmen(prs, 3, "R2 · c) Methode & Ergebnis",
                 f"Im Sommer kostet das Status-quo-Fenster {k('status_quo')} im Median {k('mk_median_eur_mwh_Sommer')} €/MWh mehr als das billigste Fenster",
-                QUELLE_PREISE + "; src/fensteranalyse.py")
+                QUELLE_PREISE + "; r2/src/fensteranalyse.py")
     _badge(s, 0.75, 1.85, 5.4, "Rückblick mit bekannten Preisen, keine Strategie")
     _text(s, 0.5, 2.35, 5.9, 4.6, [
         "Mehrkosten in €/MWh, Median (IQR): " + " · ".join(
@@ -495,36 +497,36 @@ def defense_qa(k: Kennzahlen) -> str:
     fragen = [
         ("Woher stammen die Daten, und dürft ihr sie nutzen?",
          f"Day-Ahead-Großhandelspreise DE-LU von {k('quelle')} (Filter {k('filter')}), Lizenz {k('lizenz')}: Nutzung und Weitergabe mit Namensnennung erlaubt. {k('rohdateien')} Wochendateien, abgerufen am {k('abrufdatum')}.",
-         f"`data/raw/MANIFEST.md`, `src/01_download.py` (Commit {h('src/01_download.py')})"),
+         f"`data/raw/MANIFEST.md`, `r2/src/01_download.py` (Commit {h('r2/src/01_download.py')})"),
         ("Woher weißt du, dass die Rohdaten nicht verändert wurden?",
          f"Jede Rohdatei hat eine {k('pruefsumme')}-Prüfsumme aus dem Abruf. Jeder Lauf und ein Test vergleichen sie; eine geänderte Zahl bricht den Lauf ab.",
          f"`data/raw/smard/manifest.csv`, Test `test_rohdaten_unveraendert` (Commit {h('tests/test_pipeline.py')})"),
         ("Wie behandelst du die Zeitumstellung?",
          f"Schlüssel ist UTC. Dort gibt es keine doppelten oder fehlenden Stunden; die doppelte Oktober-Stunde sind zwei verschiedene UTC-Stunden mit eigenem Preis, nichts wird gemittelt. Lokal gibt es {k('tage_23h')} Tage mit {k('stunden_23')} und {k('tage_25h')} mit {k('stunden_25')}; sie liegen nachts, außerhalb der Betriebszeit {k('betriebszeit')}.",
-         f"`reports/tables/zeitumstellung.csv`, Tagebuch E-026, `src/cleaning.py` (Commit {h('src/cleaning.py')})"),
+         f"`r2/reports/tables/zeitumstellung.csv`, Tagebuch E-026, `r2/src/cleaning.py` (Commit {h('r2/src/cleaning.py')})"),
         ("Warum löschst du keine Ausreißer?",
          f"Day-Ahead-Preise sind Auktionsergebnisse, keine Messwerte. Extreme Preise sind echt, und gerade die billigen Stunden tragen den Flexibilitätswert. Deshalb werden {k('geflaggt')} auffällige Preise ({k('geflaggt_pct')}) nur markiert, mit robustem z-Wert (Median/MAD) statt ±3 Standardabweichungen.",
-         "`docs/datenaufbereitung.md` Abschnitt 4, Tagebuch E-025, `reports/tables/ausreisser.csv`"),
+         "`r2/docs/datenaufbereitung.md` Abschnitt 4, Tagebuch E-025, `r2/reports/tables/ausreisser.csv`"),
         ("Wie hast du die Umstellung auf Viertelstunden behandelt?",
          f"Seit {k('regimewechsel')} handelt die Börse in Viertelstunden. Wir nutzen einheitlich {k('aufloesung')}: den Stundenwert, den SMARD aus den vier Viertelstunden bildet. Bei Blöcken zur vollen Stunde ist das kostengleich.",
          "Tagebuch E-021, E-028; Quelle NEMO Committee (2025)"),
         ("Warum keine zweite, unabhängige Preisquelle?",
          "SMARD bezieht die Day-Ahead-Preise von ENTSO-E. Ein Abgleich wäre keine unabhängige Prüfung. Die Datenqualität prüfen wir stattdessen aktiv über die Sensitivitätsrechnung.",
-         "Tagebuch E-015, `docs/sensitivitaet_plan.md`"),
+         "Tagebuch E-015, `r2/docs/sensitivitaet_plan.md`"),
         ("Warum 2,0 MWh verschiebbar?",
          f"Ehrlich: Das ist ein Platzhalter. Der Praxiskontakt hat uns den Gesamtverbrauch ({k('verbrauch_gesamt')}), die Betriebszeit ({k('betriebszeit')}) und die flexiblen Prozesse genannt, aber noch keine Menge für den verschiebbaren Teil. Bis Prozess und Menge feststehen, bleibt {k('verbrauch_flexibel')} als Annahme stehen und ist überall so gekennzeichnet. Die Ersparnis in Euro skaliert damit linear; der Anteil am erreichbaren Optimum hängt nicht davon ab. Die Sensitivitätsrechnung zeigt die Wirkung anderer Mengen.",
          "`config/params.yaml` (`last.mwh_pro_tag`), Tagebuch K-005, E-024"),
         ("Ist eure Mehrkosten-Kennzahl nicht ein Blick in die Zukunft?",
          "Ja, bewusst: Sie ist ein Rückblick mit bekannten Preisen und zeigt nur, wie groß der Spielraum ist. Sie ist keine Strategie und steht so auf der Folie. Die Strategien im Backtest bekommen über `src/datenzugriff.py` nur Daten bis zum jeweiligen Freitag, und `flag_outlier` wird dort entfernt.",
-         "`src/fensteranalyse.py`, `src/datenzugriff.py`, Test `test_kein_look_ahead_in_allen_planungswochen`"),
+         "`r2/src/fensteranalyse.py`, `src/datenzugriff.py`, Test `test_kein_look_ahead_in_allen_planungswochen`"),
         ("Warum sind die Prozentwerte so breit gestreut?",
          f"Mittags liegen die Preise im Frühling und Sommer oft nahe null. Prozent = Mehrkosten geteilt durch einen sehr kleinen Preis, das wird instabil; an {k('mk_ohne_pct_Sommer')} Sommertagen war das billigste Fenster sogar null oder negativ, dort gibt es keinen Prozentwert. Deshalb argumentieren wir in €/MWh (Sommer Median {k('mk_median_eur_mwh_Sommer')} €/MWh).",
-         "`src/fensteranalyse.py`, `pptx_kit/key_figures.json`"),
+         "`r2/src/fensteranalyse.py`, `r2/pptx_kit/key_figures.json`"),
         ("Was hat die KI gemacht, und was hast du selbst entschieden?",
          "Claude Code hat Code, Tests und Doku geschrieben. Ich habe vorher jeweils einen Plan freigegeben und die fachlichen Entscheidungen getroffen (UTC statt Mitteln, nur markieren statt löschen, CSV, Kennzahl Mehrkosten, Annahmen). Alles ist im Tagebuch und in `docs/ki-nutzung.md` gekennzeichnet; den Code erkläre ich selbst.",
          "`docs/ki-nutzung.md`, Tagebuch A-008, K-006, A-009"),
     ]
-    text = "# Verteidigung R2: wahrscheinliche Prüferfragen\n\nErzeugt von `src/build_presentation.py`; Zahlen aus `key_figures.json`.\n\n"
+    text = "# Verteidigung R2: wahrscheinliche Prüferfragen\n\nErzeugt von `r2/src/build_presentation.py`; Zahlen aus `key_figures.json`.\n\n"
     for i, (f, a, b) in enumerate(fragen, 1):
         text += f"## {i}. {f}\n\n{a}\n\n**Beleg:** {b}\n\n"
     return text
@@ -533,7 +535,7 @@ def defense_qa(k: Kennzahlen) -> str:
 def sources_md(k: Kennzahlen) -> str:
     return f"""# Quellen und KI-Einsatz (R2)
 
-Erzeugt von `src/build_presentation.py`.
+Erzeugt von `r2/src/build_presentation.py`.
 
 ## Daten
 
@@ -552,11 +554,11 @@ Erzeugt von `src/build_presentation.py`.
 
 ## Methodische Literatur
 
-Siehe `docs/datenaufbereitung.md` (Wang & Strong 1996; Tukey 1977; Hampel 1974; Iglewicz & Hoaglin 1993; Leys et al. 2013; Janczura et al. 2013; Weron 2014).
+Siehe `r2/docs/datenaufbereitung.md` (Wang & Strong 1996; Tukey 1977; Hampel 1974; Iglewicz & Hoaglin 1993; Leys et al. 2013; Janczura et al. 2013; Weron 2014).
 
 ## KI-Einsatz
 
-**Wofür Claude Code genutzt wurde:** Programmcode (`src/01_download.py`, `src/02_synthetisch.py`, `src/cleaning.py`, `src/datenzugriff.py`, `src/fensteranalyse.py`, `src/build_presentation.py`), Tests, Dokumentation (Codebook, Aufbereitungsprotokoll, Schnittstellen), Quellenrecherche zu Preisgrenzen und zur Viertelstunden-Umstellung, Entwürfe für Tagebucheinträge, diese Folien.
+**Wofür Claude Code genutzt wurde:** Programmcode (`r2/src/01_download.py`, `r2/src/02_synthetisch.py`, `r2/src/cleaning.py`, `src/datenzugriff.py`, `r2/src/fensteranalyse.py`, `r2/src/build_presentation.py`), Tests, Dokumentation (Codebook, Aufbereitungsprotokoll, Schnittstellen), Quellenrecherche zu Preisgrenzen und zur Viertelstunden-Umstellung, Entwürfe für Tagebucheinträge, diese Folien.
 
 **Was ich (Max, R2) entschieden und geprüft habe:**
 - Pläne vor jedem größeren Schritt freigegeben (Tagebuch A-008, A-009).

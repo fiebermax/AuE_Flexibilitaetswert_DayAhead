@@ -19,7 +19,7 @@ CLEAN = ROOT / PARAMS["daten"]["pfade"]["processed"] / "preise_clean.csv"
 SPALTEN = ["ts_utc", "ts_lokal", "datum_lokal", "stunde_lokal", "wochentag", "saison", "preis_eur_mwh", "regime",
            "werktag", "in_betriebszeit", "last_mwh_tag", "last_mwh_flexibel_tag", "imputed", "flag_outlier"]
 
-spec = importlib.util.spec_from_file_location("cleaning", ROOT / "src" / "cleaning.py")
+spec = importlib.util.spec_from_file_location("cleaning", ROOT / "r2" / "src" / "cleaning.py")
 cl = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cl)
 

@@ -508,7 +508,7 @@ aue-strom/
 ├─ data/raw/<quelle>/   # unverändert, nie überschreiben
 │  └─ SOURCES.md        # URL, Abrufdatum, Lizenz, Namensnennung, SHA256
 ├─ data/interim/  data/processed/
-├─ src/01_download.py … 05_bewertung.py
+├─ r2/src/01_download.py … 05_bewertung.py
 ├─ tests/               # 24 h pro Tag, keine Lücken, Preisbereich, kein Look-ahead
 ├─ notebooks/           # nur Exploration
 ├─ results/figures/  results/tables/

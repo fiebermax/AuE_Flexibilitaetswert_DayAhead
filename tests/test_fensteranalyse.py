@@ -11,7 +11,7 @@ TZ = "Europe/Berlin"
 
 
 def _modul(name):
-    spec = importlib.util.spec_from_file_location(name, ROOT / "src" / f"{name}.py")
+    spec = importlib.util.spec_from_file_location(name, ROOT / "r2" / "src" / f"{name}.py")
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     return m

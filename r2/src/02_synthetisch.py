@@ -18,7 +18,7 @@ modulo 24. The whole plant uses last.gesamtverbrauch_mwh_pro_tag (180 MWh); that
 Deterministic on purpose (no random numbers): a random day-to-day fluctuation would hit all strategies
 equally (each week is compared under all strategies), so it would not change which strategy is cheaper,
 but it would add a parameter nobody can check. Uncertainty about the amount is handled by the
-sensitivity analysis over mwh_pro_tag and blocklaenge_h (docs/sensitivitaet_plan.md).
+sensitivity analysis over mwh_pro_tag and blocklaenge_h (r2/docs/sensitivitaet_plan.md).
 
 The night of the clock change has 7 (March) or 9 (October) real hours; the strategies count real hours
 (UTC), so a 2-hour block is always 2 hours of work and 8 MWh (diary E-036).
@@ -28,7 +28,9 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+# R2's own scripts live in r2/src/, the shared helpers (gemeinsam.py) in src/ (diary E-038).
+_HIER = Path(__file__).resolve().parent
+sys.path[:0] = [str(_HIER), str(_HIER.parents[1] / "src")]
 from gemeinsam import fensterstunden, lade_params, pfad, werktage  # noqa: E402
 
 SPALTEN = ["datum", "mwh_gesamt", "mwh_flexibel"]   # exactly as in docs/schnittstellen.md / docs/codebook.md

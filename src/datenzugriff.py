@@ -54,7 +54,7 @@ class Planungswoche:
 # Loading (thin wrappers, so R3 never has to know paths)
 # ---------------------------------------------------------------------------------------------
 def lade_preise(params: dict | None = None) -> pd.DataFrame:
-    """Load preise_clean.csv (src/cleaning.py) and add `zeit` = the UTC hour in German time.
+    """Load preise_clean.csv (r2/src/cleaning.py) and add `zeit` = the UTC hour in German time.
 
     Key of the file is ts_utc. `zeit` is only a convenience for date logic in local time; it stays
     unique because it keeps the UTC offset (the two October 02:00 hours are +02:00 and +01:00).

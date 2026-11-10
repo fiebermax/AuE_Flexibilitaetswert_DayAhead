@@ -34,7 +34,9 @@ from urllib3.util.retry import Retry
 
 # Make "src/" importable so we can use our shared helper module gemeinsam.py,
 # no matter from which folder the script is started.
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+# R2's own scripts live in r2/src/, the shared helpers (gemeinsam.py) in src/ (diary E-038).
+_HIER = Path(__file__).resolve().parent
+sys.path[:0] = [str(_HIER), str(_HIER.parents[1] / "src")]
 from gemeinsam import ROOT, lade_params, pfad  # noqa: E402
 
 # Column order of manifest.csv. One row per downloaded file.
@@ -44,7 +46,7 @@ MANIFEST_SPALTEN = [
 ]
 # The script rewrites only the text between these two markers in SOURCES.md; everything else
 # in that file (written by hand) stays untouched.
-MARKER_START = "<!-- manifest:start (automatisch von src/01_download.py erzeugt, nicht von Hand ändern) -->"
+MARKER_START = "<!-- manifest:start (automatisch von r2/src/01_download.py erzeugt, nicht von Hand ändern) -->"
 MARKER_ENDE = "<!-- manifest:ende -->"
 
 
@@ -212,7 +214,7 @@ def aktualisiere_sources(sources: Path, manifest: list[dict], manifest_datei: Pa
 def schreibe_manifest_md(ziel: Path, manifest: list[dict]) -> None:
     """Human-readable list of every raw file: file, source, URL, retrieval date, licence, SHA-256."""
     zeilen = ["# Manifest der Rohdaten", "",
-              "Automatisch erzeugt von `src/01_download.py` aus `smard/manifest.csv`. `data/raw/` wird nur gelesen, nie überschrieben.",
+              "Automatisch erzeugt von `r2/src/01_download.py` aus `smard/manifest.csv`. `data/raw/` wird nur gelesen, nie überschrieben.",
               "Lizenz aller Dateien: CC BY 4.0, Namensnennung „Bundesnetzagentur | SMARD.de“.", "",
               "| Datei | Quelle | URL | Abrufdatum (UTC) | Lizenz | SHA-256 |", "| --- | --- | --- | --- | --- | --- |"]
     for z in sorted((z for z in manifest if z["status"] == "aktiv"), key=lambda z: z["datei"]):
@@ -337,7 +339,7 @@ def main() -> None:
     print(f"Download: {neu} neu geladen, {vorhanden} bereits vorhanden ({'offline' if session is None else 'online'}).")
 
 
-# Runs only when the file is started directly (python src/01_download.py) or via run_all.py,
+# Runs only when the file is started directly (python r2/src/01_download.py) or via run_all.py,
 # not when the tests import it to check single functions.
 if __name__ == "__main__":
     try:
