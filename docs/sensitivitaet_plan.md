@@ -1,6 +1,6 @@
 # Plan: Sensitivitätsrechnung (K2 Stufe 5)
 
-Stand 07.11.2026, Owner R2. Abgestimmt mit R3 über Tagebuch A-003 (Antwort offen). **Nur Plan, noch nicht gerechnet**: Es fehlt der Backtest von R3 (`src/04_strategien.py`).
+Stand 07.11.2026, aktualisiert 10.11.2026 auf den Reinigungsfall (E-033), Owner R2. Abgestimmt mit R3 über Tagebuch A-003 (Antwort offen). **Nur Plan, noch nicht gerechnet**: Es fehlt der Backtest von R3 (`src/04_strategien.py`).
 
 ## Ziel
 
@@ -21,12 +21,14 @@ Die Varianten sind keine neuen Hypothesentests. Es entstehen keine zusätzlichen
 
 | ID | Was | Basis | Variante(n) | Schalter in `params.yaml` | Betroffen | Erwartung (Annahme) |
 | --- | --- | --- | --- | --- | --- | --- |
-| V1 | Zeitumstellung | — | **entfällt** | — | — | Mit `ts_utc` als Schlüssel wird nichts gemittelt oder aufgefüllt (E-026); 02–03 Uhr liegt außerhalb der Betriebszeit 06–22 Uhr |
+| V1 | Zeitumstellung | — | **entfällt** | — | — | Mit `ts_utc` als Schlüssel wird nichts gemittelt oder aufgefüllt (E-026). Die Umstellung liegt im Reinigungsfenster 22–06 Uhr; gerechnet wird mit echten Stunden (7 bzw. 9 h je Nacht, E-036), keine Variante nötig |
 | V2 | Auffällige Preise | alle Stunden | Auswertung ohne Stunden mit `flag_outlier` (Daten bleiben unverändert) | Filter in `06_sensitivitaet.py` | Auswertung | zeigt, ob das Ergebnis an wenigen Extremstunden hängt (E-025) |
 | V3 | Feiertagskalender | ohne Mariä Himmelfahrt | mit Mariä Himmelfahrt (15.08.) | `last.feiertagsvariante_mariae_himmelfahrt` | nur Spalte `werktag` der Preise (Produktion läuft täglich) | voraussichtlich 0 für die Kosten; nur relevant für Strategien, die `werktag` nutzen |
 | V4 | Produktionstage | täglich (Praxiskontakt) | Mo–Fr ohne Feiertage | `last.produktionstage` | `02_synthetisch` | zeigt, wie stark das Ergebnis an der Wochenendproduktion hängt |
-| V6 | verschiebbare Menge (synthetisch) | 2,0 MWh/Tag | 1,0 · 4,0 · 8,0 | `last.mwh_pro_tag` | `02_synthetisch` | €/Woche skaliert linear, Anteil am Oracle bleibt gleich (rechnerisch, als Kontrolle) |
-| V7 | Blocklänge (synthetisch) | 6 h | 4 h · 8 h | `last.blocklaenge_h` | R3 (Blockkosten-Matrix) | nicht trivial: kurze Blöcke treffen das Preistal besser |
+| V6 | verschiebbare Menge (Reinigung) | 8,0 MWh/Tag (4 MW × 2 h) | 4,0 · 12,0 | `last.mwh_pro_tag` | `02_synthetisch` | €/Woche skaliert linear, Anteil am Oracle bleibt gleich (rechnerisch, als Kontrolle) |
+| V7 | Dauer der Reinigung | 2 h | 1 h · 3 h · 4 h (Energie bleibt 8 MWh) | `last.blocklaenge_h` | R3 (Blockkosten-Matrix) | nicht trivial: kurze Blöcke treffen das Preistal besser |
+| V8 | Bewertung der verschobenen Menge (Kipp-Annahme A3) | Band: 100 % zum Spotpreis | proportional: 30 % (`vertrag.spot_anteil`) | `vertrag.bewertung_verschiebung` | R3, R4 | Ersparnis in € sinkt auf 30 %; ob H0a kippt, hängt an den Personal- und Zuschlagskosten |
+| V9 | Nachtstunden des Zuschlags | 23–06 Uhr | 22–06 Uhr | `kosten.nachtstunden` | R3, R4 | Status quo 22–24 Uhr hätte dann zwei statt einer zuschlagspflichtigen Stunde (offen, E-035) |
 
 V6 und V7 sind laut Kickoff Pflicht für K2 Stufe 5: Synthetische Daten lassen sich nicht gegen die Wirklichkeit prüfen, also prüfen wir, wie stark das Ergebnis von ihren Parametern abhängt.
 
@@ -50,10 +52,13 @@ Nur Stundenpreise (Tagebuch E-021). Bei Blöcken zur vollen Stunde wären 15-min
        V2:  {auswertung.ohne_flag_outlier: true}
        V3:  {last.feiertagsvariante_mariae_himmelfahrt: true}
        V4:  {last.produktionstage: "Mo-Fr ohne Feiertage Bayern"}
-       V6a: {last.mwh_pro_tag: 1.0}
-       V6b: {last.mwh_pro_tag: 4.0}
-       V7a: {last.blocklaenge_h: 4}
-       V7b: {last.blocklaenge_h: 8}
+       V6a: {last.mwh_pro_tag: 4.0}
+       V6b: {last.mwh_pro_tag: 12.0}
+       V7a: {last.blocklaenge_h: 1}
+       V7b: {last.blocklaenge_h: 3}
+       V7c: {last.blocklaenge_h: 4}
+       V8:  {vertrag.bewertung_verschiebung: "proportional"}
+       V9:  {kosten.nachtstunden: [22, 23, 0, 1, 2, 3, 4, 5]}
    ```
 3. **Umbau der Schritte, damit Varianten nichts überschreiben:** `cleaning.main()` und `02_synthetisch.main()` bekommen die optionalen Argumente `params` und `ausgabe_ordner`. Ohne Argumente verhalten sie sich wie heute. Varianten schreiben nach `data/processed/sensitivitaet/<ID>/` (in `.gitignore`).
 4. **Neues Skript `src/06_sensitivitaet.py` (R2):** je Variante Parameter kopieren, Schalter setzen, Schritte 02 und 02b ausführen, R3s Backtest aufrufen, Kennzahlen sammeln. Ausgabe `results/tables/sensitivitaet.csv` mit den Spalten `variante`, `schalter`, `wert`, `strategie`, `periode`, `mittel_eur_woche`, `delta_eur`, `delta_pct`, `anteil_oracle`, `h0_entscheidung_gleich`, `relevant`. Der Bootstrap braucht denselben Seed wie die Basis, damit Unterschiede nicht vom Zufall kommen.
@@ -62,7 +67,7 @@ Nur Stundenpreise (Tagebuch E-021). Bei Blöcken zur vollen Stunde wären 15-min
    - Die Basis-Variante reproduziert die Basis-Ergebnisse exakt.
    - Jede Variante ändert ihren Schalter tatsächlich, sonst wäre sie eine stille Nullvariante.
    - V6 skaliert die €/Woche linear und lässt den Anteil am Oracle gleich, als Plausibilitätskontrolle.
-   - Zeitumstellung liegt außerhalb der Betriebszeit (`test_lokale_tage_23_24_25_stunden`).
+   - Umstellungsnächte werden mit echten Stunden gerechnet (`test_umstellungsnaechte_mit_echten_stunden`).
 
 ## Zeitplan und Aufwand (Schätzung)
 

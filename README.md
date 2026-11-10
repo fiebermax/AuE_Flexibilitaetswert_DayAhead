@@ -2,7 +2,7 @@
 
 Modul Analyse und Entscheidungsfindung, Hochschule München, WS 26/27. Team aus 4 Personen.
 
-**Worum es geht:** Eine Großmolkerei in Bayern kauft Strom zum Day-Ahead-Preis, der jede Stunde anders ist und erst am Vortag feststeht. Die Schichten werden aber schon freitags für die ganze Woche geplant. Wir spielen mit echten Preisen von 2022 bis 2026 nach, wie viel Geld sie gespart hätte, wenn sie ihre stromintensive Produktion jeden Freitag in die voraussichtlich billigsten Stunden gelegt hätte.
+**Worum es geht:** Eine Großmolkerei in Bayern kauft Strom zum Day-Ahead-Preis, der jede Stunde anders ist und erst am Vortag feststeht. Die Schichten werden aber schon freitags für die ganze Woche geplant. Wir spielen mit echten Preisen von 2022 bis 2026 nach, wie viel Geld sie gespart hätte, wenn sie die stromintensive Reinigung der Anlagen (4 MW für 2 Stunden pro Nacht) jeden Freitag in die voraussichtlich billigsten Nachtstunden zwischen 22 und 6 Uhr gelegt hätte, statt sie direkt nach Produktionsende um 22 Uhr zu starten.
 
 ## Daten ansehen (ohne das Repo zu kennen)
 
@@ -11,7 +11,7 @@ Alle fertigen Daten liegen als **CSV** in `data/processed/`. Öffnen mit Excel o
 | Datei | Inhalt |
 | --- | --- |
 | [`data/processed/preise_clean.csv`](data/processed/preise_clean.csv) | bereinigter Strompreis für jede Stunde, 01.01.2022 bis 31.10.2026, mit Uhrzeit, Saison, Werktag, Betriebszeit, Verbrauch |
-| [`data/processed/last_synth.csv`](data/processed/last_synth.csv) | Stromverbrauch des Werks pro Tag (50 MWh) und verschiebbarer Anteil (Platzhalter) |
+| [`data/processed/last_synth.csv`](data/processed/last_synth.csv) | Stromverbrauch des Werks pro Tag (180 MWh) und verschiebbarer Anteil (Reinigung, 8 MWh) |
 | [`reports/data_quality.md`](reports/data_quality.md) | Kennzahlen und Grafiken zur Datenqualität |
 | [`reports/cleaning_log.md`](reports/cleaning_log.md) | jeder Bereinigungsschritt mit Zeilenzahl vorher/nachher |
 
@@ -38,7 +38,7 @@ Jede Spalte erklärt: [`docs/codebook.md`](docs/codebook.md).
 
 ## Fragestellung und Hypothesen
 
-Inwiefern lässt sich der Flexibilitätswert verschiebbarer Produktionslast eines bayerischen Werks einer international tätigen Großmolkerei am Day-Ahead-Strommarkt DE-LU durch eine wöchentliche Schichtplanung realisieren, und wie verändert die Umstellung auf den Viertelstundenhandel im Oktober 2025 diesen Wert?
+Inwiefern lässt sich der Flexibilitätswert verschiebbarer Last eines bayerischen Werks einer international tätigen Großmolkerei am Day-Ahead-Strommarkt DE-LU durch eine wöchentliche Schichtplanung realisieren, und wie verändert die Umstellung auf den Viertelstundenhandel im Oktober 2025 diesen Wert?
 
 - **H0a:** Nach Zuschlägen und Umstellungskosten ist die Netto-Ersparnis gegenüber dem Status quo nicht größer als null.
 - **H0b:** Eine wöchentliche Preisprognose realisiert nicht mehr vom Wert als eine feste Zeitregel.
@@ -59,5 +59,5 @@ Für neue Daten nur `zeitraeume.datenstand` in `config/params.yaml` ändern.
 ## Daten, Lizenzen, KI
 
 - Day-Ahead-Großhandelspreise DE-LU: **Bundesnetzagentur | SMARD.de**, Lizenz CC BY 4.0.
-- Verbrauch und Betriebszeit: Angaben des Praxiskontakts (Interview 09.11.2026); verschiebbarer Anteil und Kosten: **synthetisch** (Annahmen in `config/params.yaml`). Keine internen Unternehmensdaten, keine personenbezogenen Daten.
+- Verbrauch, Betriebszeit, Reinigung, Vertrag und Zuschläge: Angaben des Praxiskontakts (Interview 09.11.2026, Termin 10.11.2026; Zuschläge geschätzt); Status quo, Personal, Stundensatz und Umstellungskosten: **Annahmen des Teams** (alle in `config/params.yaml`). Keine internen Unternehmensdaten, keine personenbezogenen Daten.
 - KI-Einsatz ist gekennzeichnet: Dateikopf, Commit-Trailer `AI-Assisted: Claude`, [`docs/ki-nutzung.md`](docs/ki-nutzung.md).

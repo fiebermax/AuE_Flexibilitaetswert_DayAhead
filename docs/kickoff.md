@@ -6,11 +6,13 @@ Nov 6, 2026 · @maxl
 
 Zwei Etappen: nächste Woche stellen wir Case und Rollen vor, ab der Woche des 20.11. laufen die Endpräsentationen. Die Analyse muss bis So 15.11. stehen. Ziel ist Stufe 5 in K1 bis K10. Der Semesterplan aus dem Katalog (W2 bis W14) gilt für uns nicht.
 
-**Fragestellung:** Inwiefern lässt sich der Flexibilitätswert verschiebbarer Produktionslast eines bayerischen Werks einer international tätigen Großmolkerei am Day-Ahead-Strommarkt DE-LU durch eine wöchentliche Schichtplanung realisieren, und wie verändert die Umstellung auf den Viertelstundenhandel im Oktober 2025 diesen Wert?
+**Fragestellung:** Inwiefern lässt sich der Flexibilitätswert verschiebbarer Last eines bayerischen Werks einer international tätigen Großmolkerei am Day-Ahead-Strommarkt DE-LU durch eine wöchentliche Schichtplanung realisieren, und wie verändert die Umstellung auf den Viertelstundenhandel im Oktober 2025 diesen Wert?
 
 *Eine Backtest-Analyse auf Basis der SMARD-Marktdaten 2022 bis 2026 (Datenstand Oktober 2026).*
 
-**Praxisfall:** Eine personalgebundene, zeitlich verschiebbare Produktionslast einer Großmolkerei in Bayern, angelehnt an einen realen Praxispartner (Name nur mit schriftlicher Freigabe). Welcher Prozess das konkret ist, klärt Max mit seinem Kontakt dort (Head of Electrician). Betrieb, Lastmenge und Uhrzeiten stehen im Problem Statement und im Testdesign, nicht in der Frage.
+**Praxisfall:** Eine personalgebundene, zeitlich verschiebbare Last einer Großmolkerei in Bayern, angelehnt an einen realen Praxispartner (Name nur mit schriftlicher Freigabe). Seit dem Termin mit dem Praxiskontakt am 10.11.2026 (Tagebuch K-008, E-031 bis E-034): Hauptfall S1 ist die Reinigung der Anlagen (CIP, 4 MW für 2 h = 8 MWh pro Tag), die innerhalb der Nebenzeit 22–06 Uhr verschoben wird; Status quo A ist 22–24 Uhr. Kontrastfall T ist die Kälteversorgung (1 MW, automatisch, täglich steuerbar); S2 (Produktionsblock verschieben) nur Ausblick. Betrieb, Lastmenge und Uhrzeiten stehen im Problem Statement und im Testdesign, nicht in der Frage.
+
+> **Hinweis:** Beispiele weiter unten (08–14 Uhr, 2 MWh im 6-h-Block, Mittagsblock) stammen aus der Planung vor dem 10.11.2026 und gelten nicht mehr. Maßgeblich sind `config/params.yaml` und die Tagebucheinträge ab E-031.
 
 **Warum Oktober 2025:** Am 01.10.2025 wurde der Day-Ahead-Handel von Stunden- auf Viertelstundenprodukte umgestellt (SDAC). Daten bis 30.09.2025 stammen aus dem Stundenregime, ab 01.10.2025 aus dem Viertelstundenregime. Mit Datenstand Oktober 2026 liegt genau ein Jahr im neuen Regime vor, also alle vier Jahreszeiten.
 

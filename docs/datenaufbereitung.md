@@ -104,15 +104,17 @@ Verglichen wird jede Stunde nur mit vergleichbaren Stunden: **gleiches Jahr, gle
 | --- | --- | --- |
 | Produktionstage | an jedem Tag, auch an Feiertagen | Praxiskontakt, Interview 09.11.2026 (K-005) |
 | Betriebszeit | 06–22 Uhr, 16 h | Praxiskontakt (K-003, K-005) |
-| Verbrauch Werk | 50 MWh pro Tag | Praxiskontakt, Interview (K-005) |
-| verschiebbarer Anteil | 2 MWh pro Tag im 6-h-Block | **Platzhalter**, Prozess und Menge noch festzulegen (K-005) |
+| Verbrauch Werk | 180 MWh pro Tag (65 GWh/a) | Praxiskontakt, Termin 10.11.2026 (K-008, E-032) |
+| verschiebbarer Anteil | Reinigung (CIP): 4 MW × 2 h = 8 MWh pro Tag, im Fenster 22–06 Uhr | Praxiskontakt (K-008, E-033) |
+| Status quo A | Reinigung 22–24 Uhr, direkt nach Produktionsende | **Annahme** des Teams (E-031) |
 
 Synthetische Daten lassen sich nicht gegen die Wirklichkeit prüfen. Deshalb deterministisch (kein Zufall) und Sensitivität über Menge und Blocklänge (E-016).
 
 ## 7. Grenzen
 
 - Nur Stundenpreise; ab 10/2025 bleibt Potenzial der Viertelstunden ungenutzt (E-021).
-- Verschiebbare Menge ist eine Annahme, bis der Prozess feststeht.
+- Status quo der Reinigung (22–24 Uhr) ist eine Annahme, nicht vom Praxiskontakt bestätigt (E-031).
+- Die Zeitumstellung liegt jetzt im Reinigungsfenster: Nächte mit 7 bzw. 9 Stunden, Blöcke über echte Stunden (E-036).
 - Keine unabhängige zweite Preisquelle (E-015).
 - Ausreißer-Kennzeichnung hängt von der Vergleichsgruppe und der Schwelle ab; deshalb nur markieren.
 
