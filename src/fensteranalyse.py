@@ -47,7 +47,7 @@ def fenster_je_tag(df: pd.DataFrame, fenster_start: int, fenster_ende: int, bloc
         im_fenster = (h >= fenster_start) | (h < fenster_ende)
     else:
         im_fenster = (h >= fenster_start) & (h < fenster_ende)
-    d = d[im_fenster].sort_values("ts_utc")
+    d = d[im_fenster].sort_values("ts_utc")                          # real time order (UTC), not clock order
 
     # Name each window after the day it starts: hours after midnight move back one calendar day.
     datum = pd.to_datetime(d["datum_lokal"])
@@ -63,6 +63,8 @@ def fenster_je_tag(df: pd.DataFrame, fenster_start: int, fenster_ende: int, bloc
         if not lueckenlos or stunden[0] != fenster_start or stunden[-1] != letzte_stunde:
             continue                                                  # incomplete window at the data edge
         preis = g["preis_eur_mwh"].to_numpy()
+        # Slide a window of block_h consecutive real hours over the night: 8-hour night, 2-hour block
+        # -> 7 candidate blocks (start 22, 23, 0, ..., 4). Mean price of each block = cost per MWh.
         mittel = [preis[i:i + block_h].mean() for i in range(len(preis) - block_h + 1)]
         i_min = min(range(len(mittel)), key=mittel.__getitem__)       # earliest start if prices tie
         i_sq = list(stunden).index(status_quo_start)                  # first hour with the status quo clock time

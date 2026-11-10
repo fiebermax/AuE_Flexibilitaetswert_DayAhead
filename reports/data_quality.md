@@ -7,7 +7,7 @@ Erzeugt von `src/cleaning.py`. Methode und Begründung: `docs/datenaufbereitung.
 - Stunden (UTC): 42360 von 31.12.2021 23:00 bis 31.10.2026 22:00 UTC
 - Lücken: 0 · imputiert: 0 · auffällig markiert: 1827 (4.3 %)
 - Stunden mit negativem Preis: 1862 (4.4 %)
-- Zeitumstellungstage: 10 (je Jahr ein Tag mit 23 und einer mit 25 Stunden, immer sonntags; 02:00 bis 03:00 Uhr liegt außerhalb der Betriebszeit)
+- Zeitumstellungstage: 10 (je Jahr ein Tag mit 23 und einer mit 25 Stunden, immer sonntags; 02:00 bis 03:00 Uhr liegt außerhalb der Produktion, aber im Reinigungsfenster 22–06 Uhr: diese Nächte haben 7 bzw. 9 Stunden, Tagebuch E-036)
 
 ## Kennzahlen je Jahr (EUR/MWh)
 

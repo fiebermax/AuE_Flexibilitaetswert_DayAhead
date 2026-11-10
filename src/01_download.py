@@ -250,7 +250,8 @@ def main() -> None:
     session = None
     neu, vorhanden = 0, 0
 
-    # --- Outer loop: one pass per resolution ("hour" from 2022, "quarterhour" from 10/2025) ---
+    # --- Outer loop: one pass per resolution. Today only "hour" from 2022 (diary E-021: hourly prices only;
+    #     the quarter-hour files are no longer downloaded). The loop stays so a resolution can be added back.
     for aufl, von in p["daten"]["aufloesungen"].items():
         beginn, ende = benoetigter_zeitraum(von, datenstand, tz)
         ordner = raw / "smard" / str(filt) / aufl

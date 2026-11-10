@@ -47,7 +47,11 @@ class CleaningFehler(RuntimeError):
 
 
 class Log:
-    """Collects one row per cleaning step for reports/cleaning_log.md."""
+    """Collects one row per cleaning step for reports/cleaning_log.md.
+
+    Why: every step must be traceable for K2/K5 ("how many rows before and after, and why?").
+    The log is the evidence that nothing was removed or changed silently.
+    """
 
     def __init__(self):
         self.zeilen = []
@@ -77,9 +81,12 @@ def pruefe_rohdaten(raw: Path) -> list[dict]:
 
 def lies_roh(raw: Path, dateien: list[dict]) -> pd.DataFrame:
     """Stack all weekly files. Each holds "series": [[unix_ms, price], ...]; null becomes NaN."""
+    # One small table per weekly file, then all stacked below each other (concat).
     teile = [pd.DataFrame(json.loads((raw / z["datei"]).read_bytes())["series"], columns=["ms", "preis_eur_mwh"])
              for z in dateien]
     df = pd.concat(teile, ignore_index=True)
+    # SMARD counts time in milliseconds since 1970 (UTC). Converting to a UTC timestamp gives every hour
+    # exactly one unique name, even on clock-change days (see principle "key is UTC" above).
     df["ts_utc"] = pd.to_datetime(df["ms"], unit="ms", utc=True)
     df["preis_eur_mwh"] = df["preis_eur_mwh"].astype(float)
     return df[["ts_utc", "preis_eur_mwh"]]
@@ -88,7 +95,9 @@ def lies_roh(raw: Path, dateien: list[dict]) -> pd.DataFrame:
 def dubletten(df: pd.DataFrame) -> tuple[pd.DataFrame, int, int]:
     """Split duplicates into exact (same time, same price: keep one) and contradicting (same time,
     different price: stop and ask, because we cannot know which value is right)."""
+    # keep=False marks ALL copies of a doubled timestamp, not just the second one.
     mehrfach = df[df["ts_utc"].duplicated(keep=False)]
+    # Per doubled timestamp: how many DIFFERENT prices? 1 = harmless copy, >1 = contradiction.
     widerspruch = mehrfach.groupby("ts_utc")["preis_eur_mwh"].nunique(dropna=False)
     n_widerspruch = int((widerspruch > 1).sum())
     if n_widerspruch:
@@ -106,9 +115,13 @@ def intervall_laengen(df: pd.DataFrame) -> pd.Series:
 def raster_und_luecken(df: pd.DataFrame, beginn_utc: pd.Timestamp, ende_utc: pd.Timestamp) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Lay the data onto the complete expected UTC hour grid. Missing hours become rows with an empty
     price (visible, not filled). Returns the gridded table and a list of gaps (start, length in hours)."""
+    # The "should" list: every UTC hour of the period. A left join keeps every hour of this list;
+    # an hour without a price in SMARD's data shows up as an empty price instead of disappearing.
     raster = pd.date_range(beginn_utc, ende_utc, freq="h", inclusive="left", tz="UTC")
     out = pd.DataFrame({"ts_utc": raster}).merge(df, on="ts_utc", how="left")
     fehlt = out["preis_eur_mwh"].isna()
+    # Group consecutive missing hours into one gap: the counter goes up whenever "missing" switches
+    # on or off, so all hours of one gap share the same number (classic run-length trick).
     block = (fehlt != fehlt.shift()).cumsum()
     luecken = (out[fehlt].groupby(block[fehlt])["ts_utc"].agg(["min", "count"])
                .rename(columns={"min": "beginn_utc", "count": "laenge_h"}).reset_index(drop=True))
@@ -126,6 +139,7 @@ def zeitspalten(df: pd.DataFrame, tz: str, wechsel: pd.Timestamp, mariae: bool) 
     out["stunde_lokal"] = lokal.dt.hour
     out["wochentag"] = lokal.dt.dayofweek            # 0 = Monday ... 6 = Sunday
     out["saison"] = lokal.dt.month.map(SAISON)
+    # Market regime: hourly auction until 30.09.2025, quarter-hour auction from 01.10.2025 (needed for H0c).
     out["regime"] = np.where(out["ts_utc"] >= wechsel.tz_convert("UTC"), "viertel", "stunde")
     out["werktag"] = werktage(pd.DatetimeIndex(lokal), mariae)
     return out
@@ -140,6 +154,8 @@ def zeitumstellungstage(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def ausserhalb_preisgrenzen(df: pd.DataFrame, minimum: float, maximum: float) -> pd.DataFrame:
+    """Prices outside the exchange's technical limits (-500 / +5 000 EUR/MWh). Such a price cannot come
+    out of the auction, so it would be a data error. We do not fix it ourselves: main() stops and asks."""
     p = df["preis_eur_mwh"]
     return df[p.notna() & ((p < minimum) | (p > maximum))]
 
@@ -150,7 +166,10 @@ def robuster_z(werte: pd.Series) -> pd.Series:
     median = werte.median()
     mad = (werte - median).abs().median()
     if not mad or np.isnan(mad):
+        # MAD = 0 means more than half of the values are identical: no scale to compare with,
+        # so no hour of this group is flagged (instead of dividing by zero).
         return pd.Series(np.nan, index=werte.index)
+    # 0.6745 rescales the MAD so that the value is comparable with an ordinary z-score for normal data.
     return 0.6745 * (werte - median) / mad
 
 
@@ -158,6 +177,9 @@ def flagge_ausreisser(df: pd.DataFrame, schwelle: float) -> tuple[pd.DataFrame, 
     """flag_outlier = |modified z| > schwelle, compared within the same local year, month and hour.
     Only a flag: no value is changed or removed. Uses the whole month -> description only (look-ahead)."""
     lokal = df["ts_lokal"]
+    # Compare like with like: a 13:00 price in July 2025 only with the other 13:00 prices of July 2025.
+    # Otherwise every sunny noon hour would look "conspicuous" against the night hours.
+    # transform() returns one z-value per row, in the original order.
     z = df.groupby([lokal.dt.year, lokal.dt.month, df["stunde_lokal"]])["preis_eur_mwh"].transform(robuster_z)
     out = df.copy()
     out["flag_outlier"] = (z.abs() > schwelle).fillna(False).astype(bool)
@@ -167,9 +189,13 @@ def flagge_ausreisser(df: pd.DataFrame, schwelle: float) -> tuple[pd.DataFrame, 
 def join_last(df: pd.DataFrame, last: pd.DataFrame, start_h: int, ende_h: int) -> tuple[pd.DataFrame, int, int]:
     """Attach the daily load (synthetic, last_synth.csv) to every hour of the same local date.
     Key: local date derived from the UTC timestamp. Returns the table, unmatched price rows and unmatched
-    load days. in_betriebszeit marks the operating hours (06-22 Uhr local)."""
+    load days. in_betriebszeit marks the production hours (06-22 Uhr local); the other 8 hours are the
+    cleaning window of case S1 (diary E-033). The load value of date d belongs to the cleaning in the
+    night starting at d 22:00, see src/02_synthetisch.py."""
     l = last.rename(columns={"datum": "datum_lokal", "mwh_gesamt": "last_mwh_tag",
                              "mwh_flexibel": "last_mwh_flexibel_tag"})[["datum_lokal", "last_mwh_tag", "last_mwh_flexibel_tag"]]
+    # validate="many_to_one": many hours per date, but at most one load row per date. If the load file
+    # ever had a date twice, pandas stops here instead of silently doubling hours.
     out = df.merge(l, on="datum_lokal", how="left", validate="many_to_one")
     ohne_last = int(out["last_mwh_tag"].isna().sum())
     ohne_preis = int((~l["datum_lokal"].isin(df["datum_lokal"])).sum())
@@ -223,7 +249,7 @@ def grafiken(df: pd.DataFrame, ordner: Path) -> list[str]:
     for saison, farbe in [("Winter", "#2f6db5"), ("Fruehling", "#3b8a5a"), ("Sommer", "#c47a00"), ("Herbst", "#b5483a")]:
         prof = df[df["saison"] == saison].groupby("stunde_lokal")["preis_eur_mwh"].median()
         ax.plot(prof.index, prof.to_numpy(), marker="o", markersize=3, label=saison, color=farbe)
-    ax.axvspan(6, 22, color="#999", alpha=0.08, label="Betriebszeit 06-22 Uhr")
+    ax.axvspan(6, 22, color="#999", alpha=0.08, label="Produktion 06-22 Uhr (Rest: Reinigungsfenster)")
     ax.set_xticks(range(0, 24, 2)); ax.set_xlabel("Stunde (deutsche Zeit)"); ax.set_ylabel("Median EUR/MWh")
     ax.set_title("Tagesprofil je Saison: Median des Preises je Uhrzeit, 2022 bis 10/2026")
     ax.legend(frameon=False, fontsize=8)
@@ -243,6 +269,8 @@ def main() -> pd.DataFrame:
     (reports / "tables").mkdir(parents=True, exist_ok=True)
     log = Log()
 
+    # Period as half-open interval [beginn, ende) in German time: ende = 00:00 on the day after the
+    # data cut-off, so the last day is complete and nothing needs "23:59" tricks.
     beginn = pd.Timestamp(p["daten"]["aufloesungen"]["hour"]).tz_localize(tz)
     ende = (pd.Timestamp(p["zeitraeume"]["datenstand"]) + pd.Timedelta(days=1)).tz_localize(tz)
     wechsel = pd.Timestamp(p["markt"]["regimewechsel"]).tz_localize(tz)
@@ -315,6 +343,8 @@ def main() -> pd.DataFrame:
     log.schritt("9 Join Last", "Schlüssel: lokales Datum aus UTC-Zeitstempel; last_synth.csv (synthetisch)", vorher, len(df),
                 ohne_last + ohne_preis, f"{ohne_last} Preisstunden ohne Last, {ohne_preis} Lasttage ohne Preis")
 
+    # Write the result. Timestamps become text with an explicit time zone ("Z" = UTC, "+01:00" local),
+    # so Excel and pandas read the same moment and the October double hour stays distinguishable.
     df = df[SPALTEN]
     out = df.copy()
     out["ts_utc"] = out["ts_utc"].dt.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -353,7 +383,7 @@ Erzeugt von `src/cleaning.py`. Methode und Begründung: `docs/datenaufbereitung.
 - Stunden (UTC): {len(df)} von {df['ts_utc'].min():%d.%m.%Y %H:%M} bis {df['ts_utc'].max():%d.%m.%Y %H:%M} UTC
 - Lücken: {len(luecken)} · imputiert: {int(df['imputed'].sum())} · auffällig markiert: {int(df['flag_outlier'].sum())} ({100 * df['flag_outlier'].mean():.1f} %)
 - Stunden mit negativem Preis: {int((df['preis_eur_mwh'] < 0).sum())} ({100 * (df['preis_eur_mwh'] < 0).mean():.1f} %)
-- Zeitumstellungstage: {len(zu)} (je Jahr ein Tag mit 23 und einer mit 25 Stunden, immer sonntags; 02:00 bis 03:00 Uhr liegt außerhalb der Betriebszeit)
+- Zeitumstellungstage: {len(zu)} (je Jahr ein Tag mit 23 und einer mit 25 Stunden, immer sonntags; 02:00 bis 03:00 Uhr liegt außerhalb der Produktion, aber im Reinigungsfenster 22–06 Uhr: diese Nächte haben 7 bzw. 9 Stunden, Tagebuch E-036)
 
 ## Kennzahlen je Jahr (EUR/MWh)
 
