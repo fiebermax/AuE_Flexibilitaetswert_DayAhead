@@ -1,6 +1,6 @@
 # Datenaufbereitung und Datenqualität (R2)
 
-Stand 09.11.2026 · Owner R2 (Max) · Grundlage für Bericht Kapitel 3 (K2) und 4 (K3). Code: `r2/src/01_download.py`, `r2/src/02_synthetisch.py`, `r2/src/cleaning.py`. Zählungen je Schritt: `r2/ergebnisse/cleaning_log.md`; Kennzahlen und Grafiken: `r2/ergebnisse/data_quality.md`; Spalten: `docs/codebook.md`. Jede Entscheidung steht mit verworfener Alternative im Projekttagebuch (E-Nummer in Klammern).
+Stand 09.11.2026 · Owner R2 (Max) · Grundlage für Bericht Kapitel 3 (K2) und 4 (K3). Code: `src/01_download.py`, `src/02_synthetisch.py`, `src/cleaning.py`. Zählungen je Schritt: `r2/ergebnisse/cleaning_log.md`; Kennzahlen und Grafiken: `r2/ergebnisse/data_quality.md`; Spalten: `docs/codebook.md`. Jede Entscheidung steht mit verworfener Alternative im Projekttagebuch (E-Nummer in Klammern).
 
 > Begriffe aus dem Kursmaterial (Statistik-Grundlagenwerk, Rheinlack-Fallstudie) haben Vorrang. Vor dem Bericht prüfen, ob dort andere Bezeichnungen für Skalenniveaus, Ausreißer oder Datenqualität verwendet werden, und angleichen.
 

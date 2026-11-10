@@ -1,5 +1,5 @@
 # KI: Claude, Zweck: Tests für Download, synthetischen Lastgang und Datenzugriff, geprüft von <Name R2> durch Review und absichtlich eingebaute Fehler
-"""Tests für r2/src/01_download.py, r2/src/02_synthetisch.py und src/datenzugriff.py (Bereinigung: tests/test_cleaning.py)."""
+"""Tests für src/01_download.py, src/02_synthetisch.py und src/datenzugriff.py (Bereinigung: tests/test_cleaning.py)."""
 import csv
 import hashlib
 import importlib.util
@@ -20,9 +20,7 @@ WECHSEL = pd.Timestamp(PARAMS["markt"]["regimewechsel"]).tz_localize(TZ)
 
 
 def _lade_modul(name):
-    # R2's pipeline steps live in r2/src/, shared modules in src/ (diary E-038)
-    ordner = ROOT / "src" if (ROOT / "src" / f"{name}.py").exists() else ROOT / "r2" / "src"
-    spec = importlib.util.spec_from_file_location(name, ordner / f"{name}.py")
+    spec = importlib.util.spec_from_file_location(name, ROOT / "src" / f"{name}.py")
     modul = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(modul)
     return modul

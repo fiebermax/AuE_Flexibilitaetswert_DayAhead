@@ -16,7 +16,7 @@ markt:
   regimewechsel: "2025-10-01"    # erster Tag mit Viertelstundenprodukten (SDAC)
   zeitzone: "Europe/Berlin"
 
-daten:                           # R2: Download und Ablage (r2/src/01_download.py, r2/src/02_synthetisch.py)
+daten:                           # R2: Download und Ablage (src/01_download.py, src/02_synthetisch.py)
   smard_basis_url: "https://www.smard.de/app/chart_data"
   aufloesungen:                  # Download ab "von" bis zeitraeume.datenstand; nur Stundenwerte (Tagebuch E-021)
     hour: "2022-01-01"
@@ -27,7 +27,7 @@ daten:                           # R2: Download und Ablage (r2/src/01_download.p
   http_versuche: 5               # Retry bei Verbindungsfehlern
   http_timeout_s: 30
 
-cleaning:                        # R2: r2/src/cleaning.py (Tagebuch E-024 bis E-029)
+cleaning:                        # R2: src/cleaning.py (Tagebuch E-024 bis E-029)
   reports: "r2/ergebnisse"
   preis_min_eur_mwh: -500        # SDAC-Preisgrenzen; Minimum -500 im ganzen Zeitraum
   preis_max_eur_mwh: 5000        # Maximum war 2022-2026 zwischen +3000 und +5000; weitester Wert (Quellen: r2/docs/datenaufbereitung.md)

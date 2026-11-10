@@ -1,5 +1,5 @@
 # KI: Claude, Zweck: Tests Ortszeit und Fenster-Kennzahl (Tag und Nacht über Mitternacht, E-036), geprüft von <Name R2> durch Review und Nachrechnen
-"""Ortszeit-Umrechnung (Sommer- und Winterzeit) und Fenster-Kennzahl (r2/src/fensteranalyse.py)."""
+"""Ortszeit-Umrechnung (Sommer- und Winterzeit) und Fenster-Kennzahl (src/fensteranalyse.py)."""
 import importlib.util
 from pathlib import Path
 
@@ -11,7 +11,7 @@ TZ = "Europe/Berlin"
 
 
 def _modul(name):
-    spec = importlib.util.spec_from_file_location(name, ROOT / "r2" / "src" / f"{name}.py")
+    spec = importlib.util.spec_from_file_location(name, ROOT / "src" / f"{name}.py")
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     return m

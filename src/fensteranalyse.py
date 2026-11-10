@@ -22,7 +22,7 @@ Why real hours: blocks are consecutive UTC hours (E-026, E-036). In the October 
 02:00 twice; a 2-hour cleaning is still 2 hours of work and 8 MWh, so a block may cover both "02:00".
 Window boundaries are LOCAL hours (stunde_lokal), never UTC: shifts follow the clock in the plant.
 
-Run directly (`python r2/src/fensteranalyse.py`) to write the tables in r2/ergebnisse/ (diary E-037).
+Run directly (`python src/fensteranalyse.py`) to write the tables in r2/ergebnisse/ (diary E-037).
 """
 import sys
 from pathlib import Path
@@ -118,9 +118,7 @@ def kennzahlen_je_jahr(tage: pd.DataFrame, mwh_pro_tag: float) -> pd.DataFrame:
 
 def main() -> None:
     """Write the look-back tables for the cleaning window (reproduces the first estimate of 10.11.2026)."""
-    # R2's own scripts live in r2/src/, the shared helpers (gemeinsam.py) in src/ (diary E-038).
-    _HIER = Path(__file__).resolve().parent
-    sys.path[:0] = [str(_HIER), str(_HIER.parents[1] / "src")]
+    sys.path.insert(0, str(Path(__file__).resolve().parent))     # make the other files in src/ importable
     from gemeinsam import ROOT, lade_params, pfad
     p = lade_params()
     last = p["last"]

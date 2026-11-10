@@ -2,11 +2,10 @@
 import importlib.util
 from pathlib import Path
 
-# Order of the pipeline. R2's steps live in r2/src/, the team's steps in src/ (diary E-038).
+# Order of the pipeline; all programs live in src/ (diary E-040).
 SRC = Path(__file__).resolve().parent
-R2 = SRC.parent / "r2" / "src"
-SCHRITTE = [R2 / "01_download.py", R2 / "02_synthetisch.py", R2 / "cleaning.py", R2 / "fensteranalyse.py",
-            SRC / "03_merkmale.py", SRC / "04_strategien.py", SRC / "05_bewertung.py"]
+SCHRITTE = [SRC / f"{n}.py" for n in ("01_download", "02_synthetisch", "cleaning", "fensteranalyse",
+                                       "03_merkmale", "04_strategien", "05_bewertung")]
 
 for pfad in SCHRITTE:
     name = pfad.stem

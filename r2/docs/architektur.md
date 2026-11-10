@@ -2,7 +2,7 @@
 
 <!-- KI: Claude, Zweck: Diagramme und Erklärung der R2-Pipeline für Verteidigung und Team, geprüft von Max (R2) durch Nachvollziehen am Code -->
 
-Stand 10.11.2026, Owner R2 (Max). Die Diagramme zeigt GitHub direkt als Grafik an; `python r2/src/build_board.py` übernimmt sie ins Board `r2/ergebnisse/board.html`. Jeder Kasten nennt die Datei, in der es passiert, damit man vom Bild direkt in den Code springen kann.
+Stand 10.11.2026, Owner R2 (Max). Die Diagramme zeigt GitHub direkt als Grafik an; `python src/build_board.py` übernimmt sie ins Board `r2/ergebnisse/board.html`. Jeder Kasten nennt die Datei, in der es passiert, damit man vom Bild direkt in den Code springen kann.
 
 **Einordnung nach Kursmaterial (Statistisches Grundlagenwerk Teil 4):** R2 ist die Stufe **deskriptiv** („Was ist passiert, und warum?“) und im DMAIC-Zyklus die Phase **Measure** (Daten sammeln, Baseline festlegen). Prädiktiv wird es mit den Prognose-Strategien von R3, präskriptiv mit der Empfehlung von R4. Leitsatz aus dem Kurs: „ohne saubere Beschreibung keine belastbare Prognose“. Die Pipeline folgt dem Prinzip „Workflow statt Formelkette: jeder Schritt ist ein Knoten“.
 
@@ -54,7 +54,7 @@ flowchart LR
 
 ---
 
-## 2. Die Bereinigung Schritt für Schritt (`r2/src/cleaning.py`)
+## 2. Die Bereinigung Schritt für Schritt (`src/cleaning.py`)
 
 Jeder Schritt schreibt eine Zeile in `r2/ergebnisse/cleaning_log.md`: Regel, Zeilen vorher, Zeilen nachher, betroffene Zeilen, Begründung. Die Rauten sind Prüfungen, die den Lauf **abbrechen**, statt still etwas zu reparieren.
 

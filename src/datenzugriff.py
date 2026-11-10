@@ -1,7 +1,7 @@
 # KI: Claude, Zweck: Datenzugriff für den Backtest (rollierender Ursprung, Look-ahead-Schutz), geprüft von <Name R2> durch Review und pytest
 """Data access for the backtest: what was known on a given Friday, and which week is being planned.
 
-Owner: R2. Used by: R3 (src/03_merkmale.py, src/04_strategien.py), later r2/src/06_sensitivitaet.py (sensitivity analysis R2).
+Owner: R2. Used by: R3 (src/03_merkmale.py, src/04_strategien.py), later src/06_sensitivitaet.py (sensitivity analysis R2).
 
 The backtest replays every Friday of a period ("rolling origin"). On each Friday a strategy may only
 use prices that were already published at planning time; afterwards the plan is evaluated with the
@@ -54,7 +54,7 @@ class Planungswoche:
 # Loading (thin wrappers, so R3 never has to know paths)
 # ---------------------------------------------------------------------------------------------
 def lade_preise(params: dict | None = None) -> pd.DataFrame:
-    """Load preise_clean.csv (r2/src/cleaning.py) and add `zeit` = the UTC hour in German time.
+    """Load preise_clean.csv (src/cleaning.py) and add `zeit` = the UTC hour in German time.
 
     Key of the file is ts_utc. `zeit` is only a convenience for date logic in local time; it stays
     unique because it keeps the UTC offset (the two October 02:00 hours are +02:00 and +01:00).

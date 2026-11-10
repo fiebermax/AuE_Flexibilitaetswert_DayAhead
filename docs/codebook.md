@@ -1,6 +1,6 @@
 # Codebook
 
-Alle Spalten der bereinigten Dateien. Erzeugt von `r2/src/cleaning.py` bzw. `r2/src/02_synthetisch.py`. Öffnen mit `pd.read_csv(...)` oder Excel.
+Alle Spalten der bereinigten Dateien. Erzeugt von `src/cleaning.py` bzw. `src/02_synthetisch.py`. Öffnen mit `pd.read_csv(...)` oder Excel.
 
 ## `data/preise_clean.csv` (eine Zeile je UTC-Stunde, 42 360 Zeilen)
 
@@ -18,8 +18,8 @@ Alle Spalten der bereinigten Dateien. Erzeugt von `r2/src/cleaning.py` bzw. `r2/
 | `in_betriebszeit` | Stunde liegt in der Betriebszeit (Produktion) des Werks | True/False | Praxiskontakt: 06–22 Uhr (K-005, K-008) | bool | 16 von 24 Stunden je Tag; die übrigen 8 Stunden (22–06 Uhr) sind das Reinigungsfenster |
 | `last_mwh_tag` | Stromverbrauch des Werks an diesem Tag | MWh pro Tag | **Praxiskontakt, Termin 10.11.2026** (K-008, E-032): 180 MWh an jedem Tag inkl. Feiertage | Kommazahl | 180,0 |
 | `last_mwh_flexibel_tag` | davon zeitlich verschiebbar: Reinigung (CIP) **nach** der Produktion dieses Tages, also in der Nacht von 22 Uhr bis 06 Uhr des Folgetags | MWh pro Tag | Praxiskontakt (K-008): 4 MW × 2 h (E-033) | Kommazahl | 8,0 |
-| `imputed` | Wert wurde ergänzt | True/False | `r2/src/cleaning.py` | bool | immer False (keine Imputation) |
-| `flag_outlier` | auffälliger Preis: Betrag des modifizierten z-Werts > 3,5 im Vergleich mit gleichem Jahr, Monat und Stunde | True/False | `r2/src/cleaning.py` (Iglewicz & Hoaglin 1993) | bool | ca. 4 % True |
+| `imputed` | Wert wurde ergänzt | True/False | `src/cleaning.py` | bool | immer False (keine Imputation) |
+| `flag_outlier` | auffälliger Preis: Betrag des modifizierten z-Werts > 3,5 im Vergleich mit gleichem Jahr, Monat und Stunde | True/False | `src/cleaning.py` (Iglewicz & Hoaglin 1993) | bool | ca. 4 % True |
 
 **Achtung `flag_outlier`:** nur zur Beschreibung. Der Vergleich nutzt den ganzen Monat, also auch spätere Stunden. Eine Planungsstrategie darf die Spalte nie verwenden (Look-ahead); `src/datenzugriff.py` entfernt sie deshalb.
 
@@ -41,5 +41,5 @@ Alle Spalten der bereinigten Dateien. Erzeugt von `r2/src/cleaning.py` bzw. `r2/
 | `zeitumstellung.csv` | lokale Tage mit 23 bzw. 25 Stunden |
 | `luecken.csv` | Lücken mit Beginn (UTC) und Länge in Stunden (derzeit leer) |
 | `ausreisser.csv` | alle Stunden mit `flag_outlier` und ihrem z-Wert |
-| `reinigungsfenster_saison.csv` | je Saison: Mehrkosten des Status quo 22–24 Uhr gegenüber dem billigsten 2-h-Fenster in 22–06 Uhr (Median, Q25, Q75 in €/MWh und %), häufigste Startzeit; Rückblick, keine Strategie (`r2/src/fensteranalyse.py`, E-037) |
+| `reinigungsfenster_saison.csv` | je Saison: Mehrkosten des Status quo 22–24 Uhr gegenüber dem billigsten 2-h-Fenster in 22–06 Uhr (Median, Q25, Q75 in €/MWh und %), häufigste Startzeit; Rückblick, keine Strategie (`src/fensteranalyse.py`, E-037) |
 | `reinigungsfenster_jahr.csv` | je Jahr: Nächte, Mittel und Median der Mehrkosten (€/MWh), Summe in € bei 8 MWh je Nacht und Hochrechnung auf 365 Nächte; Obergrenze ohne Personal und Zuschläge |

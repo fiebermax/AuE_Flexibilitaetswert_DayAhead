@@ -40,16 +40,17 @@ Im Terminal: `python src/preisabfrage.py 2026-10-15` (oder zwei Daten für einen
 
 ## Wo was liegt
 
-Eine Einstellungsdatei und fünf Ordner. Alles in **`r2/`** gehört nur zu Max (R2), das Team kann es ignorieren.
+Eine Einstellungsdatei und fünf Ordner. **Aller Code liegt in `src/`.** In **`r2/`** liegen nur Dokumente und Ergebnisse von Max (R2), das Team kann es ignorieren.
 
 ```
 params.yaml   alle Annahmen und Zahlen an einer Stelle (Zeiträume, Verbrauch, Kosten)
 data/         die Daten: preise_clean.csv, last_synth.csv; raw/ = Originaldateien von SMARD, nur lesen
-src/          Programme fürs Team: preisabfrage, datenzugriff (R3), Gerüste R3/R4, run_all
+src/          aller Code: Download, Bereinigung, Lastgang, Fensteranalyse, Board (R2), preisabfrage,
+              datenzugriff (R3), Gerüste R3/R4, run_all
 docs/         Projekttagebuch, Belegmatrix (Abgaben und Bewertung), Schnittstellen, Codebook, Kickoff
 tests/        automatische Prüfungen, vor jedem Commit: pytest tests/
-r2/           nur R2: src/ (Download, Bereinigung, Lastgang, Fensteranalyse, Board),
-              ergebnisse/ (Bereinigungsprotokoll, Datenqualität, Tabellen, Grafiken, board.html), docs/
+r2/           nur R2, kein Code: ergebnisse/ (Bereinigungsprotokoll, Datenqualität, Tabellen, Grafiken,
+              board.html), docs/ (Diagramme, Aufbereitung, Datenkatalog, Sensitivitätsplan)
 ```
 
 | Datei | Was steht drin | Wer braucht es |
@@ -62,6 +63,7 @@ r2/           nur R2: src/ (Download, Bereinigung, Lastgang, Fensteranalyse, Boa
 | `src/03_merkmale.py`, `src/04_strategien.py` | Backtest (noch leer) | R3 |
 | `src/05_bewertung.py` | Kosten, Break-even, Empfehlung (noch leer) | R4 |
 | `src/run_all.py` | rechnet alles mit einem Befehl neu | alle |
+| `src/01_download.py`, `src/02_synthetisch.py`, `src/cleaning.py`, `src/fensteranalyse.py`, `src/build_board.py` | Daten laden, Lastgang, Bereinigung, Rückblick Reinigungsfenster, Board (R2); laufen über `run_all.py` | R2, indirekt alle |
 | `docs/projekttagebuch.md` | jede Entscheidung, Absprache, jedes Problem und jeder KI-Einsatz mit Datum | alle |
 | `docs/belegmatrix.md` | was wir abgeben müssen, wie bewertet wird, wo wir stehen | alle |
 | `docs/schnittstellen.md` | wer liefert welche Datei an wen | alle |

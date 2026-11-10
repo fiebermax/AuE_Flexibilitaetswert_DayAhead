@@ -1,7 +1,7 @@
 # KI: Claude, Zweck: scrollbares HTML-Board R2 (Daten, Bereinigung, Reinigungsfenster) aus den Repo-Daten erzeugen, geprüft von <Name R2> durch Sichtprüfung im Browser und Abgleich mit r2/ergebnisse/
 """Builds r2/ergebnisse/board.html: one scrollable page with everything R2 did. One command:
 
-    python r2/src/build_board.py
+    python src/build_board.py
 
 Why a generated page and not a hand-made one: every number on the board is read from the files in
 the repo (preise_clean.csv, r2/ergebnisse/, the diary), so the board can never disagree with the code.
@@ -25,9 +25,7 @@ from pathlib import Path
 
 import pandas as pd
 
-# R2's own scripts live in r2/src/, the shared helpers (gemeinsam.py) in src/ (diary E-038).
-_HIER = Path(__file__).resolve().parent
-sys.path[:0] = [str(_HIER), str(_HIER.parents[1] / "src")]
+sys.path.insert(0, str(Path(__file__).resolve().parent))     # make the other files in src/ importable
 from gemeinsam import ROOT, lade_params, pfad      # noqa: E402
 import fensteranalyse as fa                        # noqa: E402
 
@@ -205,7 +203,7 @@ def seite(p: dict, x: dict) -> str:
 <header><div class="wrap">
   <div class="eyebrow">AuE · Flexibilitätswert Day-Ahead · R2 Datenanalyse &amp; IT</div>
   <h1>Board R2: von SMARD bis zur geprüften Datenbasis</h1>
-  <p class="sub">Erzeugt von <code>r2/src/build_board.py</code> aus den Dateien im Repo. Preise: Bundesnetzagentur | SMARD.de, Day-Ahead DE-LU, CC BY 4.0.
+  <p class="sub">Erzeugt von <code>src/build_board.py</code> aus den Dateien im Repo. Preise: Bundesnetzagentur | SMARD.de, Day-Ahead DE-LU, CC BY 4.0.
   Zeitraum {x['von']} bis {x['bis']}. Einordnung: deskriptive Analytik, DMAIC-Phase Measure.</p>
 </div></header>
 <nav><div class="wrap"><a href="#kpi">Überblick</a><a href="#workflow">Workflow</a><a href="#bereinigung">Bereinigung</a>
@@ -278,7 +276,7 @@ Gerät etwas aus der Zukunft in die Historie, bricht der Lauf ab. <code>preisabf
 <p class="lead">Alle E-Einträge, neueste zuerst. Jeder Eintrag nennt die verworfene Alternative und den Beleg.</p>
 <div class="card"><ul class="dec">{dec}</ul></div></section>
 
-<footer>Stand der Daten {x['bis']}. Neu erzeugen: <code>python r2/src/build_board.py</code>. KI-Einsatz gekennzeichnet im Projekttagebuch (K-Einträge).</footer>
+<footer>Stand der Daten {x['bis']}. Neu erzeugen: <code>python src/build_board.py</code>. KI-Einsatz gekennzeichnet im Projekttagebuch (K-Einträge).</footer>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
