@@ -8,6 +8,18 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 10.11.2026
 
+### P-011 · PR #10 ohne Review gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners; PR #10 (Code zurück nach `src/`, E-040) hat niemand geprüft.
+- **Angesprochen von:** Claude, 10.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich („merge bitte alles“). Vorher geprüft: Pipeline läuft, `preise_clean.csv` bitgleich zu `main`, 51 Tests grün.
+- **Ergebnis:** PR #10 am 10.11.2026 gemergt; nachträgliches Review durch Susan offen (zusammen mit P-010).
+
+### E-040 · Aller Code in `src/`, `r2/` nur Dokumente und Ergebnisse (korrigiert E-038)
+- **Person:** Max (R2)
+- **Entscheidung:** Die Programme `01_download.py`, `02_synthetisch.py`, `cleaning.py`, `fensteranalyse.py`, `build_board.py` liegen wieder in `src/`, neben allem anderen Code. `r2/` enthält nur `ergebnisse/` und `docs/` von R2. Gemeint war in E-038 von Anfang an: was alle brauchen (und Code gehört dazu, weil `run_all.py` ihn für alle ausführt), bleibt in `src/`.
+- **Verworfen:** Code in `r2/src/` (zweiter Code-Ordner, Importe über zwei Ordner, für das Team verwirrend).
+- **Beleg:** `README.md` („Wo was liegt“), `src/run_all.py`; Pipeline gelaufen, `preise_clean.csv` bitgleich zu `main`, 51 Tests grün.
+
 ### P-010 · PR #9 auf Anweisung von Max gemergt, spätere Commits ohne Review
 - **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners. Susan hat den Branch bis Commit `a0185cb` geprüft (A-012); die späteren Commits (Kommentare, Diagramme, Board, Umzug nach `r2/`, Vereinfachung E-038, E-039) hat sie nicht gesehen.
 - **Angesprochen von:** Claude, 10.11.2026

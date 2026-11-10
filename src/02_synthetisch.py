@@ -28,9 +28,7 @@ from pathlib import Path
 
 import pandas as pd
 
-# R2's own scripts live in r2/src/, the shared helpers (gemeinsam.py) in src/ (diary E-038).
-_HIER = Path(__file__).resolve().parent
-sys.path[:0] = [str(_HIER), str(_HIER.parents[1] / "src")]
+sys.path.insert(0, str(Path(__file__).resolve().parent))     # make the other files in src/ importable
 from gemeinsam import fensterstunden, lade_params, pfad, werktage  # noqa: E402
 
 SPALTEN = ["datum", "mwh_gesamt", "mwh_flexibel"]   # exactly as in docs/schnittstellen.md / docs/codebook.md

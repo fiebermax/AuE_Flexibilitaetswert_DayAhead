@@ -25,7 +25,7 @@ preise[preise["in_betriebszeit"]].groupby(["saison", "stunde_lokal"])["preis_eur
 
 - **Begriffe:** **Status quo A** = Reinigung 22–24 Uhr Ortszeit, direkt nach Produktionsende (Annahme, E-031; `last.status_quo_start_h`). Die Reinigung (2 h, `last.blocklaenge_h`) darf nur im **Reinigungsfenster** 22–06 Uhr liegen (`last.fenster_start_h`, `last.fenster_ende_h`). Die Faustregel D (fester Block in der Nacht) legt R3 im Backtest fest; 22–24 Uhr heißt nie „Faustregel“. **Kontrastfall T** ist die Kälte (Block `kaelte`), täglich mit bekannten Preisen gesteuert.
 - **Nacht über die Wochengrenze (A-010):** Die Nacht von Sonntag auf Montag gehört zum Sonntag der Zielwoche, ihre Stunden 00–06 Uhr liegen aber schon in der Folgewoche und fehlen in `w.zielwoche` (Mo 00:00 bis So 24:00). R3 entscheidet, ob die Sonntagsnacht mitgewertet wird (dann Preise bis Montag 06:00 nachladen) oder entfällt.
-- **Mehrkosten-Rückblick:** `r2/src/fensteranalyse.py` bewertet Nächte als Folge echter Stunden; die Funktion `fenster_je_tag(df, 22, 6, 2, 22)` kann R3 für die Bewertung je Nacht wiederverwenden.
+- **Mehrkosten-Rückblick:** `src/fensteranalyse.py` bewertet Nächte als Folge echter Stunden; die Funktion `fenster_je_tag(df, 22, 6, 2, 22)` kann R3 für die Bewertung je Nacht wiederverwenden.
 - **Schlüssel ist `ts_utc`.** In UTC gibt es keine doppelten oder fehlenden Stunden. Die lokale Zeit (`ts_lokal`, `stunde_lokal`) ist Zusatz: Am Oktober-Umstellungssonntag kommt 02:00 Uhr zweimal vor (zwei UTC-Stunden, zwei Preise), im März fehlt 02:00. Beides liegt außerhalb der Betriebszeit 06–22 Uhr, aber **im Reinigungsfenster 22–06 Uhr**: Diese Nächte haben 7 bzw. 9 echte Stunden (E-036).
 - **Nur Stundenpreise**; ab 01.10.2025 der SMARD-Stundenwert (Mittel der vier Viertelstunden).
 - **`flag_outlier` nie für die Planung nutzen** (Look-ahead, siehe Codebook).
@@ -54,5 +54,5 @@ for w in dz.planungswochen(preise, last, "test_1_stunde", historie_wochen=4):   
 
 ## Rückblick-Kennzahl R2
 
-- „Mehrkosten Status quo A (Reinigung 22–24 Uhr) gegenüber billigstem 2-h-Fenster in 22–06 Uhr“ (`r2/src/fensteranalyse.py`, Tabellen `r2/ergebnisse/reinigungsfenster_*.csv`): beschreibend, keine Strategie.
+- „Mehrkosten Status quo A (Reinigung 22–24 Uhr) gegenüber billigstem 2-h-Fenster in 22–06 Uhr“ (`src/fensteranalyse.py`, Tabellen `r2/ergebnisse/reinigungsfenster_*.csv`): beschreibend, keine Strategie.
 - Präsentationsfolien entstehen am Ende mit Claude, nicht per Skript im Repo (E-039).

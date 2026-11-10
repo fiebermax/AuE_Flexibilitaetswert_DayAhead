@@ -1,6 +1,6 @@
 # Cleaning-Log
 
-Erzeugt von `r2/src/cleaning.py`. Eingabe: `data/raw/` (unverändert), `data/last_synth.csv`. Ausgabe: `data/preise_clean.csv`.
+Erzeugt von `src/cleaning.py`. Eingabe: `data/raw/` (unverändert), `data/last_synth.csv`. Ausgabe: `data/preise_clean.csv`.
 
 | Schritt | Regel | N vorher | N nachher | betroffene Zeilen | Begründung |
 | --- | --- | --- | --- | --- | --- |

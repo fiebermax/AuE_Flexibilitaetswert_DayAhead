@@ -1,7 +1,7 @@
 # KI: Claude, Zweck: Datenbereinigung SMARD-Preise + Join synthetische Last, mit Log und Berichten, geprüft von <Name R2> durch Review, Nachrechnen einzelner Tage und pytest
 """Step 02 (cleaning): SMARD raw week files -> one cleaned hourly table in UTC, plus log and reports.
 
-Owner: R2. Run: python r2/src/cleaning.py   (after r2/src/01_download.py and r2/src/02_synthetisch.py)
+Owner: R2. Run: python src/cleaning.py   (after src/01_download.py and src/02_synthetisch.py)
 Input (read-only):  data/raw/... (JSON as delivered by SMARD), data/last_synth.csv
 Output:
   data/preise_clean.csv      one row per UTC hour, columns see docs/codebook.md
@@ -32,9 +32,7 @@ import matplotlib.pyplot as plt          # noqa: E402
 import numpy as np                       # noqa: E402
 import pandas as pd                      # noqa: E402
 
-# R2's own scripts live in r2/src/, the shared helpers (gemeinsam.py) in src/ (diary E-038).
-_HIER = Path(__file__).resolve().parent
-sys.path[:0] = [str(_HIER), str(_HIER.parents[1] / "src")]
+sys.path.insert(0, str(Path(__file__).resolve().parent))     # make the other files in src/ importable
 from gemeinsam import ROOT, lade_params, pfad, werktage  # noqa: E402
 
 SPALTEN = ["ts_utc", "ts_lokal", "datum_lokal", "stunde_lokal", "wochentag", "saison",
@@ -193,7 +191,7 @@ def join_last(df: pd.DataFrame, last: pd.DataFrame, start_h: int, ende_h: int) -
     Key: local date derived from the UTC timestamp. Returns the table, unmatched price rows and unmatched
     load days. in_betriebszeit marks the production hours (06-22 Uhr local); the other 8 hours are the
     cleaning window of case S1 (diary E-033). The load value of date d belongs to the cleaning in the
-    night starting at d 22:00, see r2/src/02_synthetisch.py."""
+    night starting at d 22:00, see src/02_synthetisch.py."""
     l = last.rename(columns={"datum": "datum_lokal", "mwh_gesamt": "last_mwh_tag",
                              "mwh_flexibel": "last_mwh_flexibel_tag"})[["datum_lokal", "last_mwh_tag", "last_mwh_flexibel_tag"]]
     # validate="many_to_one": many hours per date, but at most one load row per date. If the load file
@@ -363,7 +361,7 @@ def main() -> pd.DataFrame:
     figuren = grafiken(df, reports)
 
     (reports / "cleaning_log.md").write_text(
-        "# Cleaning-Log\n\nErzeugt von `r2/src/cleaning.py`. Eingabe: `data/raw/` (unverändert), "
+        "# Cleaning-Log\n\nErzeugt von `src/cleaning.py`. Eingabe: `data/raw/` (unverändert), "
         "`data/last_synth.csv`. Ausgabe: `data/preise_clean.csv`.\n\n" + log.markdown(), encoding="utf-8")
     schreibe_qualitaetsbericht(reports, df, zu, luecken, figuren, jahr=kennzahlen(df.assign(jahr=df["ts_lokal"].dt.year), ["jahr"]))
     print(f"Cleaning: {len(df)} Stunden -> {processed / 'preise_clean.csv'}; Berichte in {reports}")
@@ -378,7 +376,7 @@ def schreibe_qualitaetsbericht(reports: Path, df: pd.DataFrame, zu: pd.DataFrame
                "".join("| " + " | ".join(str(v) for v in r) + " |\n" for r in t.itertuples(index=False))
     text = f"""# Datenqualität (erzeugt)
 
-Erzeugt von `r2/src/cleaning.py`. Methode und Begründung: `r2/docs/datenaufbereitung.md`. Schritte und Zählungen: `cleaning_log.md`.
+Erzeugt von `src/cleaning.py`. Methode und Begründung: `r2/docs/datenaufbereitung.md`. Schritte und Zählungen: `cleaning_log.md`.
 
 ## Überblick
 
