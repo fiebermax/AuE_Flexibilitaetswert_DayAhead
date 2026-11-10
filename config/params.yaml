@@ -33,24 +33,39 @@ cleaning:                        # R2: src/cleaning.py (Tagebuch E-024 bis E-029
   preis_max_eur_mwh: 5000        # Maximum war 2022-2026 zwischen +3000 und +5000; weitester Wert (Quellen: docs/datenaufbereitung.md)
   ausreisser_schwelle: 3.5       # modifizierter z-Wert (Iglewicz & Hoaglin 1993), je Jahr x Monat x Stunde; nur markieren
 
-last:                            # Interview mit dem Praxiskontakt 09.11.2026 (Tagebuch K-003, K-005)
+last:                            # Praxiskontakt: Interview 09.11.2026 (K-003, K-005), Termin mit dem Team 10.11.2026 (K-008)
   produktionstage: "taeglich"    # an jedem Tag, auch an Feiertagen (K-005); Alternative: "Mo-Fr ohne Feiertage Bayern"
-  betrieb_start_h: 6             # Betriebszeit 06-22 Uhr, 16 h am Tag (K-003, K-005)
+  betrieb_start_h: 6             # Produktion 06-22 Uhr, 16 h am Tag (K-008 P5)
   betrieb_ende_h: 22
-  gesamtverbrauch_mwh_pro_tag: 50.0   # Stromverbrauch des Werks, 50 000 kWh pro Tag (K-005)
-  mwh_pro_tag: 2.0               # PLATZHALTER: davon verschiebbar pro Tag, Prozess und Menge noch festzulegen (K-005)
-  blocklaenge_h: 6               # Block muss in der Betriebszeit liegen
-  status_quo_start_h: 8          # Strategie A: fest 08-14 Uhr
+  gesamtverbrauch_mwh_pro_tag: 180.0   # Werk: 65 GWh/a, rund 180 MWh/Tag (K-008 P1, P2; E-032)
+  # Verschiebbarer Hauptfall S1: Reinigung (CIP), 4 MW für ca. 2 h, voll elektrisch (K-008 P6; E-033)
+  prozess: "Reinigung (CIP)"
+  mwh_pro_tag: 8.0               # = 4 MW x 2 h (K-008 B3); Leistung = mwh_pro_tag / blocklaenge_h
+  blocklaenge_h: 2               # Dauer einer Reinigung
+  fenster_start_h: 22            # Reinigung nur in der Nebenzeit 22-06 Uhr (K-008 B5); Fenster geht über Mitternacht
+  fenster_ende_h: 6
+  status_quo_start_h: 22         # Status quo A: Reinigung 22-24 Uhr, direkt nach Produktionsende (Annahme, E-031)
   feiertagsvariante_mariae_himmelfahrt: false   # wirkt nur auf die Spalte werktag der Preise
 
+kaelte:                          # Kontrastfall T (E-033): läuft automatisch, täglich mit bekannten Day-Ahead-Preisen steuerbar
+  leistung_mw: 1.0               # K-008 P7
+  verschiebung_h: 2              # Vorkühlung (Annahme Team A1, Bandbreite 0-4 h; Quelle offen)
+
 kosten:
-  mitarbeiter: 3
-  stundenlohn_eur: 30.0
-  nachtzuschlag: 0.25            # Sensitivität 0.00-0.30
-  nachtstunden: [23, 0, 1, 2, 3, 4, 5]
+  mitarbeiter: 3                 # Personal an der Reinigung (Annahme Team A6, Bandbreite 2-4)
+  stundenlohn_eur: 35.0          # Zeitarbeit (Annahme Team A7, Bandbreite 30-45 EUR/h; Quelle offen)
+  nachtzuschlag: 0.25            # vom Kontakt geschätzt (K-008 P13), Bandbreite 0.25-0.30
+  sonntagszuschlag: 0.50         # vom Kontakt geschätzt (K-008 P14), Bandbreite 0.30-0.50
+  feiertagszuschlag: 1.00        # vom Kontakt geschätzt (K-008 P15), bis 1.00
+  nachtstunden: [23, 0, 1, 2, 3, 4, 5]   # unverändert; OFFEN: gilt 22-23 Uhr schon als Nacht? (E-035)
   umstellungskosten_eur_pro_jahr: null   # aus Recherche bzw. Kontakt, dann als Kurve
-  festpreis_eur_mwh: null        # null = Mittel Training + Aufschlag
-  festpreis_aufschlag: 0.10
+  festpreis_eur_mwh: 85.0        # Festpreis für rund 70 % der Menge, Einkauf im Januar für das Folgejahr (K-008 P4)
+  festpreis_aufschlag: 0.10      # nur genutzt, wenn festpreis_eur_mwh null ist
+
+vertrag:                         # K-008 P3, P4; E-035
+  spot_anteil: 0.30              # rund 53 von 180 MWh/Tag am Day-Ahead-Markt
+  bewertung_verschiebung: "band" # Kipp-Annahme A3: Festanteil als Band -> verschobene MWh zu 100 % am Spot bewertet;
+                                 # Alternative "proportional": nur spot_anteil der verschobenen MWh. Beide Fälle rechnen.
 
 strategien:
   historie_wochen: 4             # B: Median der letzten 4 gleichen Werktage
@@ -59,7 +74,7 @@ strategien:
 
 planung:                         # R2: Datenzugriff für den Backtest (src/datenzugriff.py)
   planungstag: "Friday"          # Schichtplan für die Folgewoche (Mo-So)
-  planungsuhrzeit: "12:00"       # Annahme: Planung Freitagmittag
+  planungsuhrzeit: "08:00"       # Freitagmorgen (K-008 P11); vor 12:45 sind nur die Freitagspreise bekannt
   day_ahead_veroeffentlichung: "12:45"   # SDAC-Ergebnis für den Folgetag (ca.); vorher ist nur Freitag bekannt
   nur_volle_wochen: true         # Wochen, die über eine Periodengrenze reichen, werden nicht gewertet
 
