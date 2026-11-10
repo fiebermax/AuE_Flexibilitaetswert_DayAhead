@@ -20,6 +20,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Verworfen:** Funktion in `datenzugriff.py` (würde den Look-ahead-Schutz verwässern); nur README-Beispiele mit `preise_clean.csv` (Spaltennamen wie `stunde_lokal`, Wochentag als Zahl 0–6 sind für das Team umständlicher).
 - **Kanal und Datum:** Wunsch von Susan an Max, weitergegeben im Chat mit Claude Code, 10.11.2026
 - **Bis:** erledigt 10.11.2026; Rückmeldung Susan offen
+- **Nachricht an Susan:** WhatsApp, formuliert am 10.11.2026, Versand durch Max: Funktionen `tag`, `tage`, `letzte_monate`, `alle_preise` mit Beispielen; Code liegt auf dem Branch `claude/friendly-ramanujan-6ej4do` (noch nicht auf `main`); Hinweis: nur zum Anschauen, nicht für Strategien; Bitte um Rückmeldung.
 - **Änderung, nachgezogen von:** `README.md`, `docs/schnittstellen.md`, K-010
 
 ### K-009 · KI-Einsatz: Umstellung auf den Reinigungsfall
