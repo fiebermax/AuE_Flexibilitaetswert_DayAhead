@@ -8,6 +8,20 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 10.11.2026
 
+### K-010 · KI-Einsatz: einfache Preisabfrage
+- **Werkzeug:** Claude Code
+- **Zweck:** `src/preisabfrage.py` (`tag`, `tage`, `letzte_monate`, Aufruf im Terminal), `tests/test_preisabfrage.py` (9 Tests), Abschnitte in `README.md` und `docs/schnittstellen.md`, Einträge A-011 und K-010 im Auftrag von Max.
+- **Wie geprüft:** `pytest tests/`: 51 Tests grün; Preis einer Stunde gegen `preise_clean.csv` verglichen (Test); Umstellungstage mit 23 und 25 Stunden; Wochentag gegen `datum.dt.weekday`; Stichprobe `python src/preisabfrage.py 2026-10-15` (Donnerstag, 24 Zeilen).
+- **Offen:** Susan probiert die Abfrage aus und meldet, ob Spalten oder Aufruf fehlen.
+
+### A-011 · Wunsch Susan: einfacher Zugriff auf einzelne Tage und die letzten Monate
+- **Von → an:** Susan (über Max, R2) → R2
+- **Was (Datei, Spalten, Einheit):** Methode, um auf die letzten Monate bzw. einzelne Tage zuzugreifen und direkt mit Variablen wie Preis, Uhrzeit, Datum und Wochentag zu arbeiten. Umgesetzt als `src/preisabfrage.py`: `tag("JJJJ-MM-TT")`, `tage(von, bis)`, `letzte_monate(n, wochentag=...)`; Spalten `datum`, `wochentag` (deutsch), `uhrzeit` ("14:00"), `stunde`, `preis` (€/MWh), `saison`, `werktag`, `zeit`. Bewusst getrennt von `datenzugriff.py`: freie Sicht auf die Vergangenheit, deshalb nicht für Strategien (Look-ahead).
+- **Verworfen:** Funktion in `datenzugriff.py` (würde den Look-ahead-Schutz verwässern); nur README-Beispiele mit `preise_clean.csv` (Spaltennamen wie `stunde_lokal`, Wochentag als Zahl 0–6 sind für das Team umständlicher).
+- **Kanal und Datum:** Wunsch von Susan an Max, weitergegeben im Chat mit Claude Code, 10.11.2026
+- **Bis:** erledigt 10.11.2026; Rückmeldung Susan offen
+- **Änderung, nachgezogen von:** `README.md`, `docs/schnittstellen.md`, K-010
+
 ### K-009 · KI-Einsatz: Umstellung auf den Reinigungsfall
 - **Werkzeug:** Claude Code
 - **Zweck:** Prüfung der Praxisangaben aus K-008 (Widerspruch P-009, Ortsname des zentralen Einkaufs, der den Praxispartner identifiziert, Konflikt D1 mit E-021, Zeitumstellung im Nachtfenster); erste Schätzung im Rückblick; Umstellung von `config/params.yaml`, `src/02_synthetisch.py`, `src/gemeinsam.py` (`fensterstunden`), `src/fensteranalyse.py` (Fenster über Mitternacht, echte Stunden, Jahrestabellen, eigener Aufruf), `src/run_all.py`; 7 neue bzw. geänderte Tests; Doku (README, Kickoff, Codebook, Schnittstellen, Datenaufbereitung, Sensitivitätsplan, `docs/ki-nutzung.md`); diese Einträge im Auftrag von Max.

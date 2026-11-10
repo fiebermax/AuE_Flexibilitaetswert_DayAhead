@@ -31,6 +31,10 @@ preise[preise["in_betriebszeit"]].groupby(["saison", "stunde_lokal"])["preis_eur
 - **`flag_outlier` nie für die Planung nutzen** (Look-ahead, siehe Codebook).
 - **Last:** 180 MWh pro Tag an jedem Tag (Praxiskontakt, K-008); verschiebbar ist die Reinigung mit 8 MWh pro Nacht (4 MW × 2 h).
 
+## Einfache Abfrage einzelner Tage: `src/preisabfrage.py` (für alle, A-011)
+
+`tag("2026-10-15")`, `tage("2026-08-01", "2026-08-31")`, `letzte_monate(3, wochentag="Samstag")` liefern je Stunde die Spalten `datum`, `wochentag` (Montag … Sonntag), `uhrzeit` ("14:00"), `stunde` (14), `preis` (€/MWh), `saison`, `werktag` und `zeit` (eindeutiger Zeitstempel mit UTC-Versatz). Nur zum Anschauen und für Grafiken; **nie** als Eingabe einer Planungsstrategie, dafür gibt es `datenzugriff.py` mit Look-ahead-Schutz.
+
 ## Datenzugriff je Freitag: `src/datenzugriff.py` (für R3)
 
 Für den Backtest, damit keine Daten aus der Zukunft benutzt werden:

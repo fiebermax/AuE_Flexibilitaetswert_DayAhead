@@ -23,6 +23,21 @@ preise.groupby("stunde_lokal")["preis_eur_mwh"].median()   # typischer Preis je 
 
 Jede Spalte erklärt: [`docs/codebook.md`](docs/codebook.md).
 
+**Einzelne Tage oder die letzten Monate abfragen** (`src/preisabfrage.py`, nur zum Anschauen, nicht für Strategien):
+
+```python
+import sys; sys.path.insert(0, "src")
+from preisabfrage import tag, tage, letzte_monate
+
+df = tag("2026-10-15")                       # ein Tag, eine Zeile je Stunde
+df = letzte_monate(3)                        # die letzten 3 Monate
+df = letzte_monate(3, wochentag="Samstag")   # nur Samstage
+df[["datum", "wochentag", "uhrzeit", "preis"]]
+df.groupby("wochentag")["preis"].mean()      # mittlerer Preis je Wochentag
+```
+
+Im Terminal: `python src/preisabfrage.py 2026-10-15` (oder zwei Daten für einen Zeitraum).
+
 ## Wo was liegt
 
 | Ordner | Inhalt |
