@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### P-014 · Branch `claude/great-pasteur-p9emmq` ohne Review nach `main` gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners. Susan (R3) hat die Phasen 1–5, die Analyseseite und Review-Phase 1 nicht reviewt; ihre Bestätigungen (K-013 bis K-015, E-056) und die von Caro und Chiara (E-045) sind offen.
+- **Angesprochen von:** Claude, 11.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich („merge alles“), damit das Team für die Präsentation (12.11.2026) mit dem Stand auf `main` arbeiten kann. Vorher geprüft: `pytest tests/` 80 grün, `python src/run_all.py` komplett, Zahlen des Hauptfalls bitgleich (K-019).
+- **Offen:** Review-Phase 2–5 (Zuordnung der Hypothesen, Quellenabgleich, Planungsskripte, Control-Seite, Prüfung) folgt auf einem neuen Branch; nachträgliches Review durch Susan auf dem Pull Request.
+
 ### K-019 · KI-Einsatz Review Phase 1 (Vertrag, Konsistenz)
 - **Werkzeug:** Claude Code, Sitzung von Max nach dem Review-Prompt (Phasen 0–5)
 - **Zweck:** Vertrag auf Faktor 1,0 (A-018), Umbenennung `test_2` (E-059), Abschnitt Spot gegen Festpreis gekürzt, B_16 als „nicht signifikant“, Rollen (E-057), „2–4 Uhr“ angeglichen.
