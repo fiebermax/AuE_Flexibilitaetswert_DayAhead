@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### E-053 · Finale Analyseseite im Design des Notebook-Prototyps
+- **Person:** Max (R2), nach Vorlage seines Notebook-Prototyps (`prototype.html`, nicht im Repo)
+- **Entscheidung:** `analyse.ipynb` ist die eine Analyseseite (Ziel aus E-039): linear von den Parametern über Daten, Preistal, Backtest, Ergebnisse FS1–FS3, Tests, Fehleranalyse, Personalkosten und Wirtschaftlichkeit, C&E, Sensitivität, Spot gegen Festpreis bis zur Empfehlung, Owner je Abschnitt. Sie rechnet nichts neu, sondern liest die Ergebnisdateien; die Interpretationstexte setzen ihre Zahlen beim Ausführen selbst ein (Zellen mit Tag `remove_input`, auf der Seite nur als Text). `src/08_board.py` führt das Notebook als letzten Schritt von `run_all.py` aus und exportiert `ergebnisse/analyse.html` im JupyterLab-Stil. Neue Pakete in `requirements.txt` (nbformat, nbclient, nbconvert, mistune 3.0.2 wegen Unverträglichkeit mit nbconvert 7.16, ipykernel). Neue Grafik g7 (kumulierte Ersparnis im Test).
+- **Verworfen:** Zahlen fest in den Text schreiben (veralten beim nächsten Lauf); Berechnungen im Notebook wiederholen (zweite Rechnung neben der getesteten Pipeline); das R2-Board erweitern (anderes Design als der Prototyp).
+- **Beleg:** `analyse.ipynb`, `src/08_board.py`, `ergebnisse/analyse.html`; im Browser gerendert und Abschnitt für Abschnitt angesehen, keine Fehlerausgabe.
+
 ### E-052 · Grafiken entstehen in Claude aus einer Datendatei; Repo liefert nur die Daten
 - **Person:** Max (R2), 11.11.2026
 - **Entscheidung:** Die Grafiken für Bericht und Folien baut das Team später in Claude. Das Repo liefert dafür **alle Daten in einer Datei**: `ergebnisse/daten_fuer_grafiken.md` (Kernaussagen und 13 Tabellen: Preistal, Ersparnis je Strategie, Netto und H0a, alle Tests, Kennzahl je Monat, Sensitivität, Break-even, Kipppunkte, Spot gegen Festpreis, C&E, Fehleranalyse, R2-Kennzahlen). Sie wird von `src/07_bericht.py` bei jedem `run_all.py` neu erzeugt, also nie von Hand gepflegt. Die sechs PNG aus K-018 bleiben nur als Entwurf.

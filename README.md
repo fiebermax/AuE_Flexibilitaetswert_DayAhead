@@ -88,6 +88,7 @@ Signifikanzniveau nach Bonferroni: α = 0,05 / 3 ≈ 0,017 je Test. Vor der Ausw
 pip install -r requirements.txt
 python src/run_all.py      # Rohdaten -> Ergebnisse, ein Befehl
 pytest tests/              # Prüfung der Datenannahmen
+# Ergebnis auf einer Seite: ergebnisse/analyse.html (aus analyse.ipynb, letzter Schritt von run_all.py)
 ```
 
 Für neue Daten nur `zeitraeume.datenstand` in `params.yaml` ändern.

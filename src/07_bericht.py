@@ -186,6 +186,22 @@ def g6_spot_festpreis(sf: pd.DataFrame, festpreis: float, ziel: Path) -> None:
     speichern(fig, ziel, "g6_spot_festpreis.png")
 
 
+def g7_kumuliert(wochen: pd.DataFrame, ziel: Path) -> None:
+    """Cumulative electricity saving vs A over the test weeks: fixed rule and weekly forecast run together."""
+    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2_viertel"])].sort_values("woche").copy()
+    w["woche"] = pd.to_datetime(w["woche"])
+    fig, ax = plt.subplots()
+    for s, name, farbe in (("C", "Tagesplanung (Oracle)", GRAU), ("B_16", "jede Woche neu, 16 Wochen", ORANGE),
+                           ("D", "fest 3 Uhr", BLAU)):
+        kum = (w["kosten_A"] - w[f"kosten_{s}"]).cumsum() / 1000
+        ax.plot(w["woche"], kum, color=farbe, label=f"{name}: {de(kum.iloc[-1])} T€")
+    # The three lines nearly overlap, so a legend (top left, empty area) instead of labels at the line ends
+    ax.legend(loc="upper left", frameon=False, fontsize=9)
+    ax.set_ylabel("Stromersparnis kumuliert in Tausend €")
+    ax.set_title("Fest 3 Uhr und wöchentliche Planung laufen im Test fast deckungsgleich")
+    speichern(fig, ziel, "g7_kumuliert_test.png")
+
+
 # ---------------------------------------------------------------------------------------------
 # Spot vs. fixed price (R1)
 # ---------------------------------------------------------------------------------------------
@@ -352,6 +368,7 @@ def main() -> None:
     g4_sensitivitaet(pd.read_csv(ROOT / p["cleaning"]["reports"] / "sensitivitaet.csv"), ziel)
     g5_break_even(pd.read_csv(tab / "wirtschaftlichkeit.csv"), ziel)
     g6_spot_festpreis(sf, p["kosten"]["festpreis_eur_mwh"], ziel)
+    g7_kumuliert(pd.read_csv(tab / "backtest_wochen.csv"), ziel)
     print(f"Bericht R1: alle Daten -> {tab / 'daten_fuer_grafiken.md'}; Entwurfsgrafiken -> {ziel}")
     print(sf[["jahr", "vollstaendig", "spot_grundlast_eur_mwh", "spot_profil_eur_mwh", "vorteil_festpreis_eur_mwh",
               "vorteil_festpreis_spotanteil_eur", "vorteil_festpreis_ganzes_werk_eur"]].round(1).to_string(index=False))
