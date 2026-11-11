@@ -7,7 +7,7 @@ Eine Phase = ein Abschnitt. Der Owner liest ihn, prüft ihn am Code nach und bes
 ## Phase 1 · R3 (Susan): Hypothesen und Merkmale
 
 **Was gebaut wurde**
-- `docs/hypothesen.md` (Commit `7a63c15`): H0a–H0c, einseitig, α = 0,05/3, Haupttest Block-Bootstrap, t-Test und Wilcoxon als Robustheit. Festgelegt, bevor irgendein Testzeitraum gerechnet wurde.
+- `docs/hypothesen.md` (Commit `7a63c15`): H0a–H0c, einseitig, α = 0,05/3, Haupttest gepaarter t-Test, Wilcoxon als Gegenprobe (E-047), keine Regression. Festgelegt, bevor irgendein Testzeitraum gerechnet wurde.
 - `src/03_merkmale.py`: die **Blockkosten-Matrix**. Für jede Nacht (benannt nach dem Tag, an dem sie um 22 Uhr beginnt) und jeden möglichen 2-h-Block der mittlere Preis in €/MWh. Normal 7 Blöcke je Nacht (Start 22, 23, 0 … 4), in der Märznacht 6, in der Oktobernacht 8. Dazu je Block die Stunden auf Sonntag und Feiertag (für R4) und als Kalendermerkmale Wochentag und Saison der Nacht.
 - **Saisonaler Block:** der beste feste Start, gelernt nur aus den 731 Trainingsnächten 2023–2024, einmal fürs ganze Jahr und einmal je Saison (`ergebnisse/saisonaler_block.csv`).
 - `tests/test_merkmale.py`: 8 Tests, darunter der Abgleich mit der getesteten R2-Funktion `fenster_je_tag` über alle 1 764 Nächte.

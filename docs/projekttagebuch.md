@@ -8,6 +8,13 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### E-047 · Haupttest t-Test, keine Regression (ändert `docs/hypothesen.md` vom selben Tag)
+- **Person:** Max (R2) für das Team, 11.11.2026
+- **Entscheidung:** Über H0a–H0c entscheidet der gepaarte t-Test, einseitig, p < α/3. Shapiro-Wilk wird vorher berichtet, Wilcoxon läuft als Gegenprobe, ein Block-Bootstrap-Intervall nur als Grenze. Die Regression (Ersparnis je Nacht gegen die Nachtspreizung) und die Regressionsvariante B′ entfallen.
+- **Verworfen:** Block-Bootstrap als Haupttest (Fassung `7a63c15`): erklärt sich in der Verteidigung schwerer, und der t-Test steht im Kickoff und im Kursmaterial. Regression: kein Beitrag zu H0a–H0c.
+- **Testdaten gesehen?** Nein. Bisher sind nur Trainingsnächte ausgewertet (Phase 1).
+- **Grenze:** Wochen derselben Saison hängen zusammen; der t-Test kann die Unsicherheit dann unterschätzen. Das Bootstrap-Intervall zeigt, wie stark.
+
 ### K-013 · KI-Einsatz Phase 0 und Phase 1 (R2-Ergänzung, Hypothesen, Merkmale R3)
 - **Werkzeug:** Claude Code, Sitzung von Max nach dem Prompt aus E-045
 - **Zweck:** Phase-0-Antworten umgesetzt (Commits `a73df08`, `49ac435`); `docs/hypothesen.md` (`7a63c15`); `src/03_merkmale.py`, `tests/test_merkmale.py`, `docs/erklaerzettel.md` (Phase 1).
