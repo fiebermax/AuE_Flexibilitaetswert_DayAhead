@@ -69,7 +69,7 @@ Eine Phase = ein Abschnitt. Der Owner liest ihn, prüft ihn am Code nach und bes
 
 **Drei Prüferfragen**
 1. *„Woher wissen Sie, dass B nicht in die Zukunft schaut?“* Test `test_b_sieht_die_zielwoche_nicht`: Alle Preise ab Samstag werden verfälscht, der Plan bleibt gleich. Zusätzlich bricht `datenzugriff` mit `LookAheadFehler` ab.
-2. *„Warum ist die Prognose schlechter als eine feste Uhrzeit?“* Das Preistal liegt fast immer bei 2–4 Uhr. B reagiert auf Zufallsschwankungen der letzten 4 Wochen und verlässt 3 Uhr in rund der Hälfte der Nächte, ohne dass das im Mittel etwas bringt.
+2. *„Warum ist die Prognose schlechter als eine feste Uhrzeit?“* Das Preistal liegt meist zwischen 2 und 5 Uhr; fest 3 Uhr (3–5 Uhr) trifft es im Mittel am besten. B reagiert auf Zufallsschwankungen der letzten 4 Wochen und verlässt 3 Uhr in rund der Hälfte der Nächte, ohne dass das im Mittel etwas bringt.
 3. *„D wurde auf denselben Daten gelernt, auf denen Sie es bewerten. Ist das fair?“* Im Training nicht, deshalb zählt nur der Test 2025–2026 (eingefroren, Phase 3).
 
 ## Phase 3 · R3 (Susan): Testzeiträume, Statistik, Fehleranalyse

@@ -43,8 +43,11 @@ mk = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(mk)
 
 STRATEGIEN = ["A", "D", "D_saison", "B", "B_ohne_wochentag", "B_16", "C"]
-PERIODEN = ["training", "test_1_stunde", "test_2_viertel", "stresstest"]
-TEST = ("test_1_stunde", "test_2_viertel")   # pooled = the one confirmatory sample (docs/hypothesen.md)
+PERIODEN = ["training", "test_1_stunde", "test_2", "stresstest"]
+# Contract (A-018): the fixed price covers the plant's base load and is always used up; the cleaning comes on
+# top and is bought 100 % day-ahead. So every shifted MWh is valued at the spot price: factor 1.0 only.
+VERTRAEGE = ("band",)
+TEST = ("test_1_stunde", "test_2")   # pooled = the one confirmatory sample (docs/hypothesen.md)
 B_NAECHTE_JE_WOCHENTAG = 4               # params strategien.historie_wochen
 B16_NAECHTE_JE_WOCHENTAG = 16           # team paper FS2: "Daten der letzten 16 Wochen" (E-049)
 # one extra week: the last Friday night ends on Saturday (unknown on Friday morning). 17 weeks serve B_16;
@@ -234,7 +237,8 @@ def t_test_einseitig(d: np.ndarray, alpha: float) -> dict:
 
 
 def faktor(p: dict, art: str) -> float:
-    """Contract: 'band' -> every shifted MWh at the spot price (1.0); 'proportional' -> spot share (0.3)."""
+    """Contract: 'band' -> every shifted MWh at the spot price (1.0, the only main case, A-018);
+    'proportional' -> spot share (0.3), used only in the sensitivity analysis (V8)."""
     return 1.0 if art == "band" else float(p["vertrag"]["spot_anteil"])
 
 
@@ -247,7 +251,7 @@ def ersparnis_tabelle(wochen: pd.DataFrame, p: dict) -> pd.DataFrame:
             d = (g.loc[ok, "kosten_A"] - g.loc[ok, f"kosten_{s}"]).to_numpy()
             oracle = (g.loc[ok, "kosten_A"] - g.loc[ok, "kosten_C"]).mean()
             b = beschreibe(d, p)
-            for art in ("band", "proportional"):
+            for art in VERTRAEGE:
                 f = faktor(p, art)
                 zeilen.append({"strategie": s, "periode": per, "vertrag": art, "faktor": f, "n_wochen": b["n_wochen"],
                                **{k: b[k] * f for k in ("mittel_eur_woche", "ki_unten", "ki_oben", "boot_unten", "boot_oben")},
@@ -271,7 +275,7 @@ def hypothesentests(wochen: pd.DataFrame, p: dict) -> pd.DataFrame:
     # Reported with the same t-test; NOT part of the pre-registered H0a-H0c (added after the freeze).
     team = [("FS1", "D spart gegenüber A", "kosten_A", "kosten_D", None),
             ("FS2", "B_16 spart gegenüber A", "kosten_A", "kosten_B_16", None),
-            ("FS3", "B_16 spart gegenüber A im letzten Jahr", "kosten_A", "kosten_B_16", "test_2_viertel")]
+            ("FS3", "B_16 spart gegenüber A im letzten Jahr", "kosten_A", "kosten_B_16", "test_2")]
     zeilen = []
     for per, g in wochen.groupby("periode", sort=False):
         for name, text, x, y, nur in team:

@@ -31,8 +31,8 @@ Zusätzlich vorab festgelegt (`docs/hypothesen.md`): H0a (D nach Personalkosten)
 | 5 | Dauer der Reinigung | 2 h | P | K-008 P6 | `last.blocklaenge_h` | ✅ |
 | 6 | Energie der Reinigung | 8 MWh pro Nacht (4 MW × 2 h) | P | K-008 P6; bestätigt von Max am 11.11.2026 (E-051) | `last.mwh_pro_tag` | ✅ Das „8 MW für 2 h“ im Teamdokument ist als 8 MWh zu lesen; 16 MWh nur als Sensitivität V6c |
 | 7 | Stromverbrauch Werk | 180 MWh pro Tag, 65 GWh pro Jahr | P | K-008 P1, P2 | `last.gesamtverbrauch_mwh_pro_tag` | ✅ |
-| 8 | Anteil Day-Ahead | ca. 53 MWh pro Tag (30 %), Rest Festpreis 85 €/MWh | P | K-008 P3, P4 | `vertrag.spot_anteil`, `kosten.festpreis_eur_mwh` | ✅ |
-| 9 | Bewertung der verschobenen MWh | Basis: 100 % am Spot (Band); Untergrenze 30 % | T | A3, K-008 | `vertrag.bewertung_verschiebung` | beide Fälle ausgewiesen |
+| 8 | Anteil Day-Ahead | ca. 53 MWh pro Tag (30 %), Rest Festpreis 85 €/MWh; der Festpreis deckt den Grundverbrauch und wird immer voll verbraucht (A-018) | P | K-008 P3, P4 | `vertrag.spot_anteil`, `kosten.festpreis_eur_mwh` | ✅ |
+| 9 | Bewertung der verschobenen MWh | 100 % am Day-Ahead: Die Reinigung liegt auf dem Grundverbrauch und wird voll an der Börse gekauft (Faktor 1,0, einziger Hauptfall) | T | A-018 (verbindlich, Owner R1) | `vertrag.bewertung_verschiebung` | ✅ Faktor 0,3 nur noch als Sensitivität V8 („falls der Festpreis nicht voll verbraucht wird“) |
 | 10 | Planungsvorlauf | Schichtplan Freitag 08:00 für Mo–So der Folgewoche (7 Tage) | P | K-008 P11 | `planung` | ✅ |
 | 11 | Nachtzuschlag | 25 % (25–30 %), gilt 22–06 Uhr | S / T | K-008 P13; Nachtstunden A-017 | `kosten.nachtzuschlag`, `nachtstunden` | Caro bestätigt beim Partner |
 | 12 | Wochenendzuschlag | 50 % (30–50 %), **Samstag und Sonntag** | S | K-008 P14, Teamdokument | `kosten.wochenendzuschlag` | ✅ (vorher nur Sonntag, E-049) |
@@ -56,7 +56,7 @@ Zusätzlich vorab festgelegt (`docs/hypothesen.md`): H0a (D nach Personalkosten)
 
 | Rolle | Person | Aufgaben laut Teamdokument |
 | --- | --- | --- |
-| R1 Projektleitung und Controlling | Chiara | Define (Problem, Forschungsfrage); Empfehlung an die Werksleitung (Improve, Control); Rahmen (Process Map), Steuerung, Vertrag Festpreis gegen Börse |
-| R2 Datenerhebung und IT | Max | Measure: Daten bestimmen, bereinigen, über Schnittstellen bereitstellen, Reproduzierbarkeit; kein Statistikteil |
+| R1 Projektleitung und Controlling | Chiara | Define (Problem, Forschungsfrage); Empfehlung an die Werksleitung (Improve); Steuerung, Vertrag Festpreis gegen Börse. *Process Map an R4, Control an R2 (E-057, abweichend vom Teamdokument)* |
+| R2 Datenerhebung und IT | Max | Measure: Daten bestimmen, bereinigen, über Schnittstellen bereitstellen, Reproduzierbarkeit; kein Statistikteil; Control (Kennzahl, Rücknahmeregel, Planungsskripte, E-057) |
 | R3 Modellierung und Statistik | Susan | Ursachen und Zusammenhänge beim Strom; Mittelwerte und optimale Zeiten; Vergleich mit heute; gepaarter t-Test |
-| R4 Produktion und Schichtplanung | Caro | Ursachen und Zusammenhänge bei den Zusatzkosten; Amortisation bzw. Break-even; dieselben Vergleiche mit Personalkosten |
+| R4 Produktion und Schichtplanung | Caro | Ursachen und Zusammenhänge bei den Zusatzkosten; Amortisation bzw. Break-even; dieselben Vergleiche mit Personalkosten; Process Map (E-057) |

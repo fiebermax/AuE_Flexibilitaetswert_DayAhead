@@ -130,5 +130,6 @@ def test_vertragsfaktor_skaliert_nur_die_euro():
     w["kosten_C"] = w["kosten_C"] - 10
     t = st.ersparnis_tabelle(w, PARAMS).set_index(["strategie", "vertrag"])
     assert t.loc[("C", "band"), "mittel_eur_woche"] == 10
-    assert abs(t.loc[("C", "proportional"), "mittel_eur_woche"] - 10 * PARAMS["vertrag"]["spot_anteil"]) < 1e-12
-    assert t.loc[("C", "band"), "anteil_oracle"] == t.loc[("C", "proportional"), "anteil_oracle"] == 1
+    assert t.loc[("C", "band"), "anteil_oracle"] == 1
+    assert set(t.index.get_level_values("vertrag")) == {"band"}           # A-018: factor 1.0 is the only main case
+    assert st.faktor(PARAMS, "proportional") == PARAMS["vertrag"]["spot_anteil"]   # still available for V8

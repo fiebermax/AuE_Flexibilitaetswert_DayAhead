@@ -151,7 +151,7 @@ def g5_break_even(be: pd.DataFrame, ziel: Path) -> None:
     """Payback months against one-off switching costs, for both contract cases."""
     b = be[(be["strategie"] == "D") & (be["periode"] == "test_gesamt")]
     fig, ax = plt.subplots()
-    for art, name, farbe in (("band", "alle verschobenen MWh am Spot", BLAU), ("proportional", "nur 30 % am Spot", ORANGE)):
+    for art, name, farbe in (("band", "Reinigung 100 % am Day-Ahead (A-018)", BLAU),):
         g = b[b["vertrag"] == art]
         x = g["umstellungskosten_eur"] / 1000
         ax.plot(x, g["break_even"], color=farbe, marker="o", markersize=5)
@@ -164,31 +164,13 @@ def g5_break_even(be: pd.DataFrame, ziel: Path) -> None:
     ax.annotate("1 Jahr", (1, 12), xytext=(0, 4), textcoords="offset points", fontsize=8, color=TEXT2)
     ax.set_xlabel("einmalige Umstellungskosten in Tausend €")
     ax.set_ylabel("Monate bis zur Amortisation")
-    ax.set_title("Bei vollem Spotbezug sind bis rund 60 000 € Umstellungskosten nach einem Jahr wieder drin")
+    ax.set_title("Bis rund 60 000 € Umstellungskosten sind nach einem Jahr wieder drin")
     speichern(fig, ziel, "g5_break_even.png")
-
-
-def g6_spot_festpreis(sf: pd.DataFrame, festpreis: float, ziel: Path) -> None:
-    """Mean spot price per year (plant profile) against the fixed price."""
-    fig, ax = plt.subplots()
-    x = np.arange(len(sf))
-    ax.bar(x, sf["spot_profil_eur_mwh"], width=0.55, color=BLAU)
-    ax.axhline(festpreis, color=ORANGE, linewidth=2)
-    # label in the empty upper right, with a leader line down to the fixed-price line (never on a bar)
-    ax.annotate(f"Festpreis {de(festpreis)} €/MWh", (len(sf) - 1.5, festpreis), xytext=(len(sf) - 1.5, festpreis + 90),
-                ha="center", fontsize=9, color=TEXT, arrowprops={"arrowstyle": "-", "color": TEXT2, "linewidth": 0.8})
-    for xi, v in zip(x, sf["spot_profil_eur_mwh"]):
-        ax.text(xi, v - 4, de(v), ha="center", va="top", fontsize=9, color="white", fontweight="bold")
-    ax.set_xticks(x, [str(j) + (" (bis Okt.)" if not v else "") for j, v in zip(sf["jahr"], sf["vollstaendig"])])
-    ax.grid(axis="x", visible=False)
-    ax.set_ylabel("Day-Ahead-Preis im Lastprofil in €/MWh")
-    ax.set_title("Außer 2024 war der Festpreis von 85 €/MWh günstiger als die Börse im Lastprofil")
-    speichern(fig, ziel, "g6_spot_festpreis.png")
 
 
 def g7_kumuliert(wochen: pd.DataFrame, ziel: Path) -> None:
     """Cumulative electricity saving vs A over the test weeks: fixed rule and weekly forecast run together."""
-    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2_viertel"])].sort_values("woche").copy()
+    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2"])].sort_values("woche").copy()
     w["woche"] = pd.to_datetime(w["woche"])
     fig, ax = plt.subplots()
     for s, name, farbe in (("C", "Tagesplanung (Oracle)", GRAU), ("B_16", "jede Woche neu, 16 Wochen", ORANGE),
@@ -240,7 +222,7 @@ def g8_heatmap_preistal(preise: pd.DataFrame, ziel: Path) -> None:
 
 def g9_heatmap_startwahl(naechte: pd.DataFrame, ziel: Path) -> None:
     """Strategy x start hour, share of test nights: D always 3 Uhr, the oracle spreads over 1-4 Uhr."""
-    n = naechte[naechte["periode"].isin(["test_1_stunde", "test_2_viertel"])]
+    n = naechte[naechte["periode"].isin(["test_1_stunde", "test_2"])]
     starts = [22, 23, 0, 1, 2, 3, 4]
     reihen = ["A", "D", "B", "B_16", "C"]
     w = pd.crosstab(n["strategie"], n["start_lokal"], normalize="index").mul(100).reindex(index=reihen, columns=starts, fill_value=0)
@@ -261,7 +243,7 @@ def g9_heatmap_startwahl(naechte: pd.DataFrame, ziel: Path) -> None:
 
 def g10_box_wochen(wochen: pd.DataFrame, ziel: Path) -> None:
     """Distribution of the weekly electricity saving vs A in the test: box plus every single week."""
-    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2_viertel"])]
+    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2"])]
     reihen = [("D", BLAU), ("B", ORANGE), ("B_16", ORANGE), ("C", GRAU)]
     daten = [(w["kosten_A"] - w[f"kosten_{s}"]).dropna().to_numpy() for s, _ in reihen]
     fig, ax = plt.subplots()
@@ -282,7 +264,7 @@ def g10_box_wochen(wochen: pd.DataFrame, ziel: Path) -> None:
 def g11_differenz_h0b(wochen: pd.DataFrame, ziel: Path) -> None:
     """H0b: weekly difference B - D (electricity saving) as histogram and QQ plot against the normal distribution."""
     from scipy import stats as sps
-    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2_viertel"])]
+    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2"])]
     d = (w["kosten_D"] - w["kosten_B"]).dropna().to_numpy()        # > 0: B saves more than D
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(9, 4))
     a1.hist(d, bins=25, color=BLAU, edgecolor="white", linewidth=1)
@@ -472,17 +454,16 @@ def daten_md(p: dict, tab: Path, sf: pd.DataFrame) -> str:
         "Zahlen mit Dezimalpunkt. € = Euro. Strategien: **A** Status quo 22–24 Uhr · **D** fest 3 Uhr (FS1, Empfehlung) · "
         "**B** jede Woche neu aus 4 Wochen (Median) · **B_16** jede Woche neu aus 16 Wochen (FS2) · **C** Oracle = Tagesplanung (Obergrenze) · "
         "D_saison = D je Saison (identisch mit D) · B_ohne_wochentag = Kontrolle für K3. Zeiträume: training 2023–2024 · test_1_stunde 01–09/2025 · "
-        "test_2_viertel 10/2025–09/2026 · test_gesamt = beide Tests (89 Wochen, Testentscheidung nur hier) · stresstest 2022. "
-        "Vertrag: band = alle verschobenen MWh am Spot (Basis), proportional = nur 30 %. Annahmen: `docs/annahmen.md`.",
+        "test_2 10/2025–09/2026 · test_gesamt = beide Tests (89 Wochen, Testentscheidung nur hier) · stresstest 2022. "
+        "Vertrag (A-018): Festpreis deckt den Grundverbrauch, die Reinigung wird zu 100 % am Day-Ahead gekauft (vertrag = band); nur in der Sensitivität V8 zählen 30 %. Annahmen: `docs/annahmen.md`.",
         "",
         "## Kernaussagen",
         "",
         f"- Fest 3 Uhr spart netto {de(netto.query('strategie == \"D\" and periode == \"test_gesamt\" and vertrag == \"band\"')['netto_eur_jahr'].iloc[0])} € pro Jahr "
-        f"(30 %-Fall {de(netto.query('strategie == \"D\" and periode == \"test_gesamt\" and vertrag == \"proportional\"')['netto_eur_jahr'].iloc[0])} €), "
         "93 % des Möglichen; H0a verworfen (p < 0.001).",
         "- Eine wöchentliche Prognose (B, B_16) ist nicht signifikant besser als fest 3 Uhr (H0b nicht verworfen).",
         "- Tagesplanung lohnt nur, wenn kurzfristiges Personal weniger als rund 2 € pro Stunde Aufpreis kostet (H0c, Kipppunkt).",
-        "- Kipppunkt der Empfehlung: mehr als 1.3 h (30 %-Fall 0.4 h) bezahlte Wartezeit je Person und Nacht.",
+        "- Kipppunkt der Empfehlung: mehr als 1.3 h bezahlte Wartezeit je Person und Nacht.",
         "- In keiner Woche 2022–2026 war 3 Uhr teurer als 22 Uhr; keine Sensitivitätsvariante kippt eine Entscheidung.",
         "",
         "## 1 Preistal der Nacht: mittlerer Preis des 2-h-Blocks je Startuhrzeit (€/MWh)",
@@ -553,7 +534,6 @@ def main() -> None:
     g3_kennzahl(pd.read_csv(tab / "kpi_rollierend.csv"), ziel)
     g4_sensitivitaet(pd.read_csv(ROOT / p["cleaning"]["reports"] / "sensitivitaet.csv"), ziel)
     g5_break_even(pd.read_csv(tab / "wirtschaftlichkeit.csv"), ziel)
-    g6_spot_festpreis(sf, p["kosten"]["festpreis_eur_mwh"], ziel)
     g7_kumuliert(pd.read_csv(tab / "backtest_wochen.csv"), ziel)
     g8_heatmap_preistal(preise, ziel)
     g9_heatmap_startwahl(pd.read_csv(tab / "backtest_naechte.csv"), ziel)

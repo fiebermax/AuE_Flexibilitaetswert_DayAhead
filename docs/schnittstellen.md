@@ -11,7 +11,7 @@ Jede Übergabe ist eine **CSV-Datei** mit festen Spalten und Einheiten (Details:
 | R3 → R4 | `ergebnisse/blockkosten_nacht.csv` | je Nacht × 2-h-Block: `nacht`, `wochentag_nacht`, `saison`, `n_stunden_nacht`, `pos`, `start_lokal`, `start_utc`, `preis_eur_mwh` (€/MWh), `sonntag_h`, `feiertag_h` (Stunden des Blocks) | `tests/test_merkmale.py` (Abgleich mit R2) |
 | R3 → R4 | `ergebnisse/backtest_naechte.csv` | je Nacht × Strategie: `periode`, `woche`, `nacht`, `strategie`, `start_lokal`, `start_utc`, `preis_eur_mwh`, `mwh`, `kosten_eur` (nur Strom), `sonntag_h`, `feiertag_h` | `pruefen()` in `src/04_strategien.py` |
 | R3 → R4 | `ergebnisse/backtest_wochen.csv` | `periode`, `woche` (Montag), `kosten_A`, `kosten_D`, `kosten_D_saison`, `kosten_B`, `kosten_B_ohne_wochentag`, `kosten_B_16`, `kosten_C` (EUR, nur Strom; C = Oracle; leer, wenn eine Strategie nicht alle 7 Nächte plant) | Wochensumme = Summe der Nächte, `pruefen()` |
-| R3 → R4 | `ergebnisse/ki_strategien.csv` | Ersparnis gegenüber A je `strategie`, `periode` (training, test_1_stunde, test_2_viertel, test_gesamt, stresstest), `vertrag` (band/proportional), `faktor`, `n_wochen`, `mittel_eur_woche`, `ki_unten`, `ki_oben` (95 % t), `boot_unten`, `boot_oben` (Block-Bootstrap), `eur_jahr`, `anteil_oracle` (EUR, nur Strom) | Seed 42, 5 000 Wiederholungen, Tests in `tests/test_strategien.py` |
+| R3 → R4 | `ergebnisse/ki_strategien.csv` | Ersparnis gegenüber A je `strategie`, `periode` (training, test_1_stunde, test_2, test_gesamt, stresstest), `vertrag` (band/proportional), `faktor`, `n_wochen`, `mittel_eur_woche`, `ki_unten`, `ki_oben` (95 % t), `boot_unten`, `boot_oben` (Block-Bootstrap), `eur_jahr`, `anteil_oracle` (EUR, nur Strom) | Seed 42, 5 000 Wiederholungen, Tests in `tests/test_strategien.py` |
 | R3 → R4, R1 | `ergebnisse/hypothesentests.csv` | H0b, H0c (Kipppunkt `untere_schranke` = m*), FS1–FS3 aus dem Teamdokument (E-049), K3-Vergleiche je Periode: `shapiro_p`, `t`, `p_t`, `p_wilcoxon`, `schwelle`, `h0_verworfen`, `robust`, `konfirmatorisch` | Entscheidung nur `test_gesamt` (`docs/hypothesen.md`) |
 | R3 → alle | `ergebnisse/fehleranalyse_b.csv` | Bedauern von B (B − C) und B − D in €/Nacht, Trefferquote, je Periode × Saison bzw. Wochentag | explorativ |
 | R4 → R1 | `ergebnisse/wirtschaftlichkeit.csv` | `szenario`, `strategie`, `periode`, `vertrag`, `ersparnis_eur_jahr` (netto nach Personal), `umstellungskosten_eur` (einmalig), `break_even` (Monate), `break_even_vorsichtig_monate` (untere KI-Grenze) | `tests/test_bewertung.py` |
@@ -54,7 +54,7 @@ for w in dz.planungswochen(preise, last, "test_1_stunde", historie_wochen=4):   
     w.last         # Last dieser Woche (mwh_gesamt, mwh_flexibel)
 ```
 
-- Perioden aus `zeitraeume` in `params.yaml`: `training` (104 Freitage), `test_1_stunde` (38), `test_2_viertel` (51), `stresstest` (51).
+- Perioden aus `zeitraeume` in `params.yaml`: `training` (104 Freitage), `test_1_stunde` (38), `test_2` (51), `stresstest` (51).
 - Planung Freitagmorgen 08:00 (K-008 P11): bekannt sind Preise bis Freitag 23:00 (die Samstagspreise kommen erst gegen 12:45). Gegenüber 12:00 ändert sich die Datengrenze nicht.
 - Nur volle Wochen je Periode; bricht mit `LookAheadFehler` ab, wenn Zukunftsdaten in die Historie geraten.
 

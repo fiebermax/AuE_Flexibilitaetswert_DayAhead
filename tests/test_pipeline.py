@@ -88,7 +88,7 @@ def test_bekannt_bis_haengt_an_der_planungsuhrzeit():
 
 
 def test_freitage_nur_volle_wochen_je_periode():
-    f1, f2 = dz.freitage("test_1_stunde", PARAMS), dz.freitage("test_2_viertel", PARAMS)
+    f1, f2 = dz.freitage("test_1_stunde", PARAMS), dz.freitage("test_2", PARAMS)
     assert all(f.weekday() == 4 for f in f1 + f2) and set(f1).isdisjoint(f2)
     assert f1[-1] + pd.Timedelta(days=10) < WECHSEL <= f2[0] + pd.Timedelta(days=3)
 
@@ -128,7 +128,7 @@ def test_datenzugriff_ohne_ausreisserflag():
 @braucht_daten
 def test_kein_look_ahead_in_allen_planungswochen():
     preise, last = dz.lade_preise(PARAMS), dz.lade_last(PARAMS)
-    for periode in ("training", "test_1_stunde", "test_2_viertel", "stresstest"):
+    for periode in ("training", "test_1_stunde", "test_2", "stresstest"):
         for w in dz.planungswochen(preise, last, periode, PARAMS, historie_wochen=4):
             assert w.historie.empty or w.historie["zeit"].max() < w.bekannt_bis
             assert w.zielwoche["zeit"].min() >= w.bekannt_bis

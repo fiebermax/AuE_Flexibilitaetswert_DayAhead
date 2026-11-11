@@ -146,7 +146,7 @@ def varianten(basis_naechte: pd.DataFrame, preise_clean: pd.DataFrame, params: d
         p7["last"]["blocklaenge_h"] = bh                                     # energy stays 8 MWh per night
         yield vid, "last.blocklaenge_h", bh, mit_personal(backtest_neu(p7), preise_clean, p7), f_band, False
 
-    yield "V8", "vertrag.bewertung_verschiebung", "proportional", basis, st.faktor(params, "proportional"), False
+    yield "V8", "vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird)", "proportional", basis, st.faktor(params, "proportional"), False
 
     p9 = copy.deepcopy(params)
     p9["kosten"]["nachtstunden"] = [23, 0, 1, 2, 3, 4, 5]

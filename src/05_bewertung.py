@@ -85,7 +85,7 @@ def netto_tests(naechte: pd.DataFrame, params: dict) -> pd.DataFrame:
     numbers for the other strategies, periods and the lower contract factor (descriptive)."""
     alpha = params["statistik"]["alpha_gesamt"] / params["statistik"]["anzahl_hypothesen"]
     zeilen = []
-    for art in ("band", "proportional"):
+    for art in st.VERTRAEGE:                       # factor 1.0 only (A-018); 0.3 lives in the sensitivity V8
         w = st.mit_testgesamt(netto_je_woche(naechte, params, st.faktor(params, art)))
         for (per, s), g in w.groupby(["periode", "strategie"], sort=False):
             if s not in BEWERTET:
@@ -126,7 +126,7 @@ def kipppunkte(naechte: pd.DataFrame, params: dict) -> pd.DataFrame:
     h0c = st.hypothesentests(st.mit_testgesamt(st.je_woche(naechte.drop(columns=["personal_eur"]))), params)
     m_stern = h0c[(h0c["hypothese"] == "H0c") & (h0c["periode"] == "test_gesamt")]["untere_schranke"].iloc[0]
     zeilen = []
-    for art in ("band", "proportional"):
+    for art in st.VERTRAEGE:
         f = st.faktor(params, art)
         d = st.mit_testgesamt(netto_je_woche(naechte, params, f))
         d = d[(d["strategie"] == "D") & (d["periode"] == "test_gesamt")]

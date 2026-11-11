@@ -8,6 +8,58 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### K-019 · KI-Einsatz Review Phase 1 (Vertrag, Konsistenz)
+- **Werkzeug:** Claude Code, Sitzung von Max nach dem Review-Prompt (Phasen 0–5)
+- **Zweck:** Vertrag auf Faktor 1,0 (A-018), Umbenennung `test_2` (E-059), Abschnitt Spot gegen Festpreis gekürzt, B_16 als „nicht signifikant“, Rollen (E-057), „2–4 Uhr“ angeglichen.
+- **Wie geprüft:** `pytest tests/`: 80 grün; `python src/run_all.py` komplett (10 Schritte, 3:42 min); alle bisherigen Zahlen für Faktor 1,0 bitgleich (netto_tests, ki_strategien, kipppunkte, wirtschaftlichkeit, backtest_wochen, sensitivitaet), nur die Zeilen des 30-%-Falls entfallen; Analyseseite neu ausgeführt.
+
+### P-013 · Folien widersprechen dem Repo an drei Stellen
+- **Problem:** (1) Folie 3 nennt H0a = feste Uhrzeit, H0b = Wochenplanung (16 Wochen) gegen 22–24 Uhr, H0c = Rücktest; vorab festgelegt sind andere H0a–H0c (`docs/hypothesen.md`, `7a63c15`). (2) Folie 3, Rahmen: „Reinigung heute 22–24 Uhr ist Annahme“; laut K-012 vom Partner bestätigt. (3) Folie 4 nennt R2 „Datenanalyse & IT“ und R3 „Energieeinkauf“; Teamdokument und Review: „Datenerhebung & IT“, „Modellierung & Statistik“.
+- **Angesprochen von:** Claude beim Abgleich mit der Präsentation (Projektvorstellung 12.11.2026), 11.11.2026
+- **Lösung:** (1) nach E-056 (Variante 1); (2) und (3) Folie anpassen. Folien liegen nicht im Repo; Änderung durch R1.
+- **Offen:** Chiara passt Folie 3 und 4 an.
+
+### E-059 · Benennung: `test_2` statt `test_2_viertel`, Empfehlung „fest 3 Uhr (3–5 Uhr)“, B_16 „nicht signifikant“
+- **Person:** Max (R2), nach Review (Punkt F)
+- **Entscheidung:** Periode `test_2_viertel` heißt überall `test_2` (Code, `params.yaml`, Ergebnisdateien, Notebook, Doku), weil die Viertelstunde Nichtziel ist (E-043). Die Empfehlung lautet einheitlich „fest 3 Uhr (3–5 Uhr)“; „2–4 Uhr“ in Erklärzettel und Ishikawa ersetzt (dort war das Preistal gemeint, jetzt „meist 2–5 Uhr“). B_16 gegen D heißt im Text „+10 € pro Woche, nicht signifikant (p = 0,019 > 0,017)“. Die Spalte `regime` in `preise_clean.csv` bleibt (Marktfakt).
+- **Verworfen:** auch `test_1_stunde` umbenennen (nicht verlangt; auf Wunsch in Phase 5).
+
+### E-058 · Zweite Preisquelle: Energy-Charts, teilweise unabhängig (revidiert den Sensitivitätsplan)
+- **Person:** Max (R2), nach Review (Punkt D)
+- **Entscheidung:** Abgleich SMARD gegen Energy-Charts (Fraunhofer ISE), gleicher Zeitraum, UTC-Stunden; Kennzeichnung „teilweise unabhängig (gleiche EPEX-Auktion, eigene Aufbereitung)“. Umsetzung in Phase 3.
+- **Verworfen:** ENTSO-E Transparency (braucht API-Token, ebenfalls dieselbe Auktion); kein Abgleich wie im Sensitivitätsplan (K2 Stufe 5 verlangt eine zweite Quelle, der Übertragungsfehler-Check ist genau ihr Wert).
+- **Revidiert:** `r2/docs/sensitivitaet_plan.md`, Abschnitt „Kein Abgleich mit ENTSO-E“.
+
+### A-019 · IT-Aufwand für die Automatisierung an R4
+- **Von → an:** Max (R2) → Caro (R4)
+- **Was:** Aufwand für den n8n-Workflow (baut Max selbst; Claude liefert `src/plan_woche.py`, `src/soll_ist.py`, Tests, `n8n/README.md`): **3–6 Personentage, Tagessatz 700 € (Bandbreite 500–900 €)**, Teamannahme. Damit einmalige Umstellungskosten 1 500–5 400 €, Mitte 3 150 € (4,5 PT × 700 €). R4 rechnet den Break-even damit neu (Phase 4).
+- **Kanal und Datum:** Chat Max mit Claude Code, 11.11.2026
+
+### E-057 · Rollen nach Review: Process Map bei R4, Control bei R2 (abweichend vom Teamdokument)
+- **Person:** Max (R2) für das Team
+- **Entscheidung:** Rollennamen wie im Teamdokument: R1 Projektleitung & Controlling (Chiara), R2 Datenerhebung & IT (Max), R3 Modellierung & Statistik (Susan), R4 Produktion & Schichtplanung (Caro). Abweichend vom Teamdokument gehört die Process Map zu R4 und Control (Kennzahl, Rücknahmeregel, Planungsskripte, Control-Seite) zu R2.
+- **Verworfen:** Process Map und Control bei R1 (Teamdokument): R4 kennt den Ablauf der Nacht, R2 baut die Skripte und die Kennzahl.
+- **Beleg:** `docs/kickoff.md` (Rollentabelle), `docs/annahmen.md` (Rollen); revidiert E-050 (Process Map bei R1).
+
+### E-056 · Hypothesen: Variante 1 (vorab festgelegte H0a–H0c bleiben konfirmatorisch)
+- **Person:** Max (R2), Entscheidung über Variante 1; Susan (R3) bestätigt hier
+- **Entscheidung:** Konfirmatorisch sind nur die vorab festgelegten H0a–H0c (`7a63c15`), α = 0,05/3. FS1–FS3 aus dem Teamdokument stehen daneben als Teamfragen mit Zuordnung und sind explorativ. Folie 3 wird darauf umgestellt (P-013). Umsetzung (Abschnitt „Zuordnung“ in `docs/hypothesen.md`, Notebook) in Phase 2.
+- **Verworfen:** Variante 2 (FS1–FS3 zusätzlich konfirmatorisch, α = 0,05/6): nicht zulässig, weil das Teamdokument nach der Berechnung der Testzeiträume entstand (E-055).
+- **Offen:** Bestätigung durch Susan.
+
+### E-055 · Teamdokument nach den Testergebnissen: FS1–FS3 und B_16 sind explorativ
+- **Person:** Max (R2)
+- **Befund:** Das Teamdokument „AuE_Projekt_gruppeF“ (16 Wochen, FS1–FS3) entstand am 11.11.2026 **nach** der Berechnung der Testzeiträume. Zeitfolge laut git (UTC): Regeln eingefroren 13:36 (`1d59427`), Testzeiträume gerechnet 13:45 (`f6a06df`), B_16 und FS1–FS3 ergänzt 13:55 (`1ef4baa`).
+- **Entscheidung:** FS1–FS3 und B_16 werden überall als **explorativ** gekennzeichnet. Die Empfehlung (fest 3 Uhr) hängt nicht daran: Sie stützt sich auf die vorab festgelegten H0a und H0b.
+- **Verworfen:** „Fragen vorab festgelegt, nur Code später“ (trifft nicht zu).
+
+### A-018 · Vertrag: Reinigung zu 100 % am Day-Ahead (verbindlich, Owner R1)
+- **Von → an:** Max (R2) nach Review → alle; Owner R1 (Chiara)
+- **Was:** Die 70 % Festpreis decken den Grundverbrauch des Werks und werden immer voll verbraucht. Die Reinigung liegt obendrauf und wird zu 100 % am Day-Ahead gekauft. Vertragsfaktor 1,0 ist der einzige Hauptfall. Faktor 0,3 ist aus Fazit, Kernaussagen, Netto-Tests, Kipppunkten und Break-even entfernt und bleibt nur als Sensitivität V8 („falls der Festpreis nicht voll verbraucht wird“). Der Abschnitt Spot gegen Festpreis ist auf eine Einordnung gekürzt (entscheidet nicht über die Uhrzeit); Grafik g6 entfällt, die Zahlen bleiben in `ergebnisse/spot_festpreis.csv`.
+- **Kanal und Datum:** Review, weitergegeben von Max, 11.11.2026
+- **Änderung, nachgezogen von:** `params.yaml` (`vertrag`), `docs/annahmen.md` (Nr. 8, 9), `src/04_strategien.py` (`VERTRAEGE`), `src/05_bewertung.py`, `src/06_sensitivitaet.py` (V8), `src/07_bericht.py`, `analyse.ipynb`; revidiert die Kipp-Annahme A3 (E-035) und die Zweifall-Rechnung aus M-004.
+- **Ergebnis:** Keine Zahl des Hauptfalls ändert sich (bitgleich); es entfallen nur die Zeilen des 30-%-Falls (z. B. 18 770 €/Jahr, Kipppunkt 0,4 h).
+
 ### E-054 · Acht weitere Grafiken nach Vorschlägen aus einer Claude-Sitzung (über Max)
 - **Person:** Max (R2), Vorschläge aus einer separaten Claude-Sitzung, die nur `analyse.html` gelesen hatte
 - **Entscheidung:** Neu in `src/07_bericht.py` und auf der Analyseseite: g8 Heatmap Stunde × Monat (Abweichung vom Monatsmittel), g9 Heatmap Startwahl je Strategie, g10 Verteilung der Wochenersparnis (Box plus Einzelwochen), g11 Differenz B − D als Histogramm und QQ-Plot (H0b, Normalität), g12 Wasserfall vom Oracle zur Netto-Ersparnis, g13 Kalender-Heatmap der Wochenersparnis, g14 Pareto der C&E-Matrix, g15 jede Nacht Preis 22 Uhr gegen 3 Uhr. Daten der Heatmap g8 zusätzlich als Tabelle 14 in `ergebnisse/daten_fuer_grafiken.md`.

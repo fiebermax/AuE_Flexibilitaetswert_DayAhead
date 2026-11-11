@@ -17,7 +17,7 @@ flowchart LR
       ME2["Prognose aus 4 bzw. 16 Wochen reagiert auf Zufall<br/>B trifft den billigsten Block nur in 24–50 % (fehleranalyse_b.csv)"]
     end
     subgraph Markt
-      MA1["Preistal wandert mit Wind und Last (2–4 Uhr)"]
+      MA1["Preistal wandert mit Wind und Last (meist 2–5 Uhr)"]
       MA2["Wochenend- und Feiertagsnächte anders geformt"]
       MA3["Krise 2022: größere Spreizung, gleicher Anteil (93 %)"]
     end

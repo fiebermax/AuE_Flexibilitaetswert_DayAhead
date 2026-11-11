@@ -3,10 +3,10 @@ Basis,—,—,D,test_1_stunde,38,1097.2216,0.92,,,0.0,0.0,True,False
 Basis,—,—,B,test_1_stunde,38,1086.1847,0.9107,,,0.0,0.0,True,False
 Basis,—,—,B_16,test_1_stunde,38,1113.0016,0.9332,,,0.0,0.0,True,False
 Basis,—,—,C,test_1_stunde,38,1192.3121,1.0,,,0.0,0.0,True,False
-Basis,—,—,D,test_2_viertel,51,1274.9216,0.9363,,,0.0,0.0,True,False
-Basis,—,—,B,test_2_viertel,51,1250.0247,0.9188,,,0.0,0.0,True,False
-Basis,—,—,B_16,test_2_viertel,51,1280.542,0.9404,,,0.0,0.0,True,False
-Basis,—,—,C,test_2_viertel,51,1361.6706,1.0,,,0.0,0.0,True,False
+Basis,—,—,D,test_2,51,1274.9216,0.9363,,,0.0,0.0,True,False
+Basis,—,—,B,test_2,51,1250.0247,0.9188,,,0.0,0.0,True,False
+Basis,—,—,B_16,test_2,51,1280.542,0.9404,,,0.0,0.0,True,False
+Basis,—,—,C,test_2,51,1361.6706,1.0,,,0.0,0.0,True,False
 Basis,—,—,D,test_gesamt,89,1199.0497,0.9299,True,,0.0,0.0,True,False
 Basis,—,—,B,test_gesamt,89,1180.0706,0.9156,,False,0.0,0.0,True,False
 Basis,—,—,B_16,test_gesamt,89,1209.0079,0.9376,,,0.0,0.0,True,False
@@ -15,10 +15,10 @@ V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,D,test_1_stunde,38,
 V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,B,test_1_stunde,38,1001.4344,0.9205,,,-84.7504,-7.8026,True,True
 V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,B_16,test_1_stunde,38,1020.0454,0.9376,,,-92.9562,-8.3519,True,True
 V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,C,test_1_stunde,38,1089.275,1.0,,,-103.0371,-8.6418,True,True
-V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,D,test_2_viertel,51,1113.8852,0.9332,,,-161.0364,-12.6311,True,True
-V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,B,test_2_viertel,51,1081.0064,0.906,,,-169.0183,-13.5212,True,True
-V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,B_16,test_2_viertel,51,1113.8614,0.9332,,,-166.6806,-13.0164,True,True
-V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,C,test_2_viertel,51,1193.1574,1.0,,,-168.5132,-12.3755,True,True
+V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,D,test_2,51,1113.8852,0.9332,,,-161.0364,-12.6311,True,True
+V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,B,test_2,51,1081.0064,0.906,,,-169.0183,-13.5212,True,True
+V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,B_16,test_2,51,1113.8614,0.9332,,,-166.6806,-13.0164,True,True
+V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,C,test_2,51,1193.1574,1.0,,,-168.5132,-12.3755,True,True
 V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,D,test_gesamt,89,1070.1931,0.9318,True,,-128.8566,-10.7466,True,True
 V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,B,test_gesamt,89,1047.0318,0.9119,,False,-133.0387,-11.2738,True,True
 V2,Auswertung ohne Nächte mit flag_outlier,174 Nächte raus,B_16,test_gesamt,89,1073.8051,0.935,,,-135.2028,-11.183,True,True
@@ -27,10 +27,10 @@ V3,last.feiertagsvariante_mariae_himmelfahrt,True,D,test_1_stunde,38,1097.2216,0
 V3,last.feiertagsvariante_mariae_himmelfahrt,True,B,test_1_stunde,38,1086.1847,0.9107,,,0.0,0.0,True,False
 V3,last.feiertagsvariante_mariae_himmelfahrt,True,B_16,test_1_stunde,38,1113.0016,0.9332,,,0.0,0.0,True,False
 V3,last.feiertagsvariante_mariae_himmelfahrt,True,C,test_1_stunde,38,1192.3121,1.0,,,0.0,0.0,True,False
-V3,last.feiertagsvariante_mariae_himmelfahrt,True,D,test_2_viertel,51,1274.9216,0.9363,,,0.0,0.0,True,False
-V3,last.feiertagsvariante_mariae_himmelfahrt,True,B,test_2_viertel,51,1250.0247,0.9188,,,0.0,0.0,True,False
-V3,last.feiertagsvariante_mariae_himmelfahrt,True,B_16,test_2_viertel,51,1280.542,0.9404,,,0.0,0.0,True,False
-V3,last.feiertagsvariante_mariae_himmelfahrt,True,C,test_2_viertel,51,1361.6706,1.0,,,0.0,0.0,True,False
+V3,last.feiertagsvariante_mariae_himmelfahrt,True,D,test_2,51,1274.9216,0.9363,,,0.0,0.0,True,False
+V3,last.feiertagsvariante_mariae_himmelfahrt,True,B,test_2,51,1250.0247,0.9188,,,0.0,0.0,True,False
+V3,last.feiertagsvariante_mariae_himmelfahrt,True,B_16,test_2,51,1280.542,0.9404,,,0.0,0.0,True,False
+V3,last.feiertagsvariante_mariae_himmelfahrt,True,C,test_2,51,1361.6706,1.0,,,0.0,0.0,True,False
 V3,last.feiertagsvariante_mariae_himmelfahrt,True,D,test_gesamt,89,1199.0497,0.9299,True,,0.0,0.0,True,False
 V3,last.feiertagsvariante_mariae_himmelfahrt,True,B,test_gesamt,89,1180.0706,0.9156,,False,0.0,0.0,True,False
 V3,last.feiertagsvariante_mariae_himmelfahrt,True,B_16,test_gesamt,89,1209.0079,0.9376,,,0.0,0.0,True,False
@@ -39,10 +39,10 @@ V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,D,test_1_stunde,38,646.5689,
 V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,B,test_1_stunde,38,639.4753,0.9146,,,-446.7095,-41.1265,True,True
 V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,B_16,test_1_stunde,38,660.0026,0.9412,,,-452.9989,-40.7007,True,True
 V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,C,test_1_stunde,38,706.8589,1.0,,,-485.4532,-40.7153,True,True
-V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,D,test_2_viertel,51,863.682,0.9512,,,-411.2396,-32.2561,True,True
-V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,B,test_2_viertel,51,844.9188,0.9322,,,-405.1059,-32.4078,True,True
-V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,B_16,test_2_viertel,51,864.3706,0.9519,,,-416.1714,-32.4996,True,True
-V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,C,test_2_viertel,51,913.27,1.0,,,-448.4006,-32.9302,True,True
+V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,D,test_2,51,863.682,0.9512,,,-411.2396,-32.2561,True,True
+V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,B,test_2,51,844.9188,0.9322,,,-405.1059,-32.4078,True,True
+V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,B_16,test_2,51,864.3706,0.9519,,,-416.1714,-32.4996,True,True
+V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,C,test_2,51,913.27,1.0,,,-448.4006,-32.9302,True,True
 V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,D,test_gesamt,89,770.982,0.9411,True,,-428.0676,-35.7006,True,True
 V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,B,test_gesamt,89,757.2013,0.9257,,False,-422.8692,-35.8342,True,True
 V4,last.produktionstage,Mo-Fr ohne Feiertage Bayern,B_16,test_gesamt,89,777.1124,0.948,,,-431.8955,-35.7231,True,True
@@ -51,10 +51,10 @@ V6a,last.mwh_pro_tag,4.0,D,test_1_stunde,38,550.6832,0.92,,,-546.5384,-49.8111,T
 V6a,last.mwh_pro_tag,4.0,B,test_1_stunde,38,545.1647,0.9107,,,-541.02,-49.8092,True,True
 V6a,last.mwh_pro_tag,4.0,B_16,test_1_stunde,38,558.5732,0.9332,,,-554.4284,-49.8138,True,True
 V6a,last.mwh_pro_tag,4.0,C,test_1_stunde,38,598.2284,1.0,,,-594.0837,-49.8262,True,True
-V6a,last.mwh_pro_tag,4.0,D,test_2_viertel,51,637.4608,0.9363,,,-637.4608,-50.0,True,True
-V6a,last.mwh_pro_tag,4.0,B,test_2_viertel,51,624.4976,0.9188,,,-625.5271,-50.0412,True,True
-V6a,last.mwh_pro_tag,4.0,B_16,test_2_viertel,51,640.271,0.9404,,,-640.271,-50.0,True,True
-V6a,last.mwh_pro_tag,4.0,C,test_2_viertel,51,680.8353,1.0,,,-680.8353,-50.0,True,True
+V6a,last.mwh_pro_tag,4.0,D,test_2,51,637.4608,0.9363,,,-637.4608,-50.0,True,True
+V6a,last.mwh_pro_tag,4.0,B,test_2,51,624.4976,0.9188,,,-625.5271,-50.0412,True,True
+V6a,last.mwh_pro_tag,4.0,B_16,test_2,51,640.271,0.9404,,,-640.271,-50.0,True,True
+V6a,last.mwh_pro_tag,4.0,C,test_2,51,680.8353,1.0,,,-680.8353,-50.0,True,True
 V6a,last.mwh_pro_tag,4.0,D,test_gesamt,89,600.4097,0.9299,True,,-598.64,-49.9262,True,True
 V6a,last.mwh_pro_tag,4.0,B,test_gesamt,89,590.6252,0.9156,,False,-589.4454,-49.95,True,True
 V6a,last.mwh_pro_tag,4.0,B_16,test_gesamt,89,605.3888,0.9376,,,-603.6191,-49.9268,True,True
@@ -63,10 +63,10 @@ V6b,last.mwh_pro_tag,12.0,D,test_1_stunde,38,1643.76,0.92,,,546.5384,49.8111,Tru
 V6b,last.mwh_pro_tag,12.0,B,test_1_stunde,38,1627.2047,0.9107,,,541.02,49.8092,True,True
 V6b,last.mwh_pro_tag,12.0,B_16,test_1_stunde,38,1667.43,0.9332,,,554.4284,49.8138,True,True
 V6b,last.mwh_pro_tag,12.0,C,test_1_stunde,38,1786.3958,1.0,,,594.0837,49.8262,True,True
-V6b,last.mwh_pro_tag,12.0,D,test_2_viertel,51,1912.3824,0.9363,,,637.4608,50.0,True,True
-V6b,last.mwh_pro_tag,12.0,B,test_2_viertel,51,1875.5518,0.9188,,,625.5271,50.0412,True,True
-V6b,last.mwh_pro_tag,12.0,B_16,test_2_viertel,51,1920.8129,0.9404,,,640.271,50.0,True,True
-V6b,last.mwh_pro_tag,12.0,C,test_2_viertel,51,2042.5059,1.0,,,680.8353,50.0,True,True
+V6b,last.mwh_pro_tag,12.0,D,test_2,51,1912.3824,0.9363,,,637.4608,50.0,True,True
+V6b,last.mwh_pro_tag,12.0,B,test_2,51,1875.5518,0.9188,,,625.5271,50.0412,True,True
+V6b,last.mwh_pro_tag,12.0,B_16,test_2,51,1920.8129,0.9404,,,640.271,50.0,True,True
+V6b,last.mwh_pro_tag,12.0,C,test_2,51,2042.5059,1.0,,,680.8353,50.0,True,True
 V6b,last.mwh_pro_tag,12.0,D,test_gesamt,89,1797.6897,0.9299,True,,598.64,49.9262,True,True
 V6b,last.mwh_pro_tag,12.0,B,test_gesamt,89,1769.516,0.9156,,False,589.4454,49.95,True,True
 V6b,last.mwh_pro_tag,12.0,B_16,test_gesamt,89,1812.627,0.9376,,,603.6191,49.9268,True,True
@@ -75,10 +75,10 @@ V6c,last.mwh_pro_tag,16.0,D,test_1_stunde,38,2190.2984,0.92,,,1093.0768,99.6223,
 V6c,last.mwh_pro_tag,16.0,B,test_1_stunde,38,2168.2247,0.9107,,,1082.04,99.6184,True,True
 V6c,last.mwh_pro_tag,16.0,B_16,test_1_stunde,38,2221.8584,0.9332,,,1108.8568,99.6276,True,True
 V6c,last.mwh_pro_tag,16.0,C,test_1_stunde,38,2380.4795,1.0,,,1188.1674,99.6524,True,True
-V6c,last.mwh_pro_tag,16.0,D,test_2_viertel,51,2549.8431,0.9363,,,1274.9216,100.0,True,True
-V6c,last.mwh_pro_tag,16.0,B,test_2_viertel,51,2501.0788,0.9188,,,1251.0541,100.0824,True,True
-V6c,last.mwh_pro_tag,16.0,B_16,test_2_viertel,51,2561.0839,0.9404,,,1280.542,100.0,True,True
-V6c,last.mwh_pro_tag,16.0,C,test_2_viertel,51,2723.3412,1.0,,,1361.6706,100.0,True,True
+V6c,last.mwh_pro_tag,16.0,D,test_2,51,2549.8431,0.9363,,,1274.9216,100.0,True,True
+V6c,last.mwh_pro_tag,16.0,B,test_2,51,2501.0788,0.9188,,,1251.0541,100.0824,True,True
+V6c,last.mwh_pro_tag,16.0,B_16,test_2,51,2561.0839,0.9404,,,1280.542,100.0,True,True
+V6c,last.mwh_pro_tag,16.0,C,test_2,51,2723.3412,1.0,,,1361.6706,100.0,True,True
 V6c,last.mwh_pro_tag,16.0,D,test_gesamt,89,2396.3297,0.9299,True,,1197.28,99.8524,True,True
 V6c,last.mwh_pro_tag,16.0,B,test_gesamt,89,2358.9613,0.9156,,False,1178.8908,99.9,True,True
 V6c,last.mwh_pro_tag,16.0,B_16,test_gesamt,89,2416.2461,0.9376,,,1207.2382,99.8536,True,True
@@ -87,10 +87,10 @@ V7a,last.blocklaenge_h,1,D,test_1_stunde,38,1493.3545,0.9394,,,396.1329,36.1033,
 V7a,last.blocklaenge_h,1,B,test_1_stunde,38,1462.8042,0.9214,,,376.6195,34.6736,True,True
 V7a,last.blocklaenge_h,1,B_16,test_1_stunde,38,1482.2976,0.9324,,,369.2961,33.1802,True,True
 V7a,last.blocklaenge_h,1,C,test_1_stunde,38,1590.2684,1.0,,,397.9563,33.3769,True,True
-V7a,last.blocklaenge_h,1,D,test_2_viertel,51,1694.6839,0.9363,,,419.7624,32.9246,True,True
-V7a,last.blocklaenge_h,1,B,test_2_viertel,51,1658.6002,0.9173,,,408.5755,32.6854,True,True
-V7a,last.blocklaenge_h,1,B_16,test_2_viertel,51,1700.2149,0.9394,,,419.6729,32.7731,True,True
-V7a,last.blocklaenge_h,1,C,test_2_viertel,51,1811.4296,1.0,,,449.759,33.0299,True,True
+V7a,last.blocklaenge_h,1,D,test_2,51,1694.6839,0.9363,,,419.7624,32.9246,True,True
+V7a,last.blocklaenge_h,1,B,test_2,51,1658.6002,0.9173,,,408.5755,32.6854,True,True
+V7a,last.blocklaenge_h,1,B_16,test_2,51,1700.2149,0.9394,,,419.6729,32.7731,True,True
+V7a,last.blocklaenge_h,1,C,test_2,51,1811.4296,1.0,,,449.759,33.0299,True,True
 V7a,last.blocklaenge_h,1,D,test_gesamt,89,1608.723,0.9375,True,,409.6734,34.1665,True,True
 V7a,last.blocklaenge_h,1,B,test_gesamt,89,1575.0019,0.9189,,False,394.9313,33.4668,True,True
 V7a,last.blocklaenge_h,1,B_16,test_gesamt,89,1607.1716,0.9366,,,398.1637,32.9331,True,True
@@ -99,10 +99,10 @@ V7b,last.blocklaenge_h,3,D,test_1_stunde,38,892.3033,0.9407,,,-204.9182,-18.6761
 V7b,last.blocklaenge_h,3,B,test_1_stunde,38,876.8485,0.9265,,,-209.3362,-19.2726,True,True
 V7b,last.blocklaenge_h,3,B_16,test_1_stunde,38,895.6311,0.9442,,,-217.3705,-19.5301,True,True
 V7b,last.blocklaenge_h,3,C,test_1_stunde,38,946.9442,1.0,,,-245.3679,-20.5792,True,True
-V7b,last.blocklaenge_h,3,D,test_2_viertel,51,1018.754,0.938,,,-256.1676,-20.0928,True,True
-V7b,last.blocklaenge_h,3,B,test_2_viertel,51,998.819,0.9206,,,-251.2058,-20.0961,True,True
-V7b,last.blocklaenge_h,3,B_16,test_2_viertel,51,1033.052,0.9512,,,-247.4899,-19.327,True,True
-V7b,last.blocklaenge_h,3,C,test_2_viertel,51,1085.0438,1.0,,,-276.6268,-20.3153,True,True
+V7b,last.blocklaenge_h,3,D,test_2,51,1018.754,0.938,,,-256.1676,-20.0928,True,True
+V7b,last.blocklaenge_h,3,B,test_2,51,998.819,0.9206,,,-251.2058,-20.0961,True,True
+V7b,last.blocklaenge_h,3,B_16,test_2,51,1033.052,0.9512,,,-247.4899,-19.327,True,True
+V7b,last.blocklaenge_h,3,C,test_2,51,1085.0438,1.0,,,-276.6268,-20.3153,True,True
 V7b,last.blocklaenge_h,3,D,test_gesamt,89,964.7638,0.9391,True,,-234.2858,-19.5393,True,True
 V7b,last.blocklaenge_h,3,B,test_gesamt,89,946.7417,0.9229,,False,-233.3289,-19.7725,True,True
 V7b,last.blocklaenge_h,3,B_16,test_gesamt,89,974.3779,0.9484,,,-234.63,-19.4068,True,True
@@ -111,34 +111,34 @@ V7c,last.blocklaenge_h,4,D,test_1_stunde,38,670.2637,0.9359,,,-426.9579,-38.9126
 V7c,last.blocklaenge_h,4,B,test_1_stunde,37,658.9851,0.9279,,,-427.1996,-39.3303,True,True
 V7c,last.blocklaenge_h,4,B_16,test_1_stunde,37,675.9568,0.9488,,,-437.0448,-39.2672,True,True
 V7c,last.blocklaenge_h,4,C,test_1_stunde,38,713.7918,1.0,,,-478.5203,-40.1338,True,True
-V7c,last.blocklaenge_h,4,D,test_2_viertel,51,764.0655,0.9164,,,-510.8561,-40.0696,True,True
-V7c,last.blocklaenge_h,4,B,test_2_viertel,51,764.2829,0.9173,,,-485.7418,-38.8586,True,True
-V7c,last.blocklaenge_h,4,B_16,test_2_viertel,50,786.962,0.9455,,,-493.58,-38.5446,True,True
-V7c,last.blocklaenge_h,4,C,test_2_viertel,51,832.6992,1.0,,,-528.9714,-38.8472,True,True
+V7c,last.blocklaenge_h,4,D,test_2,51,764.0655,0.9164,,,-510.8561,-40.0696,True,True
+V7c,last.blocklaenge_h,4,B,test_2,51,764.2829,0.9173,,,-485.7418,-38.8586,True,True
+V7c,last.blocklaenge_h,4,B_16,test_2,50,786.962,0.9455,,,-493.58,-38.5446,True,True
+V7c,last.blocklaenge_h,4,C,test_2,51,832.6992,1.0,,,-528.9714,-38.8472,True,True
 V7c,last.blocklaenge_h,4,D,test_gesamt,89,724.0153,0.924,True,,-475.0344,-39.6176,True,True
 V7c,last.blocklaenge_h,4,B,test_gesamt,88,720.01,0.9213,,False,-460.0606,-38.9859,True,True
 V7c,last.blocklaenge_h,4,B_16,test_gesamt,87,739.7529,0.9468,,,-469.255,-38.8132,True,True
 V7c,last.blocklaenge_h,4,C,test_gesamt,89,781.9298,1.0,,,-507.4304,-39.3552,True,True
-V8,vertrag.bewertung_verschiebung,proportional,D,test_1_stunde,38,332.0678,0.92,,,-765.1538,-69.7356,True,True
-V8,vertrag.bewertung_verschiebung,proportional,B,test_1_stunde,38,328.7567,0.9107,,,-757.428,-69.7329,True,True
-V8,vertrag.bewertung_verschiebung,proportional,B_16,test_1_stunde,38,336.8018,0.9332,,,-776.1998,-69.7393,True,True
-V8,vertrag.bewertung_verschiebung,proportional,C,test_1_stunde,38,360.5949,1.0,,,-831.7172,-69.7567,True,True
-V8,vertrag.bewertung_verschiebung,proportional,D,test_2_viertel,51,382.4765,0.9363,,,-892.4451,-70.0,True,True
-V8,vertrag.bewertung_verschiebung,proportional,B,test_2_viertel,51,374.2868,0.9188,,,-875.7379,-70.0576,True,True
-V8,vertrag.bewertung_verschiebung,proportional,B_16,test_2_viertel,51,384.1626,0.9404,,,-896.3794,-70.0,True,True
-V8,vertrag.bewertung_verschiebung,proportional,C,test_2_viertel,51,408.5012,1.0,,,-953.1694,-70.0,True,True
-V8,vertrag.bewertung_verschiebung,proportional,D,test_gesamt,89,360.9537,0.9299,True,,-838.096,-69.8967,True,True
-V8,vertrag.bewertung_verschiebung,proportional,B,test_gesamt,89,354.847,0.9156,,False,-825.2236,-69.93,True,True
-V8,vertrag.bewertung_verschiebung,proportional,B_16,test_gesamt,89,363.9411,0.9376,,,-845.0667,-69.8975,True,True
-V8,vertrag.bewertung_verschiebung,proportional,C,test_gesamt,89,388.0468,1.0,,,-901.3134,-69.9039,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,D,test_1_stunde,38,332.0678,0.92,,,-765.1538,-69.7356,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,B,test_1_stunde,38,328.7567,0.9107,,,-757.428,-69.7329,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,B_16,test_1_stunde,38,336.8018,0.9332,,,-776.1998,-69.7393,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,C,test_1_stunde,38,360.5949,1.0,,,-831.7172,-69.7567,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,D,test_2,51,382.4765,0.9363,,,-892.4451,-70.0,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,B,test_2,51,374.2868,0.9188,,,-875.7379,-70.0576,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,B_16,test_2,51,384.1626,0.9404,,,-896.3794,-70.0,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,C,test_2,51,408.5012,1.0,,,-953.1694,-70.0,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,D,test_gesamt,89,360.9537,0.9299,True,,-838.096,-69.8967,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,B,test_gesamt,89,354.847,0.9156,,False,-825.2236,-69.93,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,B_16,test_gesamt,89,363.9411,0.9376,,,-845.0667,-69.8975,True,True
+V8,vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird),proportional,C,test_gesamt,89,388.0468,1.0,,,-901.3134,-69.9039,True,True
 V9,kosten.nachtstunden,23-06 Uhr,D,test_1_stunde,38,970.8071,0.92,,,-126.4145,-11.5213,True,True
 V9,kosten.nachtstunden,23-06 Uhr,B,test_1_stunde,38,959.7703,0.9107,,,-126.4145,-11.6384,True,True
 V9,kosten.nachtstunden,23-06 Uhr,B_16,test_1_stunde,38,986.5871,0.9332,,,-126.4145,-11.358,True,True
 V9,kosten.nachtstunden,23-06 Uhr,C,test_1_stunde,38,1067.2792,1.0,,,-125.0329,-10.4866,True,True
-V9,kosten.nachtstunden,23-06 Uhr,D,test_2_viertel,51,1148.8186,0.9363,,,-126.1029,-9.891,True,True
-V9,kosten.nachtstunden,23-06 Uhr,B,test_2_viertel,51,1123.9218,0.9188,,,-126.1029,-10.088,True,True
-V9,kosten.nachtstunden,23-06 Uhr,B_16,test_2_viertel,51,1154.439,0.9404,,,-126.1029,-9.8476,True,True
-V9,kosten.nachtstunden,23-06 Uhr,C,test_2_viertel,51,1238.6559,1.0,,,-123.0147,-9.0341,True,True
+V9,kosten.nachtstunden,23-06 Uhr,D,test_2,51,1148.8186,0.9363,,,-126.1029,-9.891,True,True
+V9,kosten.nachtstunden,23-06 Uhr,B,test_2,51,1123.9218,0.9188,,,-126.1029,-10.088,True,True
+V9,kosten.nachtstunden,23-06 Uhr,B_16,test_2,51,1154.439,0.9404,,,-126.1029,-9.8476,True,True
+V9,kosten.nachtstunden,23-06 Uhr,C,test_2,51,1238.6559,1.0,,,-123.0147,-9.0341,True,True
 V9,kosten.nachtstunden,23-06 Uhr,D,test_gesamt,89,1072.8137,0.9299,True,,-126.236,-10.528,True,True
 V9,kosten.nachtstunden,23-06 Uhr,B,test_gesamt,89,1053.8346,0.9156,,False,-126.236,-10.6973,True,True
 V9,kosten.nachtstunden,23-06 Uhr,B_16,test_gesamt,89,1082.7719,0.9376,,,-126.236,-10.4413,True,True
@@ -147,10 +147,10 @@ V10,kosten.zuschlag_regel,addiert,D,test_1_stunde,38,1098.6032,0.92,,,1.3816,0.1
 V10,kosten.zuschlag_regel,addiert,B,test_1_stunde,38,1087.5663,0.9107,,,1.3816,0.1272,True,False
 V10,kosten.zuschlag_regel,addiert,B_16,test_1_stunde,38,1114.3832,0.9332,,,1.3816,0.1241,True,False
 V10,kosten.zuschlag_regel,addiert,C,test_1_stunde,38,1193.6937,1.0,,,1.3816,0.1159,True,False
-V10,kosten.zuschlag_regel,addiert,D,test_2_viertel,51,1274.9216,0.9363,,,0.0,0.0,True,False
-V10,kosten.zuschlag_regel,addiert,B,test_2_viertel,51,1248.9953,0.9188,,,-1.0294,-0.0824,True,False
-V10,kosten.zuschlag_regel,addiert,B_16,test_2_viertel,51,1280.542,0.9404,,,0.0,0.0,True,False
-V10,kosten.zuschlag_regel,addiert,C,test_2_viertel,51,1361.6706,1.0,,,0.0,0.0,True,False
+V10,kosten.zuschlag_regel,addiert,D,test_2,51,1274.9216,0.9363,,,0.0,0.0,True,False
+V10,kosten.zuschlag_regel,addiert,B,test_2,51,1248.9953,0.9188,,,-1.0294,-0.0824,True,False
+V10,kosten.zuschlag_regel,addiert,B_16,test_2,51,1280.542,0.9404,,,0.0,0.0,True,False
+V10,kosten.zuschlag_regel,addiert,C,test_2,51,1361.6706,1.0,,,0.0,0.0,True,False
 V10,kosten.zuschlag_regel,addiert,D,test_gesamt,89,1199.6396,0.9299,True,,0.5899,0.0492,True,False
 V10,kosten.zuschlag_regel,addiert,B,test_gesamt,89,1180.0706,0.9156,,False,0.0,0.0,True,False
 V10,kosten.zuschlag_regel,addiert,B_16,test_gesamt,89,1209.5978,0.9376,,,0.5899,0.0488,True,False

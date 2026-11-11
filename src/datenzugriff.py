@@ -116,7 +116,7 @@ def bekannt_bis(freitag: pd.Timestamp, params: dict | None = None) -> pd.Timesta
 def freitage(periode: str, params: dict | None = None) -> list[pd.Timestamp]:
     """All planning Fridays whose planned week (following Mon-Sun) belongs to the period.
 
-    `periode` is a key of `zeitraeume` in params.yaml, e.g. "test_1_stunde", "test_2_viertel",
+    `periode` is a key of `zeitraeume` in params.yaml, e.g. "test_1_stunde", "test_2",
     "training", "stresstest". With nur_volle_wochen the whole Mon-Sun week must lie inside the period;
     a week that crosses the boundary (e.g. 29.09.-05.10.2025, hour -> quarter-hour regime) is left out.
     """

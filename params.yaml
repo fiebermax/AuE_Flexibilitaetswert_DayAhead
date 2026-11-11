@@ -5,7 +5,7 @@ seed: 42
 zeitraeume:
   training:      ["2023-01-01", "2024-12-31"]
   test_1_stunde: ["2025-01-01", "2025-09-30"]   # Stundenregime
-  test_2_viertel: ["2025-10-01", "2026-09-30"]  # Viertelstundenregime ab 01.10.2025
+  test_2:        ["2025-10-01", "2026-09-30"]  # zweiter Testzeitraum (Stundenwerte; Viertelstunde ist Nichtziel, E-043, E-059)
   stresstest:    ["2022-01-01", "2022-12-31"]   # Gaspreiskrise, nie im Training
   datenstand:    "2026-10-31"
 
@@ -62,8 +62,9 @@ kosten:
 
 vertrag:                         # K-008 P3, P4; E-035
   spot_anteil: 0.30              # rund 53 von 180 MWh/Tag am Day-Ahead-Markt
-  bewertung_verschiebung: "band" # Kipp-Annahme A3: Festanteil als Band -> verschobene MWh zu 100 % am Spot bewertet;
-                                 # Alternative "proportional": nur spot_anteil der verschobenen MWh. Beide Fälle rechnen.
+  bewertung_verschiebung: "band" # A-018: Festpreis deckt den Grundverbrauch und wird voll verbraucht; die Reinigung liegt
+                                 # obendrauf und wird zu 100 % am Day-Ahead gekauft (Faktor 1,0, einziger Hauptfall).
+                                 # "proportional" (nur spot_anteil) nur noch als Sensitivität V8
 
 strategien:
   historie_wochen: 4             # B: Median der letzten 4 gleichen Werktage

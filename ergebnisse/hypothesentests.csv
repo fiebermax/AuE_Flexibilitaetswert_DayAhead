@@ -13,14 +13,14 @@ H0c,Kipppunkt m*: C spart mehr als B,test_1_stunde,False,38,106.1274,58.9775,86.
 K3 explorativ,D_saison spart mehr als D,test_1_stunde,False,38,0.0,0.0,0.0,0.0,0.0,0.0,,,,,,,,
 K3 explorativ,B spart mehr als B_ohne_wochentag,test_1_stunde,False,38,-12.5674,71.7449,-36.1493,11.0146,-28.1098,4.8244,0.0009,-1.0798,0.8564,0.9725,0.0167,False,True,-38.2944
 explorativ,B_16 spart mehr als D,test_1_stunde,False,38,15.78,42.0998,1.9421,29.6179,6.5514,31.0975,0.0004,2.3106,0.0133,0.0112,0.0167,True,True,0.6834
-FS1,D spart gegenüber A,test_2_viertel,False,51,1274.9216,788.5264,1053.145,1496.6982,939.6085,1615.3558,0.0001,11.5466,0.0,0.0,0.0167,True,True,1033.2787
-FS2,B_16 spart gegenüber A,test_2_viertel,False,51,1280.542,777.2099,1061.9481,1499.1358,946.2863,1616.7369,0.0,11.7663,0.0,0.0,0.0167,True,True,1042.367
-FS3,B_16 spart gegenüber A im letzten Jahr,test_2_viertel,False,51,1280.542,777.2099,1061.9481,1499.1358,946.2863,1616.7369,0.0,11.7663,0.0,0.0,0.0167,True,True,1042.367
-H0b,B spart mehr als D,test_2_viertel,False,51,-23.8675,88.854,-48.858,1.1231,-53.0634,3.7663,0.0,-1.9183,0.9696,0.9367,0.0167,False,True,-51.0966
-H0c,Kipppunkt m*: C spart mehr als B,test_2_viertel,False,51,110.6165,92.0376,84.7305,136.5025,77.8083,149.022,0.0,8.583,0.0,0.0,0.0167,True,True,82.4117
-K3 explorativ,D_saison spart mehr als D,test_2_viertel,False,51,0.0,0.0,0.0,0.0,0.0,0.0,,,,,,,,
-K3 explorativ,B spart mehr als B_ohne_wochentag,test_2_viertel,False,51,-14.2706,84.8937,-38.1473,9.6061,-46.7721,14.5048,0.0,-1.2005,0.8822,0.5817,0.0167,False,True,-40.2861
-explorativ,B_16 spart mehr als D,test_2_viertel,False,51,5.6204,46.2404,-7.3849,18.6257,-6.7405,16.9797,0.221,0.868,0.1948,0.2743,0.0167,False,True,-8.5499
+FS1,D spart gegenüber A,test_2,False,51,1274.9216,788.5264,1053.145,1496.6982,939.6085,1615.3558,0.0001,11.5466,0.0,0.0,0.0167,True,True,1033.2787
+FS2,B_16 spart gegenüber A,test_2,False,51,1280.542,777.2099,1061.9481,1499.1358,946.2863,1616.7369,0.0,11.7663,0.0,0.0,0.0167,True,True,1042.367
+FS3,B_16 spart gegenüber A im letzten Jahr,test_2,False,51,1280.542,777.2099,1061.9481,1499.1358,946.2863,1616.7369,0.0,11.7663,0.0,0.0,0.0167,True,True,1042.367
+H0b,B spart mehr als D,test_2,False,51,-23.8675,88.854,-48.858,1.1231,-53.0634,3.7663,0.0,-1.9183,0.9696,0.9367,0.0167,False,True,-51.0966
+H0c,Kipppunkt m*: C spart mehr als B,test_2,False,51,110.6165,92.0376,84.7305,136.5025,77.8083,149.022,0.0,8.583,0.0,0.0,0.0167,True,True,82.4117
+K3 explorativ,D_saison spart mehr als D,test_2,False,51,0.0,0.0,0.0,0.0,0.0,0.0,,,,,,,,
+K3 explorativ,B spart mehr als B_ohne_wochentag,test_2,False,51,-14.2706,84.8937,-38.1473,9.6061,-46.7721,14.5048,0.0,-1.2005,0.8822,0.5817,0.0167,False,True,-40.2861
+explorativ,B_16 spart mehr als D,test_2,False,51,5.6204,46.2404,-7.3849,18.6257,-6.7405,16.9797,0.221,0.868,0.1948,0.2743,0.0167,False,True,-8.5499
 FS1,D spart gegenüber A,training,False,104,1162.3677,501.7366,1064.7924,1259.9429,1018.0857,1294.7849,0.0015,23.6257,0.0,0.0,0.0167,True,True,1056.2459
 FS2,B_16 spart gegenüber A,training,False,104,1148.8154,493.4251,1052.8565,1244.7743,1007.5071,1281.3601,0.003,23.7436,0.0,0.0,0.0167,True,True,1044.4515
 H0b,B spart mehr als D,training,False,104,-30.8008,70.6823,-44.5467,-17.0548,-44.5127,-14.9945,0.0,-4.4439,1.0,1.0,0.0167,False,True,-45.7507

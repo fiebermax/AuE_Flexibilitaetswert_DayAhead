@@ -2,14 +2,14 @@
 
 <!-- KI: Claude, Zweck: alle Kennzahlen in einer Datei für Grafiken in Claude (E-052), erzeugt von src/07_bericht.py, geprüft von Chiara (R1) -->
 
-Erzeugt von `src/07_bericht.py` bei jedem `python src/run_all.py` aus den Ergebnisdateien; nichts von Hand eingetragen. Zahlen mit Dezimalpunkt. € = Euro. Strategien: **A** Status quo 22–24 Uhr · **D** fest 3 Uhr (FS1, Empfehlung) · **B** jede Woche neu aus 4 Wochen (Median) · **B_16** jede Woche neu aus 16 Wochen (FS2) · **C** Oracle = Tagesplanung (Obergrenze) · D_saison = D je Saison (identisch mit D) · B_ohne_wochentag = Kontrolle für K3. Zeiträume: training 2023–2024 · test_1_stunde 01–09/2025 · test_2_viertel 10/2025–09/2026 · test_gesamt = beide Tests (89 Wochen, Testentscheidung nur hier) · stresstest 2022. Vertrag: band = alle verschobenen MWh am Spot (Basis), proportional = nur 30 %. Annahmen: `docs/annahmen.md`.
+Erzeugt von `src/07_bericht.py` bei jedem `python src/run_all.py` aus den Ergebnisdateien; nichts von Hand eingetragen. Zahlen mit Dezimalpunkt. € = Euro. Strategien: **A** Status quo 22–24 Uhr · **D** fest 3 Uhr (FS1, Empfehlung) · **B** jede Woche neu aus 4 Wochen (Median) · **B_16** jede Woche neu aus 16 Wochen (FS2) · **C** Oracle = Tagesplanung (Obergrenze) · D_saison = D je Saison (identisch mit D) · B_ohne_wochentag = Kontrolle für K3. Zeiträume: training 2023–2024 · test_1_stunde 01–09/2025 · test_2 10/2025–09/2026 · test_gesamt = beide Tests (89 Wochen, Testentscheidung nur hier) · stresstest 2022. Vertrag (A-018): Festpreis deckt den Grundverbrauch, die Reinigung wird zu 100 % am Day-Ahead gekauft (vertrag = band); nur in der Sensitivität V8 zählen 30 %. Annahmen: `docs/annahmen.md`.
 
 ## Kernaussagen
 
-- Fest 3 Uhr spart netto 62 351 € pro Jahr (30 %-Fall 18 770 €), 93 % des Möglichen; H0a verworfen (p < 0.001).
+- Fest 3 Uhr spart netto 62 351 € pro Jahr 93 % des Möglichen; H0a verworfen (p < 0.001).
 - Eine wöchentliche Prognose (B, B_16) ist nicht signifikant besser als fest 3 Uhr (H0b nicht verworfen).
 - Tagesplanung lohnt nur, wenn kurzfristiges Personal weniger als rund 2 € pro Stunde Aufpreis kostet (H0c, Kipppunkt).
-- Kipppunkt der Empfehlung: mehr als 1.3 h (30 %-Fall 0.4 h) bezahlte Wartezeit je Person und Nacht.
+- Kipppunkt der Empfehlung: mehr als 1.3 h bezahlte Wartezeit je Person und Nacht.
 - In keiner Woche 2022–2026 war 3 Uhr teurer als 22 Uhr; keine Sensitivitätsvariante kippt eine Entscheidung.
 
 ## 1 Preistal der Nacht: mittlerer Preis des 2-h-Blocks je Startuhrzeit (€/MWh)
@@ -54,12 +54,12 @@ Quelle: `ergebnisse/ki_strategien.csv`.
 | B_ohne_wochentag | test_1_stunde | 38 | 1094.607 | 966.042 | 1223.172 | 931.476 | 1326.755 | 56919.583 | 0.921 |
 | B_16 | test_1_stunde | 38 | 1108.857 | 975.574 | 1242.14 | 943.802 | 1342.936 | 57660.556 | 0.933 |
 | C | test_1_stunde | 38 | 1188.167 | 1053.357 | 1322.978 | 1025.23 | 1424.947 | 61784.703 | 1.0 |
-| D | test_2_viertel | 51 | 1274.922 | 1053.145 | 1496.698 | 939.608 | 1615.356 | 66295.922 | 0.936 |
-| D_saison | test_2_viertel | 51 | 1274.922 | 1053.145 | 1496.698 | 939.608 | 1615.356 | 66295.922 | 0.936 |
-| B | test_2_viertel | 51 | 1251.054 | 1027.872 | 1474.237 | 902.668 | 1602.935 | 65054.814 | 0.919 |
-| B_ohne_wochentag | test_2_viertel | 51 | 1265.325 | 1043.966 | 1486.684 | 927.596 | 1607.552 | 65796.885 | 0.929 |
-| B_16 | test_2_viertel | 51 | 1280.542 | 1061.948 | 1499.136 | 946.286 | 1616.737 | 66588.182 | 0.94 |
-| C | test_2_viertel | 51 | 1361.671 | 1143.08 | 1580.262 | 1026.723 | 1704.594 | 70806.871 | 1.0 |
+| D | test_2 | 51 | 1274.922 | 1053.145 | 1496.698 | 939.608 | 1615.356 | 66295.922 | 0.936 |
+| D_saison | test_2 | 51 | 1274.922 | 1053.145 | 1496.698 | 939.608 | 1615.356 | 66295.922 | 0.936 |
+| B | test_2 | 51 | 1251.054 | 1027.872 | 1474.237 | 902.668 | 1602.935 | 65054.814 | 0.919 |
+| B_ohne_wochentag | test_2 | 51 | 1265.325 | 1043.966 | 1486.684 | 927.596 | 1607.552 | 65796.885 | 0.929 |
+| B_16 | test_2 | 51 | 1280.542 | 1061.948 | 1499.136 | 946.286 | 1616.737 | 66588.182 | 0.94 |
+| C | test_2 | 51 | 1361.671 | 1143.08 | 1580.262 | 1026.723 | 1704.594 | 70806.871 | 1.0 |
 | D | training | 104 | 1162.368 | 1064.792 | 1259.943 | 1018.086 | 1294.785 | 60443.12 | 0.934 |
 | D_saison | training | 104 | 1162.368 | 1064.792 | 1259.943 | 1018.086 | 1294.785 | 60443.12 | 0.934 |
 | B | training | 104 | 1131.567 | 1035.589 | 1227.545 | 986.409 | 1266.571 | 58841.48 | 0.91 |
@@ -86,10 +86,10 @@ Quelle: `ergebnisse/netto_tests.csv`. Grafikidee: Balken je Strategie mit Interv
 | B_16 | test_1_stunde | band | 1108.86 | -4.14 | 1113.0 | 979.52 | 1246.49 | 57876.08 | 0.0 | 0.0 | True |
 | C | test_1_stunde | band | 1188.17 | -4.14 | 1192.31 | 1058.06 | 1326.57 | 62000.23 | 0.0 | 0.0 | True |
 | D | test_1_stunde | band | 1093.08 | -4.14 | 1097.22 | 962.78 | 1231.66 | 57055.52 | 0.0 | 0.0 | True |
-| B | test_2_viertel | band | 1251.05 | 1.03 | 1250.02 | 1027.33 | 1472.72 | 65001.28 | 0.0 | 0.0 | True |
-| B_16 | test_2_viertel | band | 1280.54 | 0.0 | 1280.54 | 1062.58 | 1498.5 | 66588.18 | 0.0 | 0.0 | True |
-| C | test_2_viertel | band | 1361.67 | 0.0 | 1361.67 | 1143.62 | 1579.72 | 70806.87 | 0.0 | 0.0 | True |
-| D | test_2_viertel | band | 1274.92 | 0.0 | 1274.92 | 1053.8 | 1496.04 | 66295.92 | 0.0 | 0.0 | True |
+| B | test_2 | band | 1251.05 | 1.03 | 1250.02 | 1027.33 | 1472.72 | 65001.28 | 0.0 | 0.0 | True |
+| B_16 | test_2 | band | 1280.54 | 0.0 | 1280.54 | 1062.58 | 1498.5 | 66588.18 | 0.0 | 0.0 | True |
+| C | test_2 | band | 1361.67 | 0.0 | 1361.67 | 1143.62 | 1579.72 | 70806.87 | 0.0 | 0.0 | True |
+| D | test_2 | band | 1274.92 | 0.0 | 1274.92 | 1053.8 | 1496.04 | 66295.92 | 0.0 | 0.0 | True |
 | B | training | band | 1131.57 | -1.01 | 1132.58 | 1035.95 | 1229.2 | 58893.98 | 0.0 | 0.0 | True |
 | B_16 | training | band | 1148.82 | 0.0 | 1148.82 | 1052.17 | 1245.46 | 59738.4 | 0.0 | 0.0 | True |
 | C | training | band | 1243.87 | 0.0 | 1243.87 | 1145.35 | 1342.38 | 64681.08 | 0.0 | 0.0 | True |
@@ -98,26 +98,6 @@ Quelle: `ergebnisse/netto_tests.csv`. Grafikidee: Balken je Strategie mit Interv
 | B_16 | test_gesamt | band | 1207.24 | -1.77 | 1209.01 | 1072.89 | 1345.12 | 62868.41 | 0.0 | 0.0 | True |
 | C | test_gesamt | band | 1287.59 | -1.77 | 1289.36 | 1153.04 | 1425.68 | 67046.73 | 0.0 | 0.0 | True |
 | D | test_gesamt | band | 1197.28 | -1.77 | 1199.05 | 1061.02 | 1337.08 | 62350.58 | 0.0 | 0.0 | True |
-| C | stresstest | proportional | 945.68 | -0.51 | 946.2 | 801.28 | 1091.11 | 49202.2 | 0.0 | 0.0 | True |
-| D | stresstest | proportional | 883.0 | 3.09 | 879.92 | 732.08 | 1027.75 | 45755.63 | 0.0 | 0.0 | True |
-| B | stresstest | proportional | 896.76 | 1.71 | 895.04 | 733.01 | 1057.08 | 46542.29 | 0.0 | 0.0 | True |
-| B_16 | stresstest | proportional | 1103.19 | 4.63 | 1098.56 | 923.34 | 1273.78 | 57125.11 | 0.0 | 0.0 | True |
-| B | test_1_stunde | proportional | 324.61 | -4.14 | 328.76 | 285.64 | 371.87 | 17095.35 | 0.0 | 0.0 | True |
-| B_16 | test_1_stunde | proportional | 332.66 | -4.14 | 336.8 | 293.59 | 380.01 | 17513.69 | 0.0 | 0.0 | True |
-| C | test_1_stunde | proportional | 356.45 | -4.14 | 360.59 | 317.53 | 403.66 | 18750.94 | 0.0 | 0.0 | True |
-| D | test_1_stunde | proportional | 327.92 | -4.14 | 332.07 | 288.58 | 375.55 | 17267.53 | 0.0 | 0.0 | True |
-| B | test_2_viertel | proportional | 375.32 | 1.03 | 374.29 | 306.99 | 441.58 | 19462.91 | 0.0 | 0.0 | True |
-| B_16 | test_2_viertel | proportional | 384.16 | 0.0 | 384.16 | 318.38 | 449.94 | 19976.45 | 0.0 | 0.0 | True |
-| C | test_2_viertel | proportional | 408.5 | 0.0 | 408.5 | 342.57 | 474.43 | 21242.06 | 0.0 | 0.0 | True |
-| D | test_2_viertel | proportional | 382.48 | 0.0 | 382.48 | 315.77 | 449.18 | 19888.78 | 0.0 | 0.0 | True |
-| B | training | proportional | 339.47 | -1.01 | 340.48 | 309.75 | 371.21 | 17704.94 | 0.0 | 0.0 | True |
-| B_16 | training | proportional | 344.64 | 0.0 | 344.64 | 313.9 | 375.39 | 17921.52 | 0.0 | 0.0 | True |
-| C | training | proportional | 373.16 | 0.0 | 373.16 | 342.35 | 403.97 | 19404.32 | 0.0 | 0.0 | True |
-| D | training | proportional | 348.71 | 0.0 | 348.71 | 317.55 | 379.87 | 18132.94 | 0.0 | 0.0 | True |
-| B | test_gesamt | proportional | 353.67 | -1.18 | 354.85 | 312.57 | 397.12 | 18452.04 | 0.0 | 0.0 | True |
-| B_16 | test_gesamt | proportional | 362.17 | -1.77 | 363.94 | 322.39 | 405.49 | 18924.94 | 0.0 | 0.0 | True |
-| C | test_gesamt | proportional | 386.28 | -1.77 | 388.05 | 346.44 | 429.65 | 20178.44 | 0.0 | 0.0 | True |
-| D | test_gesamt | proportional | 359.18 | -1.77 | 360.95 | 318.85 | 403.06 | 18769.59 | 0.0 | 0.0 | True |
 
 ## 4 Hypothesentests (einseitig, Schwelle 0.05/3 = 0.0167)
 Quelle: `ergebnisse/hypothesentests.csv`; H0a in Abschnitt 3. konfirmatorisch = vorab festgelegt und nur test_gesamt.
@@ -138,14 +118,14 @@ Quelle: `ergebnisse/hypothesentests.csv`; H0a in Abschnitt 3. konfirmatorisch = 
 | K3 explorativ | D_saison spart mehr als D | test_1_stunde | False | 38 | 0.0 | 0.0 | 0.0 |  |  |  |  |  |  |
 | K3 explorativ | B spart mehr als B_ohne_wochentag | test_1_stunde | False | 38 | -12.567 | -36.149 | 11.015 | 0.001 | 0.856 | 0.972 | False | True | -38.294 |
 | explorativ | B_16 spart mehr als D | test_1_stunde | False | 38 | 15.78 | 1.942 | 29.618 | 0.0 | 0.013 | 0.011 | True | True | 0.683 |
-| FS1 | D spart gegenüber A | test_2_viertel | False | 51 | 1274.922 | 1053.145 | 1496.698 | 0.0 | 0.0 | 0.0 | True | True | 1033.279 |
-| FS2 | B_16 spart gegenüber A | test_2_viertel | False | 51 | 1280.542 | 1061.948 | 1499.136 | 0.0 | 0.0 | 0.0 | True | True | 1042.367 |
-| FS3 | B_16 spart gegenüber A im letzten Jahr | test_2_viertel | False | 51 | 1280.542 | 1061.948 | 1499.136 | 0.0 | 0.0 | 0.0 | True | True | 1042.367 |
-| H0b | B spart mehr als D | test_2_viertel | False | 51 | -23.868 | -48.858 | 1.123 | 0.0 | 0.97 | 0.937 | False | True | -51.097 |
-| H0c | Kipppunkt m*: C spart mehr als B | test_2_viertel | False | 51 | 110.616 | 84.73 | 136.502 | 0.0 | 0.0 | 0.0 | True | True | 82.412 |
-| K3 explorativ | D_saison spart mehr als D | test_2_viertel | False | 51 | 0.0 | 0.0 | 0.0 |  |  |  |  |  |  |
-| K3 explorativ | B spart mehr als B_ohne_wochentag | test_2_viertel | False | 51 | -14.271 | -38.147 | 9.606 | 0.0 | 0.882 | 0.582 | False | True | -40.286 |
-| explorativ | B_16 spart mehr als D | test_2_viertel | False | 51 | 5.62 | -7.385 | 18.626 | 0.221 | 0.195 | 0.274 | False | True | -8.55 |
+| FS1 | D spart gegenüber A | test_2 | False | 51 | 1274.922 | 1053.145 | 1496.698 | 0.0 | 0.0 | 0.0 | True | True | 1033.279 |
+| FS2 | B_16 spart gegenüber A | test_2 | False | 51 | 1280.542 | 1061.948 | 1499.136 | 0.0 | 0.0 | 0.0 | True | True | 1042.367 |
+| FS3 | B_16 spart gegenüber A im letzten Jahr | test_2 | False | 51 | 1280.542 | 1061.948 | 1499.136 | 0.0 | 0.0 | 0.0 | True | True | 1042.367 |
+| H0b | B spart mehr als D | test_2 | False | 51 | -23.868 | -48.858 | 1.123 | 0.0 | 0.97 | 0.937 | False | True | -51.097 |
+| H0c | Kipppunkt m*: C spart mehr als B | test_2 | False | 51 | 110.616 | 84.73 | 136.502 | 0.0 | 0.0 | 0.0 | True | True | 82.412 |
+| K3 explorativ | D_saison spart mehr als D | test_2 | False | 51 | 0.0 | 0.0 | 0.0 |  |  |  |  |  |  |
+| K3 explorativ | B spart mehr als B_ohne_wochentag | test_2 | False | 51 | -14.271 | -38.147 | 9.606 | 0.0 | 0.882 | 0.582 | False | True | -40.286 |
+| explorativ | B_16 spart mehr als D | test_2 | False | 51 | 5.62 | -7.385 | 18.626 | 0.221 | 0.195 | 0.274 | False | True | -8.55 |
 | FS1 | D spart gegenüber A | training | False | 104 | 1162.368 | 1064.792 | 1259.943 | 0.002 | 0.0 | 0.0 | True | True | 1056.246 |
 | FS2 | B_16 spart gegenüber A | training | False | 104 | 1148.815 | 1052.856 | 1244.774 | 0.003 | 0.0 | 0.0 | True | True | 1044.451 |
 | H0b | B spart mehr als D | training | False | 104 | -30.801 | -44.547 | -17.055 | 0.0 | 1.0 | 1.0 | False | True | -45.751 |
@@ -239,7 +219,7 @@ Quelle: `r2/ergebnisse/sensitivitaet.csv`. Grafikidee: liegende Balken der Ände
 | V7a | last.blocklaenge_h | 1 | 1608.72 | 34.17 | 0.94 | True | True |
 | V7b | last.blocklaenge_h | 3 | 964.76 | -19.54 | 0.94 | True | True |
 | V7c | last.blocklaenge_h | 4 | 724.02 | -39.62 | 0.92 | True | True |
-| V8 | vertrag.bewertung_verschiebung | proportional | 360.95 | -69.9 | 0.93 | True | True |
+| V8 | vertrag.bewertung_verschiebung (falls der Festpreis nicht voll verbraucht wird) | proportional | 360.95 | -69.9 | 0.93 | True | True |
 | V9 | kosten.nachtstunden | 23-06 Uhr | 1072.81 | -10.53 | 0.93 | True | True |
 | V10 | kosten.zuschlag_regel | addiert | 1199.64 | 0.05 | 0.93 | True | False |
 
@@ -254,12 +234,6 @@ Quelle: `ergebnisse/wirtschaftlichkeit.csv`.
 | band | 25000 | 62350.58 | 4.81 | 5.44 |
 | band | 50000 | 62350.58 | 9.62 | 10.87 |
 | band | 100000 | 62350.58 | 19.25 | 21.75 |
-| proportional | 0 | 18769.59 | 0.0 | 0.0 |
-| proportional | 5000 | 18769.59 | 3.2 | 3.62 |
-| proportional | 10000 | 18769.59 | 6.39 | 7.24 |
-| proportional | 25000 | 18769.59 | 15.98 | 18.09 |
-| proportional | 50000 | 18769.59 | 31.97 | 36.19 |
-| proportional | 100000 | 18769.59 | 63.93 | 72.38 |
 
 ## 8 Kipppunkte (D, test_gesamt)
 Quelle: `ergebnisse/kipppunkte.csv`.
@@ -271,11 +245,6 @@ Quelle: `ergebnisse/kipppunkte.csv`.
 | band | Zusätzlich bezahlte Stunden je Nacht (Warten oder zweite Anfahrt), mit Nachtzuschlag | 0.0 | 1.305 | Stunden je Person und Nacht | muss jede Person länger bezahlt werden als das, kippt die Verschiebung |
 | band | Preisunterschied 22-24 Uhr gegen gewählten Block | 21.38 | -0.032 | EUR/MWh | fällt die mittlere Spreizung darunter, lohnt die Verschiebung nicht mehr |
 | band | Tagesplanung statt Wochenplanung (H0c): Mehrkosten kurzfristiges Personal |  | 2.156 | EUR je Personalstunde | nur wenn kurzfristiges Personal weniger Aufpreis kostet, lohnt die Tagesplanung gegenüber B |
-| proportional | Vertragsfaktor (Anteil der verschobenen MWh am Spot) | 0.3 | -0.001 | Faktor | darunter frisst der Personal-Mehraufwand die Stromersparnis; <= 0 heißt: kein Kipppunkt |
-| proportional | Aufpreis je Personalstunde für die Verschiebung (zusätzlich zu Lohn und Zuschlägen) | 0.0 | 8.594 | EUR je Personalstunde | so viel mehr pro Stunde dürfte das Personal für 3 statt 22 Uhr kosten |
-| proportional | Zusätzlich bezahlte Stunden je Nacht (Warten oder zweite Anfahrt), mit Nachtzuschlag | 0.0 | 0.393 | Stunden je Person und Nacht | muss jede Person länger bezahlt werden als das, kippt die Verschiebung |
-| proportional | Preisunterschied 22-24 Uhr gegen gewählten Block | 21.38 | -0.105 | EUR/MWh | fällt die mittlere Spreizung darunter, lohnt die Verschiebung nicht mehr |
-| proportional | Tagesplanung statt Wochenplanung (H0c): Mehrkosten kurzfristiges Personal |  | 0.647 | EUR je Personalstunde | nur wenn kurzfristiges Personal weniger Aufpreis kostet, lohnt die Tagesplanung gegenüber B |
 
 ## 9 Spot gegen Festpreis (85 €/MWh)
 Quelle: `ergebnisse/spot_festpreis.csv`. Lastprofil (Annahme): 180 MWh/Tag, Reinigung 22–24 Uhr, Rest gleichmäßig 06–22 Uhr. vorteil_festpreis > 0 heißt: Der Festpreis war günstiger als die Börse.
@@ -311,10 +280,10 @@ Quelle: `ergebnisse/fehleranalyse_b.csv`. regret_b = B − C, b_minus_d = B − 
 | test_1_stunde | saison | Herbst | 28 | 16.87 | -1.9 | 32.14 |
 | test_1_stunde | saison | Sommer | 92 | 13.45 | 0.94 | 38.04 |
 | test_1_stunde | saison | Winter | 54 | 19.13 | 6.78 | 37.04 |
-| test_2_viertel | saison | Fruehling | 92 | 25.13 | 8.05 | 23.91 |
-| test_2_viertel | saison | Herbst | 83 | 20.47 | 7.19 | 37.35 |
-| test_2_viertel | saison | Sommer | 92 | 6.96 | -3.91 | 50.0 |
-| test_2_viertel | saison | Winter | 90 | 10.99 | 2.66 | 28.89 |
+| test_2 | saison | Fruehling | 92 | 25.13 | 8.05 | 23.91 |
+| test_2 | saison | Herbst | 83 | 20.47 | 7.19 | 37.35 |
+| test_2 | saison | Sommer | 92 | 6.96 | -3.91 | 50.0 |
+| test_2 | saison | Winter | 90 | 10.99 | 2.66 | 28.89 |
 | training | saison | Fruehling | 184 | 13.8 | 2.01 | 33.15 |
 | training | saison | Herbst | 182 | 16.81 | 7.89 | 28.57 |
 | training | saison | Sommer | 184 | 12.98 | 1.13 | 38.04 |
@@ -333,13 +302,13 @@ Quelle: `ergebnisse/fehleranalyse_b.csv`. regret_b = B − C, b_minus_d = B − 
 | test_1_stunde | wochentag_nacht | 4 | 38 | 11.03 | 1.02 | 36.84 |
 | test_1_stunde | wochentag_nacht | 5 | 38 | 21.15 | 2.71 | 31.58 |
 | test_1_stunde | wochentag_nacht | 6 | 38 | 12.59 | -3.35 | 34.21 |
-| test_2_viertel | wochentag_nacht | 0 | 51 | 18.23 | 11.05 | 31.37 |
-| test_2_viertel | wochentag_nacht | 1 | 51 | 12.43 | -0.48 | 31.37 |
-| test_2_viertel | wochentag_nacht | 2 | 51 | 19.17 | 9.6 | 25.49 |
-| test_2_viertel | wochentag_nacht | 3 | 51 | 9.02 | 0.23 | 41.18 |
-| test_2_viertel | wochentag_nacht | 4 | 51 | 10.1 | -1.0 | 45.1 |
-| test_2_viertel | wochentag_nacht | 5 | 51 | 26.01 | -0.27 | 35.29 |
-| test_2_viertel | wochentag_nacht | 6 | 51 | 15.66 | 4.76 | 35.29 |
+| test_2 | wochentag_nacht | 0 | 51 | 18.23 | 11.05 | 31.37 |
+| test_2 | wochentag_nacht | 1 | 51 | 12.43 | -0.48 | 31.37 |
+| test_2 | wochentag_nacht | 2 | 51 | 19.17 | 9.6 | 25.49 |
+| test_2 | wochentag_nacht | 3 | 51 | 9.02 | 0.23 | 41.18 |
+| test_2 | wochentag_nacht | 4 | 51 | 10.1 | -1.0 | 45.1 |
+| test_2 | wochentag_nacht | 5 | 51 | 26.01 | -0.27 | 35.29 |
+| test_2 | wochentag_nacht | 6 | 51 | 15.66 | 4.76 | 35.29 |
 | training | wochentag_nacht | 0 | 104 | 17.47 | 6.36 | 31.73 |
 | training | wochentag_nacht | 1 | 104 | 15.47 | 2.67 | 30.77 |
 | training | wochentag_nacht | 2 | 104 | 11.8 | 2.79 | 42.31 |
