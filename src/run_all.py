@@ -5,7 +5,7 @@ from pathlib import Path
 # Order of the pipeline; all programs live in src/ (diary E-040).
 SRC = Path(__file__).resolve().parent
 SCHRITTE = [SRC / f"{n}.py" for n in ("01_download", "02_synthetisch", "cleaning", "fensteranalyse",
-                                       "03_merkmale", "04_strategien", "05_bewertung")]
+                                       "03_merkmale", "04_strategien", "05_bewertung", "06_sensitivitaet")]
 
 for pfad in SCHRITTE:
     name = pfad.stem

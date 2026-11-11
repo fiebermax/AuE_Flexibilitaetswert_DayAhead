@@ -8,6 +8,18 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### M-005 · Sensitivitätsrechnung gerechnet (Phase 5, K2 Stufe 5)
+- **Stand:** `src/06_sensitivitaet.py`, zwölf Varianten (V2, V3, V4, V6a–c, V7a–c, V8, V9, V10) gegen die Basis, Schwelle 5 % vorab festgelegt (E-044). Keine Testentscheidung kippt (H0a verworfen, H0b nicht verworfen in allen Varianten); Anteil am Oracle 92–95 %. Euro-Beträge stark abhängig von Menge (−50 % bis +100 %), Vertrag (−70 %), Produktionstagen (−36 %) und Blocklänge (+34 % bis −40 %). Ohne Nächte mit auffälligen Preisen −11 %, Anteil gleich.
+- **Neu:** V6c = 16 MWh aus dem Teamdokument (E-049).
+- **Abweichung vom Plan:** Varianten, die die Regeln nicht berühren, werden auf den gewählten Blöcken nachgerechnet statt `cleaning`/`02_synthetisch` neu laufen zu lassen; nur V7 rechnet R3s eingefrorene Regeln neu (als Funktion `backtest_periode`, damit ist die Absprache aus Planpunkt 5 erledigt).
+- **Beleg:** `r2/ergebnisse/sensitivitaet.csv`, Tabelle in `r2/docs/sensitivitaet_plan.md`, `tests/test_sensitivitaet.py`, Erklärzettel Phase 5
+
+### K-017 · KI-Einsatz Phase 5 (Sensitivität R2)
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** `src/06_sensitivitaet.py`, `tests/test_sensitivitaet.py`, Schritt in `src/run_all.py`, Ergebnis im Sensitivitätsplan, Erklärzettel Phase 5.
+- **Wie geprüft:** `pytest tests/`: 80 grün; Basis gleich R4 (1 199,05 €/Woche); V3 und V10 zunächst verdächtig (fast 0): von Hand nachvollzogen, Feiertags- und Wochenendzuschläge treffen A und D symmetrisch; jede Variante ändert nachweislich ihren Schalter (Test); V6 linear (Test).
+- **Offen:** Max geht Erklärzettel Phase 5 durch (eigenes Paket, Verteidigung).
+
 ### M-004 · Bewertung R4 gerechnet (Phase 4): H0a verworfen, Kipppunkt ist das Personal
 - **Stand:** `src/05_bewertung.py`; `python src/run_all.py` läuft erstmals komplett durch. Test gesamt, D gegen A nach Personalkosten: netto 1 199 €/Woche (KI 1 061–1 337), 62 400 €/Jahr bei Faktor 1,0; 361 €/Woche, 18 800 €/Jahr bei Faktor 0,3. **H0a verworfen** (p < 0,001, Wilcoxon gleich). In keiner der 244 Wochen 2022–2026 war D teurer als 22–24 Uhr.
 - **Kipppunkte:** Zuschläge fast ohne Wirkung (Personal-Mehrkosten −2 €/Woche, weil 22–06 Uhr ganz Nacht ist). Die Verschiebung kippt, wenn jede Person je Nacht mehr als 1,3 h (Faktor 1,0) bzw. 0,4 h (Faktor 0,3) zusätzlich bezahlt werden muss, z. B. Warten von 22 bis 3 Uhr. Break-even bei 25 000 € Umstellungskosten: 4,8 bzw. 16 Monate.

@@ -152,3 +152,28 @@ Kriterien: Steuerbarkeit im Wochenplan (Gewicht 5), kein Produktrisiko (5), pers
 1. *„Warum kosten die Zuschläge fast nichts?“* Weil 22–06 Uhr komplett Nacht ist (A-017). Unterschiede entstehen nur am Wochenende und an Feiertagen, und die gleichen sich über die Woche aus (Freitagnacht teurer, Sonntagnacht billiger).
 2. *„Ihre Rücknahmeregel hat nie ausgelöst. Ist sie dann sinnlos?“* Mit unseren Kosten ja, weil die Ersparnis robust ist. Die Regel schützt gegen das, was wir nicht kennen: bezahlte Wartezeit, ein flacheres Preistal. Mit einer Stunde Wartezeit hätte sie in 43 von 196 Quartalen ausgelöst.
 3. *„Wie sicher ist die C&E-Bewertung?“* Es ist eine Teamannahme mit Begründung je Zelle. Selbst wenn man die Leistung (MW) am höchsten gewichtet, bleibt die Produktion wegen Rohmilch (P9) und fester Betriebszeit unverschiebbar.
+
+## Phase 5 · R2 (Max): Sensitivitätsrechnung
+
+**Was gebaut wurde**
+- `src/06_sensitivitaet.py` (läuft als letzter Schritt in `run_all.py`): zwölf Varianten aus `r2/docs/sensitivitaet_plan.md` gegen die Basis, je Strategie und Testzeitraum. Ergebnis: `r2/ergebnisse/sensitivitaet.csv`, Tabelle mit Lesart im Plan.
+- `tests/test_sensitivitaet.py`: 5 Tests (Basis = Ergebnis R4, Menge wirkt linear und lässt den Anteil gleich, jede Variante ändert wirklich ihren Schalter, V4, Zuordnung auffälliger Stunden zur Nacht).
+
+**Warum so**
+- *Schwelle vorher festgelegt* (5 %, E-044) und *alle Varianten berichtet*, auch die ohne Wirkung: sonst könnte man nur passende Varianten zeigen.
+- *Nachrechnen statt alles neu laufen lassen:* Die Regeln schauen nicht auf Menge, Personal, Feiertage oder Vertrag. Diese Größen wirken nur in der Bewertung. Nur die Blocklänge (V7) ändert die Wahl und läuft deshalb mit R3s eingefrorenen Regeln neu.
+
+**Ergebnis**
+- **Keine Testentscheidung kippt** in irgendeiner Variante (H0a verworfen, H0b nicht verworfen). Der Anteil am Oracle bleibt bei 92–95 %.
+- **Die Euro-Beträge schwanken stark:** Menge (4 bis 16 MWh) −50 % bis +100 %, Vertrag 30 % −70 %, nur Mo–Fr −36 %, Blocklänge 1 bis 4 h +34 % bis −40 %. Deshalb im Bericht immer als Bandbreite.
+- **Datenqualität (K2):** Ohne die 174 Nächte mit auffälligen Preisen sinkt die Ersparnis um 11 %, der Anteil bleibt gleich. Die Aussage hängt nicht an wenigen Extremstunden.
+- Feiertagskalender und addierte Zuschläge wirken nicht (sie treffen A und D gleich).
+
+**Verworfen**
+- Abgleich mit ENTSO-E als „zweite Quelle“ (keine unabhängige Quelle, nur Übertragungsfehler; der Check innerhalb von SMARD liegt schon vor, E-028).
+- `cleaning` und `02_synthetisch` für jede Variante neu laufen lassen (gleiches Ergebnis, viel mehr Code und Laufzeit).
+
+**Drei Prüferfragen**
+1. *„Woher wissen Sie, dass die Daten gut genug sind?“* Die Entscheidung bleibt in allen zwölf Varianten gleich, auch ohne die auffälligen Preise (−11 % in €, Anteil gleich). Dazu Lücken null, Stundenmittel gegen SMARD-Stundenwert höchstens 0,005 €/MWh Abweichung (E-028).
+2. *„Warum ist ‚relevant‘ bei V6 und V8 ja, wenn das doch nur linear ist?“* Weil die Schwelle für die Euro-Beträge gilt. Dass es linear ist, prüft ein Test; für die Entscheidung zählt, dass die Tests nicht kippen.
+3. *„Welche Annahme ist am kritischsten?“* Für die Euro-Beträge der Vertrag (Faktor 0,3) und die Menge (8 oder 16 MWh). Für die Entscheidung keine aus dieser Liste, sondern die bezahlte Wartezeit des Personals (Kipppunkt R4: 1,3 h bzw. 0,4 h).
