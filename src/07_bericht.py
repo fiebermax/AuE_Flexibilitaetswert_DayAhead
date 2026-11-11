@@ -203,6 +203,184 @@ def g7_kumuliert(wochen: pd.DataFrame, ziel: Path) -> None:
 
 
 # ---------------------------------------------------------------------------------------------
+# Further figures (team suggestions, E-054): distributions, heatmaps, waterfall, Pareto
+# ---------------------------------------------------------------------------------------------
+from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm  # noqa: E402
+
+# Sequential = one hue light -> dark (blue ramp); diverging = blue <-> red with a neutral grey midpoint
+SEQ = LinearSegmentedColormap.from_list("seq", ["#cde2fb", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"])
+DIV = LinearSegmentedColormap.from_list("div", ["#104281", "#3987e5", "#f0efec", "#e66767", "#a8282a"])
+STRATEGIE_NAME = {"A": "22–24 Uhr (heute)", "D": "fest 3 Uhr", "B": "jede Woche neu, 4 W.",
+                  "B_16": "jede Woche neu, 16 W.", "C": "Tagesplanung (Oracle)"}
+
+
+def g8_heatmap_preistal(preise: pd.DataFrame, ziel: Path) -> None:
+    """Hour x calendar month, price minus the monthly mean: shows the night valley AND the midday solar valley,
+    and how both move over the seasons. Deviation instead of level, so 2022 does not swamp the colour scale."""
+    d = preise.copy()
+    d["monat"] = pd.to_datetime(d["datum_lokal"]).dt.month
+    d["jahr"] = pd.to_datetime(d["datum_lokal"]).dt.year
+    d = d[d["jahr"] >= 2023]                                    # 2022 crisis would dominate; shown elsewhere
+    d["abw"] = d["preis_eur_mwh"] - d.groupby(["jahr", "monat"])["preis_eur_mwh"].transform("mean")
+    m = d.pivot_table(index="stunde_lokal", columns="monat", values="abw", aggfunc="mean")
+    fig, ax = plt.subplots(figsize=(8, 5.5))
+    grenze = np.nanmax(np.abs(m.to_numpy()))
+    bild = ax.imshow(m.to_numpy(), aspect="auto", cmap=DIV, norm=TwoSlopeNorm(0, -grenze, grenze))
+    ax.set_xticks(range(12), ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"])
+    ax.set_yticks(range(0, 24, 2), [f"{h:02d}:00" for h in range(0, 24, 2)])
+    for y in (-0.5 + 22, -0.5 + 6):                             # cleaning window 22-06 Uhr
+        ax.axhline(y, color=TEXT, linewidth=1, linestyle="--")
+    ax.grid(False)
+    fig.colorbar(bild, ax=ax, label="Abweichung vom Monatsmittel in €/MWh", shrink=0.85)
+    ax.set_ylabel("Uhrzeit (Stundenbeginn)")
+    ax.set_xlabel("Monat (2023–2026); gestrichelt: Reinigungsfenster 22–06 Uhr")
+    ax.set_title("Im Winter ist die Nacht das Preistal, im Sommer der Mittag; 3 Uhr ist stets billiger als 22 Uhr")
+    speichern(fig, ziel, "g8_heatmap_stunde_monat.png")
+
+
+def g9_heatmap_startwahl(naechte: pd.DataFrame, ziel: Path) -> None:
+    """Strategy x start hour, share of test nights: D always 3 Uhr, the oracle spreads over 1-4 Uhr."""
+    n = naechte[naechte["periode"].isin(["test_1_stunde", "test_2_viertel"])]
+    starts = [22, 23, 0, 1, 2, 3, 4]
+    reihen = ["A", "D", "B", "B_16", "C"]
+    w = pd.crosstab(n["strategie"], n["start_lokal"], normalize="index").mul(100).reindex(index=reihen, columns=starts, fill_value=0)
+    fig, ax = plt.subplots(figsize=(8, 3.8))
+    ax.imshow(w.to_numpy(), aspect="auto", cmap=SEQ, vmin=0, vmax=100)
+    for i in range(len(reihen)):
+        for j in range(len(starts)):
+            v = w.iat[i, j]
+            if v >= 0.5:
+                ax.text(j, i, f"{v:.0f} %", ha="center", va="center", fontsize=9, color="white" if v > 45 else TEXT)
+    ax.set_xticks(range(len(starts)), [f"{h:02d}–{(h + 2) % 24:02d}" for h in starts])
+    ax.set_yticks(range(len(reihen)), [STRATEGIE_NAME[r] for r in reihen])
+    ax.grid(False)
+    ax.set_xlabel("gewählter 2-h-Block (Start, deutsche Zeit), Anteil der Testnächte")
+    ax.set_title("Fest 3 Uhr trifft das Zentrum dessen, was die Tagesplanung im Nachhinein wählt")
+    speichern(fig, ziel, "g9_heatmap_startwahl.png")
+
+
+def g10_box_wochen(wochen: pd.DataFrame, ziel: Path) -> None:
+    """Distribution of the weekly electricity saving vs A in the test: box plus every single week."""
+    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2_viertel"])]
+    reihen = [("D", BLAU), ("B", ORANGE), ("B_16", ORANGE), ("C", GRAU)]
+    daten = [(w["kosten_A"] - w[f"kosten_{s}"]).dropna().to_numpy() for s, _ in reihen]
+    fig, ax = plt.subplots()
+    rng = np.random.default_rng(42)                              # fixed jitter, reproducible picture
+    for i, ((s, farbe), d) in enumerate(zip(reihen, daten)):
+        ax.scatter(i + rng.uniform(-0.18, 0.18, len(d)), d, s=10, color=farbe, alpha=0.45, linewidths=0)
+        ax.boxplot(d, positions=[i], widths=0.5, showfliers=False, medianprops={"color": TEXT, "linewidth": 2},
+                   boxprops={"color": TEXT2}, whiskerprops={"color": TEXT2}, capprops={"color": TEXT2})
+        ax.text(i + 0.3, np.median(d), f"Median {de(np.median(d))} €", va="center", fontsize=8, color=TEXT)
+    ax.set_xticks(range(len(reihen)), [STRATEGIE_NAME[s] for s, _ in reihen])
+    ax.set_xlim(-0.5, len(reihen) - 0.2)
+    ax.grid(axis="x", visible=False)
+    ax.set_ylabel("Stromersparnis gegenüber 22–24 Uhr in € je Woche")
+    ax.set_title("Die Wochen streuen stark und schief, alle Strategien gleich: deshalb Wilcoxon zusätzlich")
+    speichern(fig, ziel, "g10_verteilung_wochen.png")
+
+
+def g11_differenz_h0b(wochen: pd.DataFrame, ziel: Path) -> None:
+    """H0b: weekly difference B - D (electricity saving) as histogram and QQ plot against the normal distribution."""
+    from scipy import stats as sps
+    w = wochen[wochen["periode"].isin(["test_1_stunde", "test_2_viertel"])]
+    d = (w["kosten_D"] - w["kosten_B"]).dropna().to_numpy()        # > 0: B saves more than D
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(9, 4))
+    a1.hist(d, bins=25, color=BLAU, edgecolor="white", linewidth=1)
+    a1.axvline(0, color=GRAU, linewidth=1.2)
+    a1.axvline(d.mean(), color=TEXT, linewidth=1.2, linestyle="--")
+    a1.annotate(f"Mittel {de(d.mean())} €", (d.mean(), a1.get_ylim()[1] * 0.92), xytext=(-6, 0), textcoords="offset points",
+                ha="right", fontsize=8)
+    a1.set_xlabel("Ersparnis B minus Ersparnis D in € je Woche")
+    a1.set_ylabel("Anzahl Wochen")
+    (osm, osr), (steigung, achse, _) = sps.probplot(d, dist="norm")
+    a2.scatter(osm, osr, s=12, color=BLAU)
+    a2.plot(osm, steigung * np.asarray(osm) + achse, color=GRAU, linewidth=1.2)
+    a2.set_xlabel("theoretische Quantile der Normalverteilung")
+    a2.set_ylabel("beobachtete Differenz in €")
+    a1.set_title("Die Prognose B liegt um null und leicht unter fest 3 Uhr; die Ränder sind breiter als normal")
+    speichern(fig, ziel, "g11_differenz_b_minus_d.png")
+
+
+def g12_wasserfall(netto: pd.DataFrame, ziel: Path) -> None:
+    """From the oracle (best possible) down to the net saving of D: where the euros get lost."""
+    t = netto[(netto["periode"] == "test_gesamt") & (netto["vertrag"] == "band")].set_index("strategie")
+    oracle, d_strom = t.loc["C", "strom_ersparnis_eur_woche"], t.loc["D", "strom_ersparnis_eur_woche"]
+    personal, d_netto = t.loc["D", "personal_mehr_eur_woche"], t.loc["D", "netto_eur_woche"]
+    schritte = [("Tagesplanung\n(Oracle)", 0, oracle, GRAU), ("Planung eine\nWoche vorher", d_strom, oracle - d_strom, ORANGE),
+                ("fest 3 Uhr\nnur Strom", 0, d_strom, BLAU), ("Zuschläge\nPersonal", min(d_strom, d_netto), abs(personal), ORANGE),
+                ("fest 3 Uhr\nnetto", 0, d_netto, BLAU)]
+    fig, ax = plt.subplots()
+    for i, (name, unten, hoehe, farbe) in enumerate(schritte):
+        ax.bar(i, hoehe, bottom=unten, width=0.55, color=farbe)
+        wert = {1: -(oracle - d_strom), 3: -personal}.get(i, unten + hoehe)
+        ax.text(i, unten + hoehe + 20, (f"{de(wert)} €" if i not in (1, 3) else f"{'+' if wert > 0 else '−'}{de(abs(wert))} €"),
+                ha="center", fontsize=9)
+    ax.set_xticks(range(len(schritte)), [s[0] for s in schritte])
+    ax.grid(axis="x", visible=False)
+    ax.set_ylim(0, oracle * 1.12)
+    ax.set_ylabel("Ersparnis gegenüber 22–24 Uhr in € je Woche (Test)")
+    ax.set_title("Verloren geht nur, was eine Woche vorher nicht absehbar ist; die Zuschläge kosten fast nichts")
+    speichern(fig, ziel, "g12_wasserfall.png")
+
+
+def g13_kalender(kpi: pd.DataFrame, ziel: Path) -> None:
+    """Net saving of D per calendar week x year: 2022 and the summers stand out."""
+    k = kpi.copy()
+    dt = pd.to_datetime(k["woche"])
+    k["jahr"], k["kw"] = dt.dt.isocalendar().year, dt.dt.isocalendar().week
+    m = k.pivot_table(index="jahr", columns="kw", values="netto", aggfunc="mean").reindex(columns=range(1, 54))
+    fig, ax = plt.subplots(figsize=(9, 3.2))
+    bild = ax.imshow(m.to_numpy(), aspect="auto", cmap=SEQ, vmin=0, vmax=np.nanpercentile(m.to_numpy(), 98))
+    ax.set_yticks(range(len(m.index)), m.index.astype(str))
+    ax.set_xticks([0, 8, 17, 26, 34, 43, 52], ["KW 1", "KW 9", "KW 18", "KW 27", "KW 35", "KW 44", "KW 53"])
+    ax.grid(False)
+    fig.colorbar(bild, ax=ax, label="€ je Woche", shrink=0.9)
+    ax.set_title("Netto-Ersparnis fest 3 Uhr je Kalenderwoche: 2022 und die Sommer am größten, nie negativ")
+    speichern(fig, ziel, "g13_kalender_ersparnis.png")
+
+
+def g14_pareto_ce(ce: pd.DataFrame, ziel: Path) -> None:
+    """Pareto of the C&E matrix without a second axis: share as bars, cumulative share as label."""
+    c = ce[ce["prozess"] != "GEWICHT"]
+    fig, ax = plt.subplots(figsize=(7, 4))
+    farben = [BLAU] + [GRAU] * (len(c) - 1)
+    ax.bar(range(len(c)), c["anteil_pct"], width=0.55, color=farben)
+    for i, (a, k) in enumerate(zip(c["anteil_pct"], c["kumuliert_pct"])):
+        ax.text(i, a + 1.5, f"{de(a)} %  (kumuliert {de(k)} %)", ha="center", fontsize=9)
+    ax.set_xticks(range(len(c)), c["prozess"])
+    ax.grid(axis="x", visible=False)
+    ax.set_ylim(0, 75)
+    ax.set_ylabel("Anteil an der gewichteten Summe in %")
+    ax.set_title("C&E-Matrix: Die Reinigung vereint 62 % der Eignung, darum nur sie")
+    speichern(fig, ziel, "g14_pareto_ce.png")
+
+
+def g15_scatter_22_3(matrix: pd.DataFrame, ziel: Path) -> None:
+    """Every night: price of the 22 Uhr block against the 3 Uhr block. Below the diagonal = 3 Uhr cheaper."""
+    a = mk_block(matrix, 22).set_index("nacht")["preis_eur_mwh"]
+    d = mk_block(matrix, 3).set_index("nacht")["preis_eur_mwh"]
+    jahr = pd.to_datetime(a.index).year
+    fig, ax = plt.subplots(figsize=(6.5, 6))
+    for maske, name, farbe in ((jahr == 2022, "2022", ORANGE), (jahr >= 2023, "2023–2026", BLAU)):
+        ax.scatter(a[maske], d[maske], s=6, color=farbe, alpha=0.4, linewidths=0, label=name)
+    grenze = [min(a.min(), d.min()), max(a.max(), d.max())]
+    ax.plot(grenze, grenze, color=GRAU, linewidth=1)
+    anteil = (d < a).mean()
+    ax.text(grenze[1], grenze[0], f"3 Uhr billiger in {de(100 * anteil)} % der Nächte", ha="right", va="bottom", fontsize=9)
+    ax.legend(loc="upper left", frameon=False, fontsize=9, markerscale=3)
+    ax.set_xlabel("Preis Block 22–24 Uhr in €/MWh")
+    ax.set_ylabel("Preis Block 03–05 Uhr in €/MWh")
+    ax.set_title("Jede Nacht ein Punkt: fast alle liegen unter der Diagonalen")
+    speichern(fig, ziel, "g15_scatter_22_gegen_3.png")
+
+
+def mk_block(matrix: pd.DataFrame, start_h: int) -> pd.DataFrame:
+    """Block of a given start hour per night (same clock-change rule as R3's block_fuer_start)."""
+    rang = (matrix["start_lokal"] - 22) % 24
+    return matrix[rang >= (start_h - 22) % 24].sort_values(["nacht", "pos"]).groupby("nacht", as_index=False).first()
+
+
+# ---------------------------------------------------------------------------------------------
 # Spot vs. fixed price (R1)
 # ---------------------------------------------------------------------------------------------
 def spot_festpreis(preise: pd.DataFrame, params: dict) -> pd.DataFrame:
@@ -278,6 +456,11 @@ def daten_md(p: dict, tab: Path, sf: pd.DataFrame) -> str:
     rj = pd.read_csv(r2 / "reinigungsfenster_jahr.csv")
     rs = pd.read_csv(r2 / "reinigungsfenster_saison.csv")
     km = pd.read_csv(r2 / "kennzahlen_monat.csv")
+    pr = pd.read_csv(pfad(p, "processed") / "preise_clean.csv")
+    pr["monat"], pr["jahr"] = pd.to_datetime(pr["datum_lokal"]).dt.month, pd.to_datetime(pr["datum_lokal"]).dt.year
+    pr = pr[pr["jahr"] >= 2023]
+    pr["abw"] = pr["preis_eur_mwh"] - pr.groupby(["jahr", "monat"])["preis_eur_mwh"].transform("mean")
+    heat = pr.pivot_table(index="stunde_lokal", columns="monat", values="abw", aggfunc="mean").reset_index()
     tp = pd.read_csv(r2 / "tagesprofil_saison.csv").pivot_table(index="stunde_lokal", columns="saison", values="median").reset_index()
 
     teile = [
@@ -344,6 +527,9 @@ def daten_md(p: dict, tab: Path, sf: pd.DataFrame) -> str:
         "## 12 R2: Rückblick-Kennzahl je Jahr (Mehrkosten 22–24 Uhr gegen billigstes Fenster)",
         "Quelle: `r2/ergebnisse/reinigungsfenster_jahr.csv`, `reinigungsfenster_saison.csv`. Obergrenze mit bekannten Preisen, keine Strategie.",
         "", tabelle(rj, 2), "", tabelle(rs, 2), "",
+        "## 14 Heatmap Stunde × Monat: Abweichung vom Monatsmittel in €/MWh (2023–2026)",
+        "Quelle: `data/preise_clean.csv`; negativ = billiger als der Monatsdurchschnitt.",
+        "", tabelle(heat), "",
         "## 13 R2: Preis je Monat (€/MWh) und Tagesprofil je Saison (Median je Stunde)",
         "Quelle: `r2/ergebnisse/kennzahlen_monat.csv`, `tagesprofil_saison.csv`.",
         "", tabelle(km, 2), "", tabelle(tp, 1), "",
@@ -369,6 +555,14 @@ def main() -> None:
     g5_break_even(pd.read_csv(tab / "wirtschaftlichkeit.csv"), ziel)
     g6_spot_festpreis(sf, p["kosten"]["festpreis_eur_mwh"], ziel)
     g7_kumuliert(pd.read_csv(tab / "backtest_wochen.csv"), ziel)
+    g8_heatmap_preistal(preise, ziel)
+    g9_heatmap_startwahl(pd.read_csv(tab / "backtest_naechte.csv"), ziel)
+    g10_box_wochen(pd.read_csv(tab / "backtest_wochen.csv"), ziel)
+    g11_differenz_h0b(pd.read_csv(tab / "backtest_wochen.csv"), ziel)
+    g12_wasserfall(pd.read_csv(tab / "netto_tests.csv"), ziel)
+    g13_kalender(pd.read_csv(tab / "kpi_rollierend.csv"), ziel)
+    g14_pareto_ce(pd.read_csv(tab / "ce_matrix.csv"), ziel)
+    g15_scatter_22_3(pd.read_csv(tab / "blockkosten_nacht.csv"), ziel)
     print(f"Bericht R1: alle Daten -> {tab / 'daten_fuer_grafiken.md'}; Entwurfsgrafiken -> {ziel}")
     print(sf[["jahr", "vollstaendig", "spot_grundlast_eur_mwh", "spot_profil_eur_mwh", "vorteil_festpreis_eur_mwh",
               "vorteil_festpreis_spotanteil_eur", "vorteil_festpreis_ganzes_werk_eur"]].round(1).to_string(index=False))

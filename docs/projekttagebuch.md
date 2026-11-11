@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### E-054 · Acht weitere Grafiken nach Vorschlägen aus einer Claude-Sitzung (über Max)
+- **Person:** Max (R2), Vorschläge aus einer separaten Claude-Sitzung, die nur `analyse.html` gelesen hatte
+- **Entscheidung:** Neu in `src/07_bericht.py` und auf der Analyseseite: g8 Heatmap Stunde × Monat (Abweichung vom Monatsmittel), g9 Heatmap Startwahl je Strategie, g10 Verteilung der Wochenersparnis (Box plus Einzelwochen), g11 Differenz B − D als Histogramm und QQ-Plot (H0b, Normalität), g12 Wasserfall vom Oracle zur Netto-Ersparnis, g13 Kalender-Heatmap der Wochenersparnis, g14 Pareto der C&E-Matrix, g15 jede Nacht Preis 22 Uhr gegen 3 Uhr. Daten der Heatmap g8 zusätzlich als Tabelle 14 in `ergebnisse/daten_fuer_grafiken.md`.
+- **Abweichend vom Vorschlag:** Tornado (g4) und rollierende Linie (g3) gab es schon. Das Pareto zeigt die kumulierten Prozent als Beschriftung statt auf einer zweiten y-Achse (zwei Skalen in einer Grafik verworfen). Erster Titel von g8 („2–5 Uhr ganzjährig günstig“) war falsch, weil die Nacht im Sommer über dem Monatsmittel liegt; korrigiert und nachgeprüft (3 Uhr ist in jedem Monat 19–46 €/MWh billiger als 22 Uhr).
+- **Beleg:** `ergebnisse/grafiken/g8`–`g15`, `ergebnisse/analyse.html`; jede Grafik gerendert und angesehen.
+
 ### E-053 · Finale Analyseseite im Design des Notebook-Prototyps
 - **Person:** Max (R2), nach Vorlage seines Notebook-Prototyps (`prototype.html`, nicht im Repo)
 - **Entscheidung:** `analyse.ipynb` ist die eine Analyseseite (Ziel aus E-039): linear von den Parametern über Daten, Preistal, Backtest, Ergebnisse FS1–FS3, Tests, Fehleranalyse, Personalkosten und Wirtschaftlichkeit, C&E, Sensitivität, Spot gegen Festpreis bis zur Empfehlung, Owner je Abschnitt. Sie rechnet nichts neu, sondern liest die Ergebnisdateien; die Interpretationstexte setzen ihre Zahlen beim Ausführen selbst ein (Zellen mit Tag `remove_input`, auf der Seite nur als Text). `src/08_board.py` führt das Notebook als letzten Schritt von `run_all.py` aus und exportiert `ergebnisse/analyse.html` im JupyterLab-Stil. Neue Pakete in `requirements.txt` (nbformat, nbclient, nbconvert, mistune 3.0.2 wegen Unverträglichkeit mit nbconvert 7.16, ipykernel). Neue Grafik g7 (kumulierte Ersparnis im Test).
