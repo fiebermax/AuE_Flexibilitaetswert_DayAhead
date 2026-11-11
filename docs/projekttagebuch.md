@@ -8,6 +8,23 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### M-002 · Strategien eingefroren (Commit `1d59427`)
+- **Stand:** Regeln A, D (3 Uhr), D_saison (3 Uhr in jeder Saison), B (Median der letzten 4 gleichen Wochentage), B_ohne_wochentag (letzte 28 Nächte), C (Oracle) in `src/04_strategien.py`, entwickelt nur auf dem Training 2023–2024. Hash: `1d594271f1c9f2a2dfccecc3faf1b114baa3e8d4`.
+- **Regel ab jetzt:** Keine Änderung an den Regeln mehr. Test 1, Test 2 und Stresstest 2022 laufen erst in Phase 3. Ein Code-Fehler wird behoben und hier offen dokumentiert, die Regel selbst bleibt (`docs/hypothesen.md`).
+- **Rückstand:** Susan hat die Regeln noch nicht bestätigt (E-045, E-046); eingefroren auf Anweisung von Max („weiter“).
+
+### E-048 · Kalendermerkmale verbessern die Strategien im Training nicht (Befund, K3)
+- **Person:** Claude als Befund für Susan (R3)
+- **Befund (Training, 104 Wochen, nur Strom, Faktor 1,0):** Ersparnis gegenüber A: D 1 162 €/Woche (93,4 % des Oracle), D_saison 1 162 (93,4 %), B 1 132 (91,0 %), B_ohne_wochentag 1 139 (91,6 %), C 1 244. Saison bringt 0 €, gleicher Wochentag −7 €/Woche. B ist im Training schlechter als die feste Regel D, wobei D im Training gelernt und deshalb geschönt ist.
+- **Folge:** K3 Stufe 5 („Merkmal verbessert das Ergebnis messbar“) ist mit diesen beiden Merkmalen nicht belegt. Beide Ergebnisse werden als negative Ergebnisse berichtet. Eine weitere Merkmalssuche nach Sicht der Ergebnisse ist verworfen (p-Hacking). Ob ein anderer K3-Beleg kommt (z. B. „Nacht als Einheit über Mitternacht“ statt Kalendertag, R2), entscheidet das Team.
+- **Beleg:** `ergebnisse/backtest_wochen.csv` (Periode training), `docs/erklaerzettel.md` Phase 2
+
+### K-014 · KI-Einsatz Phase 2 (Strategien R3)
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** `src/04_strategien.py`, `tests/test_strategien.py`, Erklärzettel Phase 2, Schnittstellen `backtest_naechte.csv` und `backtest_wochen.csv`.
+- **Wie geprüft:** `pytest tests/`: 67 grün. Beim ersten Lauf schlug die Prüfung „Oracle nie teurer“ an: Der Montag war als „Freitag + 72 h“ berechnet und verschob in Wochen mit Zeitumstellung die Woche um eine Nacht; behoben mit Kalendertagen und Test. Woche ab 04.03.2024 von Hand aus den Stundenpreisen nachgerechnet (A 3 682,24 €, D 3 199,52 €, C 3 163,32 €, gleich). Look-ahead-Test: verfälschte Zukunftspreise ändern den Plan von B nicht.
+- **Offen:** Susan bestätigt den Erklärzettel Phase 2.
+
 ### E-047 · Haupttest t-Test, keine Regression (ändert `docs/hypothesen.md` vom selben Tag)
 - **Person:** Max (R2) für das Team, 11.11.2026
 - **Entscheidung:** Über H0a–H0c entscheidet der gepaarte t-Test, einseitig, p < α/3. Shapiro-Wilk wird vorher berichtet, Wilcoxon läuft als Gegenprobe, ein Block-Bootstrap-Intervall nur als Grenze. Die Regression (Ersparnis je Nacht gegen die Nachtspreizung) und die Regressionsvariante B′ entfallen.
