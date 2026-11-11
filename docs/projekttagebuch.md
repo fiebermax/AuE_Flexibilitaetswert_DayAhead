@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### E-051 · Energie der Reinigung: 8 MWh pro Nacht (löst den offenen Punkt aus E-049)
+- **Person:** Max (R2), 11.11.2026
+- **Entscheidung:** Die Reinigung braucht 8 MWh pro Nacht (4 MW × 2 h), wie im Interview genannt (K-008 P6). Das „8 MW für 2 h“ im Teamdokument ist als 8 MWh zu lesen; das Teamdokument wird entsprechend korrigiert. Alle bisherigen Ergebnisse gelten unverändert, weil sie schon mit 8 MWh gerechnet sind.
+- **Verworfen:** 16 MWh (8 MW × 2 h): widerspricht dem Interview. Bleibt als Sensitivität V6c im Bericht (Euro-Beträge doppelt, Entscheidung gleich, M-005).
+- **Beleg:** `params.yaml` (`last.mwh_pro_tag`), `docs/annahmen.md` Nr. 6
+
 ### K-018 · KI-Einsatz Phase 6 (R1), Zwischenstand: Grafiken und Spot gegen Festpreis
 - **Werkzeug:** Claude Code, Sitzung von Max (E-045)
 - **Zweck:** `src/07_bericht.py` (letzter Schritt in `run_all.py`): sechs Grafiken nach einem Standard in `ergebnisse/grafiken/` (Titel = Kernaussage, eine y-Achse, Quelle unten, Farben nach Rolle, farbenblind geprüft mit dem Palettenprüfer, direkte Beschriftung) und `ergebnisse/spot_festpreis.csv` (mittlerer Day-Ahead-Preis im Lastprofil des Werks je Jahr gegen 85 €/MWh: 2022 247, 2023 100, 2024 82, 2025 91, 2026 bis Okt. 111 €/MWh).
@@ -51,7 +57,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Offenlegung:** B_16 und FS1–FS3 kamen **nach** dem Einfrieren (`1d59427`) und nach Sicht der Testergebnisse dazu. Sie sind deshalb als „nicht konfirmatorisch“ markiert; die vorab festgelegten H0a–H0c bleiben unverändert. Die Regel B_16 stammt aus dem Teamdokument, wurde also nicht nach den Ergebnissen gewählt. Die bisherigen Strategien sind bitgleich (geprüft gegen den Stand von Phase 3).
 - **Ergebnis (Test gesamt, 89 Wochen, nur Strom):** FS1: D spart 1 197 €/Woche (KI 1 059–1 336). FS2: B_16 spart 1 207 €/Woche (KI 1 071–1 344, 93,8 % des Oracle). FS3 (letztes Jahr): B_16 spart 1 281 €/Woche (KI 1 062–1 499). Alle p < 0,001. B_16 gegen D: +10 €/Woche (KI 0,6–19, p = 0,019 > α/3; im Training −14): praktisch gleich gut.
 - **Nebenbei behoben:** Anteil am Oracle wurde bei Strategien mit fehlenden Wochen (B in 2022) gegen das Oracle aller Wochen gerechnet; jetzt auf denselben Wochen (B im Stresstest 90,8 % statt 94,8 %).
-- **Offen:** Energie der Reinigung. Das Teamdokument nennt „8 MW für 2 h“ (16 MWh), das Interview K-008 P6 „4 MW für ca. 2 h“ (8 MWh). Im Code bleibt 8 MWh, bis das Team es klärt; alle Euro-Beträge würden sich verdoppeln, Anteile, Tests und €/MWh-Werte nicht.
+- **Offen:** ~~Energie der Reinigung~~ erledigt am 11.11.2026: 8 MWh (E-051).
 - **Verworfen:** B (4 Wochen, Median) durch B_16 ersetzen (würde die eingefrorene Regel nachträglich ändern); FS1–FS3 als konfirmatorisch zählen (nachträglich, und es wären sechs statt drei Tests für Bonferroni).
 
 ### M-003 · Backtest und Tests von R3 gerechnet (Phase 3)

@@ -40,7 +40,7 @@ last:                            # Praxiskontakt: Interview 09.11.2026 (K-003, K
   gesamtverbrauch_mwh_pro_tag: 180.0   # Werk: 65 GWh/a, rund 180 MWh/Tag (K-008 P1, P2; E-032)
   # Verschiebbarer Hauptfall S1: Reinigung (CIP), 4 MW für ca. 2 h, voll elektrisch (K-008 P6; E-033)
   prozess: "Reinigung (CIP)"
-  mwh_pro_tag: 8.0               # = 4 MW x 2 h (K-008 P6, B3); Teamdokument nennt "8 MW für 2 h" = 16 MWh, OFFEN (E-049, docs/annahmen.md A-Nr. 6)
+  mwh_pro_tag: 8.0               # = 4 MW x 2 h (K-008 P6, B3); von Max bestätigt am 11.11.2026 (E-051), 16 MWh nur als Sensitivität V6c
   blocklaenge_h: 2               # Dauer einer Reinigung
   fenster_start_h: 22            # Reinigung nur in der Nebenzeit 22-06 Uhr (K-008 B5); Fenster geht über Mitternacht
   fenster_ende_h: 6

@@ -29,7 +29,7 @@ Zusätzlich vorab festgelegt (`docs/hypothesen.md`): H0a (D nach Personalkosten)
 | 3 | Reinigung heute | 22–24 Uhr (Status quo A) | P | K-012 (Interview 10.11.2026) | `last.status_quo_start_h` | ✅ Tatsache |
 | 4 | Reinigung an jedem Tag | 7 Nächte pro Woche, auch Feiertage | P | K-005 | `last.produktionstage` | ✅ |
 | 5 | Dauer der Reinigung | 2 h | P | K-008 P6 | `last.blocklaenge_h` | ✅ |
-| 6 | **Energie der Reinigung** | **8 MWh pro Nacht (4 MW × 2 h)** | P | K-008 P6 | `last.mwh_pro_tag` | ⚠️ **offen:** Das Teamdokument nennt „8 MW für 2 h“ (= 16 MWh). Alle Euro-Beträge skalieren linear; Anteile, Tests und Kipppunkte in €/MWh bleiben gleich |
+| 6 | Energie der Reinigung | 8 MWh pro Nacht (4 MW × 2 h) | P | K-008 P6; bestätigt von Max am 11.11.2026 (E-051) | `last.mwh_pro_tag` | ✅ Das „8 MW für 2 h“ im Teamdokument ist als 8 MWh zu lesen; 16 MWh nur als Sensitivität V6c |
 | 7 | Stromverbrauch Werk | 180 MWh pro Tag, 65 GWh pro Jahr | P | K-008 P1, P2 | `last.gesamtverbrauch_mwh_pro_tag` | ✅ |
 | 8 | Anteil Day-Ahead | ca. 53 MWh pro Tag (30 %), Rest Festpreis 85 €/MWh | P | K-008 P3, P4 | `vertrag.spot_anteil`, `kosten.festpreis_eur_mwh` | ✅ |
 | 9 | Bewertung der verschobenen MWh | Basis: 100 % am Spot (Band); Untergrenze 30 % | T | A3, K-008 | `vertrag.bewertung_verschiebung` | beide Fälle ausgewiesen |
