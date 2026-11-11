@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### K-018 · KI-Einsatz Phase 6 (R1), Zwischenstand: Grafiken und Spot gegen Festpreis
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** `src/07_bericht.py` (letzter Schritt in `run_all.py`): sechs Grafiken nach einem Standard in `ergebnisse/grafiken/` (Titel = Kernaussage, eine y-Achse, Quelle unten, Farben nach Rolle, farbenblind geprüft mit dem Palettenprüfer, direkte Beschriftung) und `ergebnisse/spot_festpreis.csv` (mittlerer Day-Ahead-Preis im Lastprofil des Werks je Jahr gegen 85 €/MWh: 2022 247, 2023 100, 2024 82, 2025 91, 2026 bis Okt. 111 €/MWh).
+- **Wie geprüft:** jede Grafik gerendert und angesehen; abgeschnittene Titel und überlappende Beschriftungen (g2, g3, g4, g5, g6) behoben; zwei Titel an die Daten angepasst (g6 behauptete zuerst „nahe am Festpreis“, 2026 liegt aber bei 111 €/MWh); `pytest tests/` grün.
+- **Offen:** Problem Statement, Process Map, Berichtsgliederung nach DMAIC, Text Spot gegen Festpreis, Tests für `07_bericht.py`, Erklärzettel Phase 6; Bestätigung durch Chiara (R1). Lastprofil für Spot gegen Festpreis ist eine Annahme (180 MWh/Tag, Reinigung 22–24 Uhr, Rest gleichmäßig 06–22 Uhr).
+
 ### M-005 · Sensitivitätsrechnung gerechnet (Phase 5, K2 Stufe 5)
 - **Stand:** `src/06_sensitivitaet.py`, zwölf Varianten (V2, V3, V4, V6a–c, V7a–c, V8, V9, V10) gegen die Basis, Schwelle 5 % vorab festgelegt (E-044). Keine Testentscheidung kippt (H0a verworfen, H0b nicht verworfen in allen Varianten); Anteil am Oracle 92–95 %. Euro-Beträge stark abhängig von Menge (−50 % bis +100 %), Vertrag (−70 %), Produktionstagen (−36 %) und Blocklänge (+34 % bis −40 %). Ohne Nächte mit auffälligen Preisen −11 %, Anteil gleich.
 - **Neu:** V6c = 16 MWh aus dem Teamdokument (E-049).
