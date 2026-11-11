@@ -48,7 +48,7 @@ Geändert am 11.11.2026 (E-047), vor jeder Auswertung: Haupttest ist der t-Test,
 
 ## Explorativ, ohne Testentscheidung (keine weiteren p-Werte für Bonferroni)
 
-- **K3-Nachweis:** D_saison gegen D, Mittel der Wochendifferenz mit 95-%-Intervall.
+- **K3-Nachweis:** D_saison gegen D und B gegen B_ohne_wochentag (Median der letzten 28 Nächte, ergänzt nach E-046, nur Trainingsdaten gesehen), je Mittel der Wochendifferenz mit 95-%-Intervall.
 - **Fehleranalyse:** Bedauern (Regret) von B = Strom B − Strom C je Nacht, nach Saison, Wochentag und Periode.
 - Faktor 0,3, Gegenprobe Test 1 / Test 2, Stresstest 2022.
 
