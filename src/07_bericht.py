@@ -3,7 +3,8 @@
 
 Owner: R1 (Chiara). Reads only result files of R2-R4, computes nothing new except the spot/fixed price
 table (R1's own question from the team paper: "Vertrag: Festpreis vs. Börse?").
-Output: ergebnisse/grafiken/*.png, ergebnisse/spot_festpreis.csv
+Output: ergebnisse/daten_fuer_grafiken.md (ALL key numbers as tables, for building figures and slides
+        in Claude; diary E-052), ergebnisse/spot_festpreis.csv, ergebnisse/grafiken/*.png (draft figures)
 
 Figure standard (docs/bericht_entwurf.md, "Grafikstandard"):
   * The title is the key message as a sentence, not a description ("3 Uhr ist am billigsten", not "Preise").
@@ -217,6 +218,123 @@ def spot_festpreis(preise: pd.DataFrame, params: dict) -> pd.DataFrame:
     return pd.DataFrame(zeilen)
 
 
+# ---------------------------------------------------------------------------------------------
+# All data in one Markdown file (E-052): figures and slides are made later in Claude from this file
+# ---------------------------------------------------------------------------------------------
+def tabelle(df: pd.DataFrame, nachkomma: int = 1) -> str:
+    """Markdown table, numbers rounded, decimal point (machine-readable)."""
+    d = df.copy()
+    for c in d.columns:
+        if pd.api.types.is_float_dtype(d[c]):
+            d[c] = d[c].round(nachkomma)
+    kopf = "| " + " | ".join(map(str, d.columns)) + " |"
+    trenn = "| " + " | ".join("---" for _ in d.columns) + " |"
+    zeilen = ["| " + " | ".join("" if pd.isna(v) else str(v) for v in r) + " |" for r in d.itertuples(index=False)]
+    return "\n".join([kopf, trenn, *zeilen])
+
+
+def daten_md(p: dict, tab: Path, sf: pd.DataFrame) -> str:
+    """Every number a figure, slide or report section needs, with its source file, in one place."""
+    r2 = ROOT / p["cleaning"]["reports"]
+    m = pd.read_csv(tab / "blockkosten_nacht.csv")
+    jahr = pd.to_datetime(m["nacht"]).dt.year
+    m["zeitraum"] = np.select([jahr == 2022, jahr <= 2024], ["2022 Krise", "2023-2024 Training"], "2025-2026 Test")
+    preistal = m.pivot_table(index="start_lokal", columns="zeitraum", values="preis_eur_mwh", aggfunc="mean")
+    preistal = preistal.reindex([22, 23, 0, 1, 2, 3, 4]).reset_index().rename(columns={"start_lokal": "start_uhr"})
+    m["jahr"] = jahr
+    preistal_jahr = m.pivot_table(index="start_lokal", columns="jahr", values="preis_eur_mwh", aggfunc="mean")
+    preistal_jahr = preistal_jahr.reindex([22, 23, 0, 1, 2, 3, 4]).reset_index().rename(columns={"start_lokal": "start_uhr"})
+
+    ki = pd.read_csv(tab / "ki_strategien.csv")
+    netto = pd.read_csv(tab / "netto_tests.csv")
+    ht = pd.read_csv(tab / "hypothesentests.csv")
+    kpi = pd.read_csv(tab / "kpi_rollierend.csv")
+    kpi["monat"] = kpi["woche"].str[:7]
+    monat = kpi.groupby("monat").agg(wochen=("netto", "size"), netto_eur_woche=("netto", "mean"),
+                                    spreizung_eur_mwh=("spreizung_eur_mwh", "mean")).reset_index()
+    sens = pd.read_csv(r2 / "sensitivitaet.csv")
+    sens = sens[(sens["strategie"] == "D") & (sens["periode"] == "test_gesamt")]
+    be = pd.read_csv(tab / "wirtschaftlichkeit.csv")
+    be = be[(be["strategie"] == "D") & (be["periode"] == "test_gesamt")]
+    kp = pd.read_csv(tab / "kipppunkte.csv")
+    ce = pd.read_csv(tab / "ce_matrix.csv")
+    fa = pd.read_csv(tab / "fehleranalyse_b.csv")
+    rj = pd.read_csv(r2 / "reinigungsfenster_jahr.csv")
+    rs = pd.read_csv(r2 / "reinigungsfenster_saison.csv")
+    km = pd.read_csv(r2 / "kennzahlen_monat.csv")
+    tp = pd.read_csv(r2 / "tagesprofil_saison.csv").pivot_table(index="stunde_lokal", columns="saison", values="median").reset_index()
+
+    teile = [
+        "# Alle Daten für Grafiken, Folien und Bericht",
+        "",
+        "<!-- KI: Claude, Zweck: alle Kennzahlen in einer Datei für Grafiken in Claude (E-052), erzeugt von src/07_bericht.py, geprüft von Chiara (R1) -->",
+        "",
+        "Erzeugt von `src/07_bericht.py` bei jedem `python src/run_all.py` aus den Ergebnisdateien; nichts von Hand eingetragen. "
+        "Zahlen mit Dezimalpunkt. € = Euro. Strategien: **A** Status quo 22–24 Uhr · **D** fest 3 Uhr (FS1, Empfehlung) · "
+        "**B** jede Woche neu aus 4 Wochen (Median) · **B_16** jede Woche neu aus 16 Wochen (FS2) · **C** Oracle = Tagesplanung (Obergrenze) · "
+        "D_saison = D je Saison (identisch mit D) · B_ohne_wochentag = Kontrolle für K3. Zeiträume: training 2023–2024 · test_1_stunde 01–09/2025 · "
+        "test_2_viertel 10/2025–09/2026 · test_gesamt = beide Tests (89 Wochen, Testentscheidung nur hier) · stresstest 2022. "
+        "Vertrag: band = alle verschobenen MWh am Spot (Basis), proportional = nur 30 %. Annahmen: `docs/annahmen.md`.",
+        "",
+        "## Kernaussagen",
+        "",
+        f"- Fest 3 Uhr spart netto {de(netto.query('strategie == \"D\" and periode == \"test_gesamt\" and vertrag == \"band\"')['netto_eur_jahr'].iloc[0])} € pro Jahr "
+        f"(30 %-Fall {de(netto.query('strategie == \"D\" and periode == \"test_gesamt\" and vertrag == \"proportional\"')['netto_eur_jahr'].iloc[0])} €), "
+        "93 % des Möglichen; H0a verworfen (p < 0.001).",
+        "- Eine wöchentliche Prognose (B, B_16) ist nicht signifikant besser als fest 3 Uhr (H0b nicht verworfen).",
+        "- Tagesplanung lohnt nur, wenn kurzfristiges Personal weniger als rund 2 € pro Stunde Aufpreis kostet (H0c, Kipppunkt).",
+        "- Kipppunkt der Empfehlung: mehr als 1.3 h (30 %-Fall 0.4 h) bezahlte Wartezeit je Person und Nacht.",
+        "- In keiner Woche 2022–2026 war 3 Uhr teurer als 22 Uhr; keine Sensitivitätsvariante kippt eine Entscheidung.",
+        "",
+        "## 1 Preistal der Nacht: mittlerer Preis des 2-h-Blocks je Startuhrzeit (€/MWh)",
+        "Quelle: `ergebnisse/blockkosten_nacht.csv`. Grafikidee: Linien je Zeitraum über die Startuhrzeit.",
+        "", tabelle(preistal), "", "Je Jahr:", "", tabelle(preistal_jahr), "",
+        "## 2 Ersparnis je Strategie gegenüber A, nur Strom (€/Woche, 95-%-Intervall)",
+        "Quelle: `ergebnisse/ki_strategien.csv`.",
+        "", tabelle(ki[ki["vertrag"] == "band"][["strategie", "periode", "n_wochen", "mittel_eur_woche", "ki_unten", "ki_oben",
+                                                 "boot_unten", "boot_oben", "eur_jahr", "anteil_oracle"]], 3), "",
+        "## 3 Netto nach Personalkosten (€/Woche) und H0a",
+        "Quelle: `ergebnisse/netto_tests.csv`. Grafikidee: Balken je Strategie mit Intervall (test_gesamt).",
+        "", tabelle(netto[["strategie", "periode", "vertrag", "strom_ersparnis_eur_woche", "personal_mehr_eur_woche", "netto_eur_woche",
+                           "ki_unten", "ki_oben", "netto_eur_jahr", "p_t", "p_wilcoxon", "h0_verworfen"]], 2), "",
+        "## 4 Hypothesentests (einseitig, Schwelle 0.05/3 = 0.0167)",
+        "Quelle: `ergebnisse/hypothesentests.csv`; H0a in Abschnitt 3. konfirmatorisch = vorab festgelegt und nur test_gesamt.",
+        "", tabelle(ht[["hypothese", "vergleich", "periode", "konfirmatorisch", "n_wochen", "mittel_eur_woche", "ki_unten", "ki_oben",
+                        "shapiro_p", "p_t", "p_wilcoxon", "h0_verworfen", "robust", "untere_schranke"]], 3), "",
+        "## 5 Kennzahl im Zeitverlauf: Netto-Ersparnis D je Monat (Mittel der Wochen)",
+        "Quelle: `ergebnisse/kpi_rollierend.csv` (je Woche, mit 13-Wochen-Mittel und Rücknahme-Flag). "
+        f"Rücknahmeregel (13-Wochen-Mittel < 0) hätte in {int(kpi['ruecknahme'].sum())} von {int(kpi['netto_rollierend_13w'].notna().sum())} Wochen ausgelöst; "
+        f"kleinstes 13-Wochen-Mittel {de(kpi['netto_rollierend_13w'].min())} €/Woche.",
+        "", tabelle(monat), "",
+        "## 6 Sensitivität (D, test_gesamt, Schwelle 5 %)",
+        "Quelle: `r2/ergebnisse/sensitivitaet.csv`. Grafikidee: liegende Balken der Änderung in %.",
+        "", tabelle(sens[["variante", "schalter", "wert", "mittel_eur_woche", "delta_pct", "anteil_oracle", "h0_entscheidung_gleich", "relevant"]], 2), "",
+        "## 7 Break-even: Monate bis zur Amortisation einmaliger Umstellungskosten (D, test_gesamt)",
+        "Quelle: `ergebnisse/wirtschaftlichkeit.csv`.",
+        "", tabelle(be[["vertrag", "umstellungskosten_eur", "ersparnis_eur_jahr", "break_even", "break_even_vorsichtig_monate"]], 2), "",
+        "## 8 Kipppunkte (D, test_gesamt)",
+        "Quelle: `ergebnisse/kipppunkte.csv`.",
+        "", tabelle(kp[["vertrag", "annahme", "basis", "kipppunkt", "einheit", "lesart"]], 3), "",
+        "## 9 Spot gegen Festpreis (85 €/MWh)",
+        "Quelle: `ergebnisse/spot_festpreis.csv`. Lastprofil (Annahme): 180 MWh/Tag, Reinigung 22–24 Uhr, Rest gleichmäßig 06–22 Uhr. "
+        "vorteil_festpreis > 0 heißt: Der Festpreis war günstiger als die Börse.",
+        "", tabelle(sf), "",
+        "## 10 C&E-Matrix (Skala 0/1/3/9, Gewichte Teamannahme)",
+        "Quelle: `ergebnisse/ce_matrix.csv`. Grafikidee: Pareto-Balken mit kumulierter Linie.",
+        "", tabelle(ce), "",
+        "## 11 Fehleranalyse B: wann liegt die Prognose daneben (€ je Nacht)",
+        "Quelle: `ergebnisse/fehleranalyse_b.csv`. regret_b = B − C, b_minus_d = B − D.",
+        "", tabelle(fa, 2), "",
+        "## 12 R2: Rückblick-Kennzahl je Jahr (Mehrkosten 22–24 Uhr gegen billigstes Fenster)",
+        "Quelle: `r2/ergebnisse/reinigungsfenster_jahr.csv`, `reinigungsfenster_saison.csv`. Obergrenze mit bekannten Preisen, keine Strategie.",
+        "", tabelle(rj, 2), "", tabelle(rs, 2), "",
+        "## 13 R2: Preis je Monat (€/MWh) und Tagesprofil je Saison (Median je Stunde)",
+        "Quelle: `r2/ergebnisse/kennzahlen_monat.csv`, `tagesprofil_saison.csv`.",
+        "", tabelle(km, 2), "", tabelle(tp, 1), "",
+    ]
+    return "\n".join(teile) + "\n"
+
+
 def main() -> None:
     p = lade_params()
     stil()
@@ -227,13 +345,14 @@ def main() -> None:
     sf = spot_festpreis(preise, p)
     sf.round(2).to_csv(tab / "spot_festpreis.csv", index=False)
 
+    (tab / "daten_fuer_grafiken.md").write_text(daten_md(p, tab, sf), encoding="utf-8")
     g1_preistal(pd.read_csv(tab / "blockkosten_nacht.csv"), ziel)
     g2_strategien(pd.read_csv(tab / "netto_tests.csv"), ziel)
     g3_kennzahl(pd.read_csv(tab / "kpi_rollierend.csv"), ziel)
     g4_sensitivitaet(pd.read_csv(ROOT / p["cleaning"]["reports"] / "sensitivitaet.csv"), ziel)
     g5_break_even(pd.read_csv(tab / "wirtschaftlichkeit.csv"), ziel)
     g6_spot_festpreis(sf, p["kosten"]["festpreis_eur_mwh"], ziel)
-    print(f"Bericht R1: 6 Grafiken -> {ziel}; Spot/Festpreis -> {tab / 'spot_festpreis.csv'}")
+    print(f"Bericht R1: alle Daten -> {tab / 'daten_fuer_grafiken.md'}; Entwurfsgrafiken -> {ziel}")
     print(sf[["jahr", "vollstaendig", "spot_grundlast_eur_mwh", "spot_profil_eur_mwh", "vorteil_festpreis_eur_mwh",
               "vorteil_festpreis_spotanteil_eur", "vorteil_festpreis_ganzes_werk_eur"]].round(1).to_string(index=False))
 

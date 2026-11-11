@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### E-052 · Grafiken entstehen in Claude aus einer Datendatei; Repo liefert nur die Daten
+- **Person:** Max (R2), 11.11.2026
+- **Entscheidung:** Die Grafiken für Bericht und Folien baut das Team später in Claude. Das Repo liefert dafür **alle Daten in einer Datei**: `ergebnisse/daten_fuer_grafiken.md` (Kernaussagen und 13 Tabellen: Preistal, Ersparnis je Strategie, Netto und H0a, alle Tests, Kennzahl je Monat, Sensitivität, Break-even, Kipppunkte, Spot gegen Festpreis, C&E, Fehleranalyse, R2-Kennzahlen). Sie wird von `src/07_bericht.py` bei jedem `run_all.py` neu erzeugt, also nie von Hand gepflegt. Die sechs PNG aus K-018 bleiben nur als Entwurf.
+- **Verworfen:** Grafiken fertig im Repo per Skript (Folien entstehen ohnehin in Claude, E-039); Zahlen von Hand in ein Dokument kopieren (veraltet beim nächsten Lauf).
+- **Beleg:** `ergebnisse/daten_fuer_grafiken.md`, `src/07_bericht.py`
+
 ### E-051 · Energie der Reinigung: 8 MWh pro Nacht (löst den offenen Punkt aus E-049)
 - **Person:** Max (R2), 11.11.2026
 - **Entscheidung:** Die Reinigung braucht 8 MWh pro Nacht (4 MW × 2 h), wie im Interview genannt (K-008 P6). Das „8 MW für 2 h“ im Teamdokument ist als 8 MWh zu lesen; das Teamdokument wird entsprechend korrigiert. Alle bisherigen Ergebnisse gelten unverändert, weil sie schon mit 8 MWh gerechnet sind.
