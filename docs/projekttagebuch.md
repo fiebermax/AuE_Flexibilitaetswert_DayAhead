@@ -6,6 +6,20 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ---
 
+## 11.11.2026
+
+### A-014 · Rolle R3: Susan
+- **Von → an:** Max (R2) → Team; weitergegeben im Chat mit Claude Code, 11.11.2026
+- **Was:** Susan übernimmt R3 Energieeinkauf (Merkmale inkl. saisonalem Block, Strategien A bis D im Backtest, Regression, gepaarter Test, Bootstrap; K3, K4). Damit ist sie Paarpartnerin von R2 für die Reviews nach P-003; der offene Punkt aus A-012 ist erledigt.
+- **Beleg:** Rollentabelle in `docs/kickoff.md`
+- **Offen:** Susan bestätigt die Rolle selbst (Commit oder Kommentar im Repo).
+
+### E-041 · Abgrenzung R2/R3: beschreibende Kennzahlen bei R2, schließende Statistik und Merkmale bei R3
+- **Person:** Max (R2), nach Rückfrage, ob Median, Quartile usw. Susans Teil sind
+- **Entscheidung:** Kennzahlen, die die Daten beschreiben (Mittel, Median, Quartile, Min/Max, Anteil negativer Preise je Monat, Saison und Uhrzeit; Rückblick-Kennzahl der Reinigungsnacht), gehören zur Datenexploration und zum Qualitätsbericht und bleiben bei R2 (Kickoff Schritt 2, K2). Alles, was eine Regel begründet oder prüft (Merkmale, saisonaler Block, Strategien, Tests, Konfidenzintervalle, Euro-Nachweis für K3/K4), macht R3. Grenzfall `r2/ergebnisse/tagesprofil_saison.csv`: bleibt rein beschreibend; R3 darf es als Startpunkt nutzen, leitet den saisonalen Block aber selbst her und bewertet ihn in Euro.
+- **Verworfen:** die beschreibenden Kennzahlen an R3 abgeben (Qualitätsbericht und Datenexploration sind laut Kickoff R2-Aufgabe; R3 hätte doppelte Arbeit ohne eigenen K3/K4-Beitrag).
+- **Beleg:** `src/cleaning.py` (Kennzahlen), `src/fensteranalyse.py` (Rückblick, keine Strategie, E-037), `docs/kickoff.md` (Rollentabelle, Schritt 2 und 3)
+
 ## 10.11.2026
 
 ### P-011 · PR #10 ohne Review gemergt (auf Anweisung von Max)
@@ -62,6 +76,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Kanal und Datum:** mündlich bzw. Chat Susan → Max, 10.11.2026
 - **Beleg:** bisher nur diese Angabe von Max. Damit das Review belegt ist (Kickoff: „Was nur im Chat steht, ist kein Beleg“), hinterlässt Susan auf dem Pull Request des Branches ein Approve bzw. einen Kommentar; Funde und Änderungen trägt sie hier nach.
 - **Offen:** Susans Rolle ist noch nicht in der Rollentabelle eingetragen (P-003 verlangt das Review des Paarpartners); Funde aus dem Review: keine genannt.
+- **Nachtrag 11.11.2026:** Susan ist R3 (A-014), Rollentabelle ergänzt.
 
 ### K-010 · KI-Einsatz: einfache Preisabfrage
 - **Werkzeug:** Claude Code

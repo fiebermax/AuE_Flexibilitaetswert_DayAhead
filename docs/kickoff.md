@@ -90,7 +90,7 @@ Vier fachliche Rollen nach dem Muster der Rheinlack-Fallstudie. Jede Rolle führ
 | --- | --- | --- | --- | --- | --- |
 | R1 Projektleitung & Controlling | offen | Fachlicher Rahmen (Frage, Hypothesen, Problem Statement); Aufbereitung & Übergabe (Bericht, Präsentation, Grafikstandard); Spot gegen Festpreis | Ergebnis & Verwertung | K1, K8, K9, K10 | R4 |
 | R2 Datenanalyse & IT | Max | Datenquellen & Qualität; Pipeline, Repo, Tests; Aggregation 15 → 60 min; Sensitivitätsrechnung; Empfehlung zur künftigen Datenerhebung; Repo-Onboarding fürs Team | Datenaufbereitung | K2, K5, Aggregation in K3 | R3 |
-| R3 Energieeinkauf | offen&#32; | Merkmale inklusive saisonalem Block; Strategien A bis D im Backtest; Regression, gepaarter Test, Bootstrap; Methodenfrage „braucht es eine Prognose?“ | Datenquellen | K3, K4 | R2 |
+| R3 Energieeinkauf | Susan | Merkmale inklusive saisonalem Block; Strategien A bis D im Backtest; Regression, gepaarter Test, Bootstrap; Methodenfrage „braucht es eine Prognose?“ | Datenquellen | K3, K4 | R2 |
 | R4 Produktion & Schichtplanung | offen | Ergebnis & Verwertung: Umstellungskosten, Stresstests, Kipppunkte, Break-even, Empfehlung mit Kennzahl und Rücknahmeregel | Fachlicher Rahmen | K6, K7 | R1 |
 
 Einzelleistung je Person: Verantwortungsnachweis auf 2 bis 3 Seiten nach a) Aufgabe, b) Problematik, c) Methode, d) Beitrag, dazu etwa 5 Minuten in der Präsentation.
