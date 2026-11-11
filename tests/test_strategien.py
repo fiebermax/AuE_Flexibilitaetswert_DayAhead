@@ -97,3 +97,38 @@ def test_backtest_woche_mit_zeitumstellung_und_pruefungen():
     kaputt.loc[kaputt["strategie"] == "C", "kosten_eur"] += 1000
     with pytest.raises(AssertionError):
         st.pruefen(kaputt, w, p)
+
+
+# ---------------------------------------------------------------------------------------------
+# Statistics (Phase 3)
+# ---------------------------------------------------------------------------------------------
+def test_t_test_einseitig_gegen_hand_rechnung():
+    import numpy as np
+    from scipy import stats as sps
+    d = np.array([3.0, 1.0, 4.0, 1.0, 5.0, 9.0, 2.0, 6.0])
+    r = st.t_test_einseitig(d, 0.05 / 3)
+    t_hand = d.mean() / (d.std(ddof=1) / np.sqrt(len(d)))
+    assert abs(r["t"] - t_hand) < 1e-12
+    assert abs(r["p_t"] - (1 - sps.t.cdf(t_hand, len(d) - 1))) < 1e-12
+    assert r["h0_verworfen"] and r["robust"]
+    unten = d.mean() - sps.t.ppf(1 - 0.05 / 3, len(d) - 1) * d.std(ddof=1) / np.sqrt(len(d))
+    assert abs(r["untere_schranke"] - unten) < 1e-12
+    assert not st.t_test_einseitig(-d, 0.05 / 3)["h0_verworfen"]          # wrong direction -> keep H0
+
+
+def test_block_bootstrap_reproduzierbar_und_um_das_mittel():
+    import numpy as np
+    d = np.random.default_rng(1).normal(10, 5, 89)
+    a = st.block_bootstrap_ki(d, 4, 2000, 42)
+    assert a == st.block_bootstrap_ki(d, 4, 2000, 42)                   # same seed, same interval
+    assert a[0] < d.mean() < a[1]
+
+
+def test_vertragsfaktor_skaliert_nur_die_euro():
+    w = pd.DataFrame({"periode": "x", "woche": [f"2025-01-{i:02d}" for i in range(1, 9)],
+                      **{f"kosten_{s}": [100.0 + i for i in range(8)] for s in st.STRATEGIEN}})
+    w["kosten_C"] = w["kosten_C"] - 10
+    t = st.ersparnis_tabelle(w, PARAMS).set_index(["strategie", "vertrag"])
+    assert t.loc[("C", "band"), "mittel_eur_woche"] == 10
+    assert abs(t.loc[("C", "proportional"), "mittel_eur_woche"] - 10 * PARAMS["vertrag"]["spot_anteil"]) < 1e-12
+    assert t.loc[("C", "band"), "anteil_oracle"] == t.loc[("C", "proportional"), "anteil_oracle"] == 1

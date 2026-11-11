@@ -8,6 +8,25 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### M-003 · Backtest und Tests von R3 gerechnet (Phase 3)
+- **Stand:** Alle vier Zeiträume gerechnet mit den eingefrorenen Regeln (`1d59427`). Test 2025–2026 (89 Wochen, nur Strom, Faktor 1,0): D 1 197 €/Woche (95-%-KI 1 059–1 336, 93,0 % des Oracle), B 1 179 (91,6 %), C 1 288. Faktor 0,3: D rund 18 700 €/Jahr.
+- **H0b nicht verworfen** (B − D = −18 €/Woche, p_t = 0,99, Wilcoxon gleich): Eine wöchentliche Prognose bringt nichts gegenüber der festen Regel 3 Uhr. **H0c:** C − B = 109 €/Woche, Kipppunkt m\* = 91 €/Woche. **H0a** offen bis Phase 4 (Personalkosten R4).
+- **Gegenproben:** Test 1, Test 2 und Stresstest 2022 einzeln mit gleicher Richtung; Bootstrap-Intervalle rund 50 % breiter als die t-Intervalle, gleiche Entscheidung; Shapiro-Wilk lehnt Normalverteilung ab, Wilcoxon gleich.
+- **Beleg:** `ergebnisse/ki_strategien.csv`, `ergebnisse/hypothesentests.csv`, `ergebnisse/fehleranalyse_b.csv`, `docs/erklaerzettel.md` Phase 3
+- **Rückstand:** Bestätigung durch Susan (Phasen 1–3).
+
+### P-012 · Code-Fehler nach dem Einfrieren: leere Historie im Stresstest
+- **Problem:** Im ersten Lauf des Stresstests 2022 stürzte B ab: Die Historie der ersten Woche ist leer (Daten beginnen am 01.01.2022), `blockkosten` gab dann eine Tabelle ohne Spalten zurück. Laut E-044 soll B in diesen Wochen nicht planen.
+- **Angesprochen von:** Claude, 11.11.2026
+- **Lösung:** `src/03_merkmale.py` gibt auch ohne vollständige Nacht feste Spalten zurück; Test in `tests/test_merkmale.py`. Keine Regel geändert (die Regeln in `src/04_strategien.py` sind seit `1d59427` unverändert, Trainingszahlen bitgleich).
+- **Nebenbefund:** Für B entfallen 2022 fünf statt vier Wochen (E-044 nannte vier): Die vierte bekannte Freitagnacht gibt es erst am Planungsfreitag der sechsten Woche.
+
+### K-015 · KI-Einsatz Phase 3 (Statistik R3)
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** Statistik in `src/04_strategien.py` (t-Test, Wilcoxon, Shapiro-Wilk, Block-Bootstrap, Fehleranalyse), drei Ergebnisdateien, Erklärzettel Phase 3, Schnittstellen.
+- **Wie geprüft:** `pytest tests/`: 70 grün, darunter t-Wert, p-Wert und untere Schranke gegen Handformel, Bootstrap reproduzierbar mit Seed, Vertragsfaktor; Trainingszahlen bitgleich mit dem eingefrorenen Stand; `git diff 1d59427` zeigt keine Änderung an den Regelfunktionen; `python src/run_all.py` läuft bis Schritt 05.
+- **Offen:** Susan bestätigt den Erklärzettel Phase 3.
+
 ### M-002 · Strategien eingefroren (Commit `1d59427`)
 - **Stand:** Regeln A, D (3 Uhr), D_saison (3 Uhr in jeder Saison), B (Median der letzten 4 gleichen Wochentage), B_ohne_wochentag (letzte 28 Nächte), C (Oracle) in `src/04_strategien.py`, entwickelt nur auf dem Training 2023–2024. Hash: `1d594271f1c9f2a2dfccecc3faf1b114baa3e8d4`.
 - **Regel ab jetzt:** Keine Änderung an den Regeln mehr. Test 1, Test 2 und Stresstest 2022 laufen erst in Phase 3. Ein Code-Fehler wird behoben und hier offen dokumentiert, die Regel selbst bleibt (`docs/hypothesen.md`).

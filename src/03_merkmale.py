@@ -69,7 +69,10 @@ def blockkosten(preise: pd.DataFrame, fenster_start: int, fenster_ende: int, blo
                 # A-017); R4 needs them for the surcharges, R3 does not use them
                 "sonntag_h": int(so[i:i + block_h].sum()), "feiertag_h": int(ft[i:i + block_h].sum()),
             })
-    m = pd.DataFrame(zeilen)
+    # Fixed columns also when no night is complete (empty history at the start of 2022, E-044):
+    # then a strategy sees "no nights" instead of crashing on a table without columns.
+    m = pd.DataFrame(zeilen, columns=["nacht", "wochentag_nacht", "saison", "n_stunden_nacht", "pos", "start_lokal",
+                                      "start_utc", "preis_eur_mwh", "sonntag_h", "feiertag_h"])
     if len(m):
         m["start_utc"] = m["start_utc"].dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     return m

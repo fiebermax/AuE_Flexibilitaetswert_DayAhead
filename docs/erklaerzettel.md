@@ -71,3 +71,33 @@ Eine Phase = ein Abschnitt. Der Owner liest ihn, prüft ihn am Code nach und bes
 1. *„Woher wissen Sie, dass B nicht in die Zukunft schaut?“* Test `test_b_sieht_die_zielwoche_nicht`: Alle Preise ab Samstag werden verfälscht, der Plan bleibt gleich. Zusätzlich bricht `datenzugriff` mit `LookAheadFehler` ab.
 2. *„Warum ist die Prognose schlechter als eine feste Uhrzeit?“* Das Preistal liegt fast immer bei 2–4 Uhr. B reagiert auf Zufallsschwankungen der letzten 4 Wochen und verlässt 3 Uhr in rund der Hälfte der Nächte, ohne dass das im Mittel etwas bringt.
 3. *„D wurde auf denselben Daten gelernt, auf denen Sie es bewerten. Ist das fair?“* Im Training nicht, deshalb zählt nur der Test 2025–2026 (eingefroren, Phase 3).
+
+## Phase 3 · R3 (Susan): Testzeiträume, Statistik, Fehleranalyse
+
+**Was gebaut wurde**
+- `src/04_strategien.py` rechnet jetzt alle vier Zeiträume. Die Regeln sind seit `1d59427` unverändert (Beleg: `git diff 1d59427 -- src/04_strategien.py` ändert nur `main` und fügt die Statistik an; die Trainingszahlen sind bitgleich).
+- Statistik: gepaarter t-Test einseitig, Schwelle 0,05/3 ≈ 0,0167, nur in der gemeinsamen Teststichprobe (Test 1 + Test 2, 89 Wochen). Vorher Shapiro-Wilk, als Gegenprobe Wilcoxon, als Grenze ein Block-Bootstrap-Intervall.
+- Ausgaben: `ergebnisse/ki_strategien.csv`, `ergebnisse/hypothesentests.csv`, `ergebnisse/fehleranalyse_b.csv`.
+
+**Ergebnisse (Test 2025–2026, 89 Wochen, nur Strom)**
+
+| Strategie | Ersparnis gegenüber 22–24 Uhr | 95-%-KI | €/Jahr (Faktor 1,0 / 0,3) | Anteil am Oracle |
+| --- | --- | --- | --- | --- |
+| D fest 3 Uhr | 1 197 €/Woche | 1 059 bis 1 336 | 62 300 / 18 700 | 93,0 % |
+| B Prognose | 1 179 €/Woche | 1 040 bis 1 318 | 61 300 / 18 400 | 91,6 % |
+| C Oracle | 1 288 €/Woche | 1 151 bis 1 424 | 67 000 / 20 100 | 100 % |
+
+- **H0b wird nicht verworfen.** B spart im Mittel 18 € pro Woche **weniger** als D (p = 0,99; Wilcoxon gleich, also robust). Es braucht keine Prognose; die feste Regel „3 Uhr“ ist mindestens so gut. In Test 1, Test 2 und 2022 einzeln liegt B ebenfalls unter D.
+- **H0c, Kipppunkt:** Die Tagesplanung (C) holt 109 €/Woche mehr als B, untere Schranke m\* = 91 €/Woche. Tagesplanung lohnt sich gegenüber B nur, wenn kurzfristiges Personal weniger als rund 91 € pro Woche mehr kostet, also etwa 2,20 € pro Personalstunde (91 € ÷ 7 Nächte ÷ 3 Personen ÷ 2 h; Umrechnung macht R4). Gegenüber D ist der Abstand noch kleiner (C − D ≈ 91 €/Woche).
+- **H0a** braucht die Personalkosten und folgt in Phase 4 (R4).
+- **Stresstest 2022:** Ersparnis D 2 943 €/Woche, Anteil 93 %. Das Ergebnis kippt nicht; B liegt auch hier unter D.
+- **K3:** Saison 0 €, gleicher Wochentag −14 €/Woche (Intervall schließt 0 ein). Kein Merkmal verbessert die Regel.
+- **Grenze t-Test:** Die Bootstrap-Intervalle sind rund 50 % breiter als die t-Intervalle (D: 984 bis 1 405 statt 1 059 bis 1 336). Benachbarte Wochen hängen zusammen; die Testentscheidungen ändern sich dadurch nicht. Shapiro-Wilk lehnt die Normalverteilung ab (p < 0,001), der Wilcoxon kommt aber zum selben Ergebnis.
+- **Fehleranalyse B:** B trifft den billigsten Block nur in 24–50 % der Nächte. Am meisten verliert B gegenüber D in den Montagnächten (rund 9–11 € pro Nacht) und im Frühling 2026.
+
+**Code-Fehler nach dem Einfrieren (P-012):** Im Stresstest war die Historie der ersten Woche leer. `blockkosten` gab dann eine Tabelle ohne Spalten zurück und B stürzte ab, statt „kein Plan“ zu melden. Behoben in `src/03_merkmale.py` (feste Spalten), Test ergänzt; an keiner Regel geändert. Für B fallen in 2022 dadurch 5 statt 4 Wochen weg: Die vierte Freitagnacht ist erst in Woche 6 bekannt.
+
+**Drei Prüferfragen**
+1. *„Sie haben 89 Wochen und einen t-Test. Sind die Wochen unabhängig?“* Nicht ganz, Wochen derselben Saison hängen zusammen. Deshalb zusätzlich das Block-Bootstrap-Intervall: rund 50 % breiter, gleiche Aussage.
+2. *„Warum testen Sie Test 1 und Test 2 nicht getrennt?“* Sonst wären es sechs statt drei Tests mit schärferer Bonferroni-Schwelle. Die getrennten Intervalle zeigen trotzdem, dass das Ergebnis nach 10/2025 nicht kippt.
+3. *„Die Daten sind nicht normalverteilt. Gilt der t-Test dann?“* Bei 89 Wochen trägt der zentrale Grenzwertsatz; der Wilcoxon, der keine Normalverteilung braucht, kommt zum selben Ergebnis.

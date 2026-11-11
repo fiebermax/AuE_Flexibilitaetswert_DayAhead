@@ -11,7 +11,9 @@ Jede Übergabe ist eine **CSV-Datei** mit festen Spalten und Einheiten (Details:
 | R3 → R4 | `ergebnisse/blockkosten_nacht.csv` | je Nacht × 2-h-Block: `nacht`, `wochentag_nacht`, `saison`, `n_stunden_nacht`, `pos`, `start_lokal`, `start_utc`, `preis_eur_mwh` (€/MWh), `sonntag_h`, `feiertag_h` (Stunden des Blocks) | `tests/test_merkmale.py` (Abgleich mit R2) |
 | R3 → R4 | `ergebnisse/backtest_naechte.csv` | je Nacht × Strategie: `periode`, `woche`, `nacht`, `strategie`, `start_lokal`, `start_utc`, `preis_eur_mwh`, `mwh`, `kosten_eur` (nur Strom), `sonntag_h`, `feiertag_h` | `pruefen()` in `src/04_strategien.py` |
 | R3 → R4 | `ergebnisse/backtest_wochen.csv` | `periode`, `woche` (Montag), `kosten_A`, `kosten_D`, `kosten_D_saison`, `kosten_B`, `kosten_B_ohne_wochentag`, `kosten_C` (EUR, nur Strom; C = Oracle; leer, wenn eine Strategie nicht alle 7 Nächte plant) | Wochensumme = Summe der Nächte, `pruefen()` |
-| R3 → R4 | `ergebnisse/ki_strategien.csv` | `strategie`, `periode`, `mittel_eur_woche`, `ki_unten`, `ki_oben`, `anteil_oracle` | Seed, Bootstrap-n |
+| R3 → R4 | `ergebnisse/ki_strategien.csv` | Ersparnis gegenüber A je `strategie`, `periode` (training, test_1_stunde, test_2_viertel, test_gesamt, stresstest), `vertrag` (band/proportional), `faktor`, `n_wochen`, `mittel_eur_woche`, `ki_unten`, `ki_oben` (95 % t), `boot_unten`, `boot_oben` (Block-Bootstrap), `eur_jahr`, `anteil_oracle` (EUR, nur Strom) | Seed 42, 5 000 Wiederholungen, Tests in `tests/test_strategien.py` |
+| R3 → R4, R1 | `ergebnisse/hypothesentests.csv` | H0b, H0c (Kipppunkt `untere_schranke` = m*), K3-Vergleiche je Periode: `shapiro_p`, `t`, `p_t`, `p_wilcoxon`, `schwelle`, `h0_verworfen`, `robust`, `konfirmatorisch` | Entscheidung nur `test_gesamt` (`docs/hypothesen.md`) |
+| R3 → alle | `ergebnisse/fehleranalyse_b.csv` | Bedauern von B (B − C) und B − D in €/Nacht, Trefferquote, je Periode × Saison bzw. Wochentag | explorativ |
 | R4 → R1 | `ergebnisse/wirtschaftlichkeit.csv` | `szenario`, `ersparnis_eur_jahr`, `umstellungskosten_eur`, `break_even` | Review R1 |
 
 ## Schnellstart mit pandas

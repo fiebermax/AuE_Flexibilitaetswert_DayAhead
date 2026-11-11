@@ -87,7 +87,8 @@ def test_sonntagsnacht_reicht_bis_montag_6_uhr(matrix):
 def test_unvollstaendige_nacht_wird_verworfen():
     """A history that ends in the middle of a night must not create a (wrong) short night."""
     df = _nacht("2025-06-10 20:00", 5)                 # 22:00 to 02:00 local only
-    assert mk.blockkosten(df, 22, 6, 2).empty
+    leer = mk.blockkosten(df, 22, 6, 2)
+    assert leer.empty and "wochentag_nacht" in leer.columns   # columns stay, so B can say "no plan" (E-044)
 
 
 def test_blockpreis_ist_mittel_der_stunden_und_billigster_block():

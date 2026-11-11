@@ -19,14 +19,16 @@ Look-ahead protection: B only ever sees `w.historie` from datenzugriff (R2), whi
 LookAheadFehler if future hours slip in. D and D_saison only see training nights. The real prices of the
 planned nights come from the full block-cost matrix (step 03) and are used for EVALUATION only.
 
-Phase 2 (this commit) runs the training period only. Test periods and statistics follow in Phase 3,
-after the rules are frozen (commit "Strategien eingefroren").
+Rules frozen in commit 1d59427 (diary M-002). Phase 3 only added the test periods and the statistics
+below; the rule functions are unchanged (check: git diff 1d59427 -- src/04_strategien.py).
 """
 import importlib.util
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+from scipy import stats
 
 SRC = Path(__file__).resolve().parent
 sys.path.insert(0, str(SRC))
@@ -39,7 +41,8 @@ mk = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(mk)
 
 STRATEGIEN = ["A", "D", "D_saison", "B", "B_ohne_wochentag", "C"]
-PERIODEN_PHASE_2 = ["training"]          # Phase 3 adds test_1_stunde, test_2_viertel, stresstest
+PERIODEN = ["training", "test_1_stunde", "test_2_viertel", "stresstest"]
+TEST = ("test_1_stunde", "test_2_viertel")   # pooled = the one confirmatory sample (docs/hypothesen.md)
 B_NAECHTE_JE_WOCHENTAG = 4               # params strategien.historie_wochen
 B_HISTORIE_WOCHEN = 5                    # one extra week: the last Friday night ends on Saturday (unknown)
 
@@ -178,7 +181,120 @@ def pruefen(naechte: pd.DataFrame, wochen: pd.DataFrame, params: dict) -> None:
         assert (abs(ok - summe.loc[ok.index, s]) < 1e-6).all(), f"Wochensumme {s} stimmt nicht"
 
 
-def main(perioden: list[str] = PERIODEN_PHASE_2) -> None:
+# ---------------------------------------------------------------------------------------------
+# Statistics (Phase 3, docs/hypothesen.md, E-047)
+# ---------------------------------------------------------------------------------------------
+def mit_testgesamt(wochen: pd.DataFrame) -> pd.DataFrame:
+    """Add the pooled confirmatory sample 'test_gesamt' = test 1 + test 2 (hourly prices in both)."""
+    t = wochen[wochen["periode"].isin(TEST)].assign(periode="test_gesamt")
+    return pd.concat([wochen, t], ignore_index=True)
+
+
+def block_bootstrap_ki(d: np.ndarray, block: int, n_boot: int, seed: int, niveau: float = 0.95) -> tuple[float, float]:
+    """Moving-block bootstrap interval of the mean. Blocks of consecutive weeks keep the dependence
+    between neighbouring weeks (same season), which the t-test ignores. Used only as a check (E-047)."""
+    rng = np.random.default_rng(seed)
+    n = len(d)
+    k = int(np.ceil(n / block))
+    starts = rng.integers(0, n - block + 1, size=(n_boot, k))
+    idx = (starts[:, :, None] + np.arange(block)).reshape(n_boot, -1)[:, :n]
+    mittel = d[idx].mean(axis=1)
+    a = (1 - niveau) / 2
+    return float(np.quantile(mittel, a)), float(np.quantile(mittel, 1 - a))
+
+
+def beschreibe(d: np.ndarray, p: dict) -> dict:
+    """Mean with two-sided 95 % t-interval and block-bootstrap interval."""
+    n, m, sd = len(d), float(d.mean()), float(d.std(ddof=1))
+    h = stats.t.ppf(0.975, n - 1) * sd / np.sqrt(n)
+    s = p["statistik"]
+    bu, bo = block_bootstrap_ki(d, s["bootstrap_block_wochen"], s["bootstrap_n"], p["seed"])
+    return {"n_wochen": n, "mittel_eur_woche": m, "sd": sd, "ki_unten": m - h, "ki_oben": m + h,
+            "boot_unten": bu, "boot_oben": bo}
+
+
+def t_test_einseitig(d: np.ndarray, alpha: float) -> dict:
+    """H0: mean(d) <= 0 against H1: mean(d) > 0. t-test decides; Shapiro-Wilk and Wilcoxon are reported."""
+    n, m, se = len(d), float(d.mean()), float(d.std(ddof=1) / np.sqrt(len(d)))
+    t = stats.ttest_1samp(d, 0.0, alternative="greater")
+    w = stats.wilcoxon(d, alternative="greater") if np.any(d != 0) else None
+    p_w = float(w.pvalue) if w is not None else 1.0
+    verworfen = bool(t.pvalue < alpha)
+    return {"shapiro_p": float(stats.shapiro(d).pvalue), "t": float(t.statistic), "p_t": float(t.pvalue),
+            "p_wilcoxon": p_w, "schwelle": alpha, "h0_verworfen": verworfen,
+            "robust": verworfen == bool(p_w < alpha),
+            # one-sided lower (1 - alpha) bound of the mean: for H0c this is the tipping point m*
+            "untere_schranke": m - stats.t.ppf(1 - alpha, n - 1) * se}
+
+
+def faktor(p: dict, art: str) -> float:
+    """Contract: 'band' -> every shifted MWh at the spot price (1.0); 'proportional' -> spot share (0.3)."""
+    return 1.0 if art == "band" else float(p["vertrag"]["spot_anteil"])
+
+
+def ersparnis_tabelle(wochen: pd.DataFrame, p: dict) -> pd.DataFrame:
+    """Interface R3 -> R4 (ki_strategien.csv): saving of every strategy against A, per period and contract case."""
+    zeilen = []
+    for per, g in wochen.groupby("periode", sort=False):
+        oracle = (g["kosten_A"] - g["kosten_C"]).mean()
+        for s in STRATEGIEN[1:]:
+            d = (g["kosten_A"] - g[f"kosten_{s}"]).dropna().to_numpy()
+            b = beschreibe(d, p)
+            for art in ("band", "proportional"):
+                f = faktor(p, art)
+                zeilen.append({"strategie": s, "periode": per, "vertrag": art, "faktor": f, "n_wochen": b["n_wochen"],
+                               **{k: b[k] * f for k in ("mittel_eur_woche", "ki_unten", "ki_oben", "boot_unten", "boot_oben")},
+                               "eur_jahr": b["mittel_eur_woche"] * f * 52,
+                               "anteil_oracle": b["mittel_eur_woche"] / oracle})
+    return pd.DataFrame(zeilen)
+
+
+def hypothesentests(wochen: pd.DataFrame, p: dict) -> pd.DataFrame:
+    """H0b and H0c (electricity, R3) plus the two K3 comparisons. H0a needs staff costs -> R4 (Phase 4).
+    Test decision only in test_gesamt; the other periods get the same numbers as a cross-check."""
+    alpha = p["statistik"]["alpha_gesamt"] / p["statistik"]["anzahl_hypothesen"]
+    vergleiche = [  # (name, column whose cost is subtracted FROM, column subtracted) -> d > 0 = H1
+        ("H0b", "B spart mehr als D", "kosten_D", "kosten_B"),
+        ("H0c", "Kipppunkt m*: C spart mehr als B", "kosten_B", "kosten_C"),
+        ("K3 explorativ", "D_saison spart mehr als D", "kosten_D", "kosten_D_saison"),
+        ("K3 explorativ", "B spart mehr als B_ohne_wochentag", "kosten_B_ohne_wochentag", "kosten_B"),
+    ]
+    zeilen = []
+    for per, g in wochen.groupby("periode", sort=False):
+        for name, text, x, y in vergleiche:
+            d = (g[x] - g[y]).dropna().to_numpy()
+            zeile = {"hypothese": name, "vergleich": text, "periode": per,
+                     "konfirmatorisch": per == "test_gesamt" and name.startswith("H0"), **beschreibe(d, p)}
+            if np.any(d != 0):
+                zeile.update(t_test_einseitig(d, alpha))
+            zeilen.append(zeile)
+    return pd.DataFrame(zeilen)
+
+
+def fehleranalyse_b(naechte: pd.DataFrame) -> pd.DataFrame:
+    """When does B miss? Regret = cost B - cost C per night, by period, season and weekday of the night."""
+    b = naechte[naechte["strategie"] == "B"].set_index(["periode", "nacht"])
+    c = naechte[naechte["strategie"] == "C"].set_index(["periode", "nacht"])
+    d = naechte[naechte["strategie"] == "D"].set_index(["periode", "nacht"])
+    x = b[["kosten_eur", "start_lokal"]].join(c[["kosten_eur", "start_lokal"]], rsuffix="_c").join(
+        d[["kosten_eur"]], rsuffix="_d").reset_index()
+    x["regret_b"] = x["kosten_eur"] - x["kosten_eur_c"]
+    x["b_minus_d"] = x["kosten_eur"] - x["kosten_eur_d"]
+    x["wochentag_nacht"] = pd.to_datetime(x["nacht"]).dt.dayofweek
+    monat = pd.to_datetime(x["nacht"]).dt.month
+    x["saison"] = monat.map({12: "Winter", 1: "Winter", 2: "Winter", 3: "Fruehling", 4: "Fruehling", 5: "Fruehling",
+                             6: "Sommer", 7: "Sommer", 8: "Sommer", 9: "Herbst", 10: "Herbst", 11: "Herbst"})
+    x["b_trifft_oracle"] = x["start_lokal"] == x["start_lokal_c"]
+    zeilen = []
+    for gruppe in ("saison", "wochentag_nacht"):
+        for (per, wert), g in x.groupby(["periode", gruppe]):
+            zeilen.append({"periode": per, "gruppe": gruppe, "wert": str(wert), "naechte": len(g),
+                           "regret_b_eur_nacht": g["regret_b"].mean(), "b_minus_d_eur_nacht": g["b_minus_d"].mean(),
+                           "anteil_b_trifft_oracle_pct": 100 * g["b_trifft_oracle"].mean()})
+    return pd.DataFrame(zeilen)
+
+
+def main(perioden: list[str] = PERIODEN) -> None:
     p = lade_params()
     L = p["last"]
     preise, last = dz.lade_preise(p), dz.lade_last(p)
@@ -191,14 +307,26 @@ def main(perioden: list[str] = PERIODEN_PHASE_2) -> None:
     ziel.mkdir(parents=True, exist_ok=True)
     naechte.round(4).to_csv(ziel / "backtest_naechte.csv", index=False)
     wochen.round(2).to_csv(ziel / "backtest_wochen.csv", index=False)
+    if not set(TEST) <= set(perioden):
+        print("Nur Training gerechnet; Statistik erst mit den Testzeiträumen.")
+        return
+    w = mit_testgesamt(wochen)
+    ki, ht, fa = ersparnis_tabelle(w, p), hypothesentests(w, p), fehleranalyse_b(naechte)
+    ki.round(4).to_csv(ziel / "ki_strategien.csv", index=False)
+    ht.round(4).to_csv(ziel / "hypothesentests.csv", index=False)
+    fa.round(2).to_csv(ziel / "fehleranalyse_b.csv", index=False)
 
-    print(f"Backtest {', '.join(perioden)}: {wochen['woche'].nunique()} Wochen -> {ziel / 'backtest_wochen.csv'}")
-    for per, g in wochen.groupby("periode"):
-        ers = {s: g["kosten_A"] - g[f"kosten_{s}"] for s in STRATEGIEN if s != "A"}
-        oracle = ers["C"].mean()
-        print(f"\n{per}: mittlere Ersparnis gegenüber A, nur Strom, Faktor 1,0")
-        for s, e in ers.items():
-            print(f"  {s:17s} {e.mean():8.0f} €/Woche   Anteil am Oracle {100 * e.mean() / oracle:5.1f} %")
+    print(f"Backtest: {len(wochen)} Wochen in {', '.join(perioden)} -> {ziel}")
+    band = ki[ki["vertrag"] == "band"]
+    for per in ["training", *TEST, "test_gesamt", "stresstest"]:
+        print(f"\n{per}: Ersparnis gegenüber A in €/Woche (nur Strom, Faktor 1,0), 95-%-KI, Anteil am Oracle")
+        for _, r in band[band["periode"] == per].iterrows():
+            print(f"  {r['strategie']:17s} {r['mittel_eur_woche']:7.0f}  [{r['ki_unten']:6.0f}; {r['ki_oben']:6.0f}]"
+                  f"  {100 * r['anteil_oracle']:5.1f} %  (n={r['n_wochen']})")
+    print("\nHypothesen (test_gesamt, einseitig, Schwelle α/3):")
+    k = ht[ht["periode"] == "test_gesamt"]
+    print(k[["hypothese", "vergleich", "n_wochen", "mittel_eur_woche", "shapiro_p", "p_t", "p_wilcoxon",
+             "h0_verworfen", "robust", "untere_schranke"]].round(4).to_string(index=False))
 
 
 if __name__ == "__main__":
