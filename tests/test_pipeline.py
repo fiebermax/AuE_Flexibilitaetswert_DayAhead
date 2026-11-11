@@ -41,6 +41,19 @@ def test_werktage_bayern_und_variante():
     tage = pd.DatetimeIndex(pd.to_datetime(["2025-01-06", "2025-06-19", "2025-08-15", "2025-10-04", "2025-10-06"])).tz_localize(TZ)
     assert list(gem.werktage(tage, mariae_himmelfahrt=False)) == [False, False, True, False, True]
     assert list(gem.werktage(tage, mariae_himmelfahrt=True)) == [False, False, False, False, True]
+    # holiday flag alone (A-016): 06.01. and 19.06. (Fronleichnam) yes, Saturday 04.10. no
+    assert list(gem.feiertage_bayern(tage, mariae_himmelfahrt=False)) == [True, True, False, False, False]
+
+
+def test_sonntag_und_feiertag_gelten_fuer_den_kalendertag_der_stunde():
+    """Night Sat 21.06. -> Sun 22.06.2025: 22:00 is Saturday, 02:00 is Sunday (A-017).
+    Night Wed 18.06. -> Thu 19.06.2025 (Fronleichnam): only the hours after midnight are a holiday."""
+    cl = _lade_modul("cleaning")
+    utc = pd.to_datetime(["2025-06-21 20:00", "2025-06-22 00:00", "2025-06-18 20:00", "2025-06-19 00:00"], utc=True)
+    df = cl.zeitspalten(pd.DataFrame({"ts_utc": utc, "preis_eur_mwh": 1.0}), TZ, pd.Timestamp("2025-10-01", tz=TZ), False)
+    assert list(df["stunde_lokal"]) == [22, 2, 22, 2]
+    assert list(df["sonntag"]) == [False, True, False, False]
+    assert list(df["feiertag"]) == [False, False, False, True]
 
 
 def test_last_taeglich_inklusive_feiertage_und_variante():
@@ -75,7 +88,7 @@ def test_bekannt_bis_haengt_an_der_planungsuhrzeit():
 
 
 def test_freitage_nur_volle_wochen_je_periode():
-    f1, f2 = dz.freitage("test_1_stunde", PARAMS), dz.freitage("test_2_viertel", PARAMS)
+    f1, f2 = dz.freitage("test_1_stunde", PARAMS), dz.freitage("test_2", PARAMS)
     assert all(f.weekday() == 4 for f in f1 + f2) and set(f1).isdisjoint(f2)
     assert f1[-1] + pd.Timedelta(days=10) < WECHSEL <= f2[0] + pd.Timedelta(days=3)
 
@@ -115,7 +128,7 @@ def test_datenzugriff_ohne_ausreisserflag():
 @braucht_daten
 def test_kein_look_ahead_in_allen_planungswochen():
     preise, last = dz.lade_preise(PARAMS), dz.lade_last(PARAMS)
-    for periode in ("training", "test_1_stunde", "test_2_viertel", "stresstest"):
+    for periode in ("training", "test_1_stunde", "test_2", "stresstest"):
         for w in dz.planungswochen(preise, last, periode, PARAMS, historie_wochen=4):
             assert w.historie.empty or w.historie["zeit"].max() < w.bekannt_bis
             assert w.zielwoche["zeit"].min() >= w.bekannt_bis

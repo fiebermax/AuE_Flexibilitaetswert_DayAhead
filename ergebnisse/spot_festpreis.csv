@@ -1,0 +1,6 @@
+jahr,tage,vollstaendig,spot_grundlast_eur_mwh,spot_profil_eur_mwh,festpreis_eur_mwh,vorteil_festpreis_eur_mwh,vorteil_festpreis_spotanteil_eur,vorteil_festpreis_ganzes_werk_eur
+2022,365,True,235.45,247.43,85.0,162.43,3201516.06,10671720.18
+2023,365,True,95.18,99.88,85.0,14.88,293369.73,977899.1
+2024,366,True,78.51,81.9,85.0,-3.1,-61252.87,-204176.22
+2025,365,True,89.32,90.71,85.0,5.71,112557.97,375193.23
+2026,304,False,114.0,110.95,85.0,25.95,425926.91,1419756.38

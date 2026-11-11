@@ -6,6 +6,255 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ---
 
+## 11.11.2026
+
+### P-014 · Branch `claude/great-pasteur-p9emmq` ohne Review nach `main` gemergt (auf Anweisung von Max)
+- **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners. Susan (R3) hat die Phasen 1–5, die Analyseseite und Review-Phase 1 nicht reviewt; ihre Bestätigungen (K-013 bis K-015, E-056) und die von Caro und Chiara (E-045) sind offen.
+- **Angesprochen von:** Claude, 11.11.2026
+- **Entscheidung:** Max verlangt den Merge ausdrücklich („merge alles“), damit das Team für die Präsentation (12.11.2026) mit dem Stand auf `main` arbeiten kann. Vorher geprüft: `pytest tests/` 80 grün, `python src/run_all.py` komplett, Zahlen des Hauptfalls bitgleich (K-019).
+- **Offen:** Review-Phase 2–5 (Zuordnung der Hypothesen, Quellenabgleich, Planungsskripte, Control-Seite, Prüfung) folgt auf einem neuen Branch; nachträgliches Review durch Susan auf dem Pull Request.
+
+### K-019 · KI-Einsatz Review Phase 1 (Vertrag, Konsistenz)
+- **Werkzeug:** Claude Code, Sitzung von Max nach dem Review-Prompt (Phasen 0–5)
+- **Zweck:** Vertrag auf Faktor 1,0 (A-018), Umbenennung `test_2` (E-059), Abschnitt Spot gegen Festpreis gekürzt, B_16 als „nicht signifikant“, Rollen (E-057), „2–4 Uhr“ angeglichen.
+- **Wie geprüft:** `pytest tests/`: 80 grün; `python src/run_all.py` komplett (10 Schritte, 3:42 min); alle bisherigen Zahlen für Faktor 1,0 bitgleich (netto_tests, ki_strategien, kipppunkte, wirtschaftlichkeit, backtest_wochen, sensitivitaet), nur die Zeilen des 30-%-Falls entfallen; Analyseseite neu ausgeführt.
+
+### P-013 · Folien widersprechen dem Repo an drei Stellen
+- **Problem:** (1) Folie 3 nennt H0a = feste Uhrzeit, H0b = Wochenplanung (16 Wochen) gegen 22–24 Uhr, H0c = Rücktest; vorab festgelegt sind andere H0a–H0c (`docs/hypothesen.md`, `7a63c15`). (2) Folie 3, Rahmen: „Reinigung heute 22–24 Uhr ist Annahme“; laut K-012 vom Partner bestätigt. (3) Folie 4 nennt R2 „Datenanalyse & IT“ und R3 „Energieeinkauf“; Teamdokument und Review: „Datenerhebung & IT“, „Modellierung & Statistik“.
+- **Angesprochen von:** Claude beim Abgleich mit der Präsentation (Projektvorstellung 12.11.2026), 11.11.2026
+- **Lösung:** (1) nach E-056 (Variante 1); (2) und (3) Folie anpassen. Folien liegen nicht im Repo; Änderung durch R1.
+- **Offen:** Chiara passt Folie 3 und 4 an.
+
+### E-059 · Benennung: `test_2` statt `test_2_viertel`, Empfehlung „fest 3 Uhr (3–5 Uhr)“, B_16 „nicht signifikant“
+- **Person:** Max (R2), nach Review (Punkt F)
+- **Entscheidung:** Periode `test_2_viertel` heißt überall `test_2` (Code, `params.yaml`, Ergebnisdateien, Notebook, Doku), weil die Viertelstunde Nichtziel ist (E-043). Die Empfehlung lautet einheitlich „fest 3 Uhr (3–5 Uhr)“; „2–4 Uhr“ in Erklärzettel und Ishikawa ersetzt (dort war das Preistal gemeint, jetzt „meist 2–5 Uhr“). B_16 gegen D heißt im Text „+10 € pro Woche, nicht signifikant (p = 0,019 > 0,017)“. Die Spalte `regime` in `preise_clean.csv` bleibt (Marktfakt).
+- **Verworfen:** auch `test_1_stunde` umbenennen (nicht verlangt; auf Wunsch in Phase 5).
+
+### E-058 · Zweite Preisquelle: Energy-Charts, teilweise unabhängig (revidiert den Sensitivitätsplan)
+- **Person:** Max (R2), nach Review (Punkt D)
+- **Entscheidung:** Abgleich SMARD gegen Energy-Charts (Fraunhofer ISE), gleicher Zeitraum, UTC-Stunden; Kennzeichnung „teilweise unabhängig (gleiche EPEX-Auktion, eigene Aufbereitung)“. Umsetzung in Phase 3.
+- **Verworfen:** ENTSO-E Transparency (braucht API-Token, ebenfalls dieselbe Auktion); kein Abgleich wie im Sensitivitätsplan (K2 Stufe 5 verlangt eine zweite Quelle, der Übertragungsfehler-Check ist genau ihr Wert).
+- **Revidiert:** `r2/docs/sensitivitaet_plan.md`, Abschnitt „Kein Abgleich mit ENTSO-E“.
+
+### A-019 · IT-Aufwand für die Automatisierung an R4
+- **Von → an:** Max (R2) → Caro (R4)
+- **Was:** Aufwand für den n8n-Workflow (baut Max selbst; Claude liefert `src/plan_woche.py`, `src/soll_ist.py`, Tests, `n8n/README.md`): **3–6 Personentage, Tagessatz 700 € (Bandbreite 500–900 €)**, Teamannahme. Damit einmalige Umstellungskosten 1 500–5 400 €, Mitte 3 150 € (4,5 PT × 700 €). R4 rechnet den Break-even damit neu (Phase 4).
+- **Kanal und Datum:** Chat Max mit Claude Code, 11.11.2026
+
+### E-057 · Rollen nach Review: Process Map bei R4, Control bei R2 (abweichend vom Teamdokument)
+- **Person:** Max (R2) für das Team
+- **Entscheidung:** Rollennamen wie im Teamdokument: R1 Projektleitung & Controlling (Chiara), R2 Datenerhebung & IT (Max), R3 Modellierung & Statistik (Susan), R4 Produktion & Schichtplanung (Caro). Abweichend vom Teamdokument gehört die Process Map zu R4 und Control (Kennzahl, Rücknahmeregel, Planungsskripte, Control-Seite) zu R2.
+- **Verworfen:** Process Map und Control bei R1 (Teamdokument): R4 kennt den Ablauf der Nacht, R2 baut die Skripte und die Kennzahl.
+- **Beleg:** `docs/kickoff.md` (Rollentabelle), `docs/annahmen.md` (Rollen); revidiert E-050 (Process Map bei R1).
+
+### E-056 · Hypothesen: Variante 1 (vorab festgelegte H0a–H0c bleiben konfirmatorisch)
+- **Person:** Max (R2), Entscheidung über Variante 1; Susan (R3) bestätigt hier
+- **Entscheidung:** Konfirmatorisch sind nur die vorab festgelegten H0a–H0c (`7a63c15`), α = 0,05/3. FS1–FS3 aus dem Teamdokument stehen daneben als Teamfragen mit Zuordnung und sind explorativ. Folie 3 wird darauf umgestellt (P-013). Umsetzung (Abschnitt „Zuordnung“ in `docs/hypothesen.md`, Notebook) in Phase 2.
+- **Verworfen:** Variante 2 (FS1–FS3 zusätzlich konfirmatorisch, α = 0,05/6): nicht zulässig, weil das Teamdokument nach der Berechnung der Testzeiträume entstand (E-055).
+- **Offen:** Bestätigung durch Susan.
+
+### E-055 · Teamdokument nach den Testergebnissen: FS1–FS3 und B_16 sind explorativ
+- **Person:** Max (R2)
+- **Befund:** Das Teamdokument „AuE_Projekt_gruppeF“ (16 Wochen, FS1–FS3) entstand am 11.11.2026 **nach** der Berechnung der Testzeiträume. Zeitfolge laut git (UTC): Regeln eingefroren 13:36 (`1d59427`), Testzeiträume gerechnet 13:45 (`f6a06df`), B_16 und FS1–FS3 ergänzt 13:55 (`1ef4baa`).
+- **Entscheidung:** FS1–FS3 und B_16 werden überall als **explorativ** gekennzeichnet. Die Empfehlung (fest 3 Uhr) hängt nicht daran: Sie stützt sich auf die vorab festgelegten H0a und H0b.
+- **Verworfen:** „Fragen vorab festgelegt, nur Code später“ (trifft nicht zu).
+
+### A-018 · Vertrag: Reinigung zu 100 % am Day-Ahead (verbindlich, Owner R1)
+- **Von → an:** Max (R2) nach Review → alle; Owner R1 (Chiara)
+- **Was:** Die 70 % Festpreis decken den Grundverbrauch des Werks und werden immer voll verbraucht. Die Reinigung liegt obendrauf und wird zu 100 % am Day-Ahead gekauft. Vertragsfaktor 1,0 ist der einzige Hauptfall. Faktor 0,3 ist aus Fazit, Kernaussagen, Netto-Tests, Kipppunkten und Break-even entfernt und bleibt nur als Sensitivität V8 („falls der Festpreis nicht voll verbraucht wird“). Der Abschnitt Spot gegen Festpreis ist auf eine Einordnung gekürzt (entscheidet nicht über die Uhrzeit); Grafik g6 entfällt, die Zahlen bleiben in `ergebnisse/spot_festpreis.csv`.
+- **Kanal und Datum:** Review, weitergegeben von Max, 11.11.2026
+- **Änderung, nachgezogen von:** `params.yaml` (`vertrag`), `docs/annahmen.md` (Nr. 8, 9), `src/04_strategien.py` (`VERTRAEGE`), `src/05_bewertung.py`, `src/06_sensitivitaet.py` (V8), `src/07_bericht.py`, `analyse.ipynb`; revidiert die Kipp-Annahme A3 (E-035) und die Zweifall-Rechnung aus M-004.
+- **Ergebnis:** Keine Zahl des Hauptfalls ändert sich (bitgleich); es entfallen nur die Zeilen des 30-%-Falls (z. B. 18 770 €/Jahr, Kipppunkt 0,4 h).
+
+### E-054 · Acht weitere Grafiken nach Vorschlägen aus einer Claude-Sitzung (über Max)
+- **Person:** Max (R2), Vorschläge aus einer separaten Claude-Sitzung, die nur `analyse.html` gelesen hatte
+- **Entscheidung:** Neu in `src/07_bericht.py` und auf der Analyseseite: g8 Heatmap Stunde × Monat (Abweichung vom Monatsmittel), g9 Heatmap Startwahl je Strategie, g10 Verteilung der Wochenersparnis (Box plus Einzelwochen), g11 Differenz B − D als Histogramm und QQ-Plot (H0b, Normalität), g12 Wasserfall vom Oracle zur Netto-Ersparnis, g13 Kalender-Heatmap der Wochenersparnis, g14 Pareto der C&E-Matrix, g15 jede Nacht Preis 22 Uhr gegen 3 Uhr. Daten der Heatmap g8 zusätzlich als Tabelle 14 in `ergebnisse/daten_fuer_grafiken.md`.
+- **Abweichend vom Vorschlag:** Tornado (g4) und rollierende Linie (g3) gab es schon. Das Pareto zeigt die kumulierten Prozent als Beschriftung statt auf einer zweiten y-Achse (zwei Skalen in einer Grafik verworfen). Erster Titel von g8 („2–5 Uhr ganzjährig günstig“) war falsch, weil die Nacht im Sommer über dem Monatsmittel liegt; korrigiert und nachgeprüft (3 Uhr ist in jedem Monat 19–46 €/MWh billiger als 22 Uhr).
+- **Beleg:** `ergebnisse/grafiken/g8`–`g15`, `ergebnisse/analyse.html`; jede Grafik gerendert und angesehen.
+
+### E-053 · Finale Analyseseite im Design des Notebook-Prototyps
+- **Person:** Max (R2), nach Vorlage seines Notebook-Prototyps (`prototype.html`, nicht im Repo)
+- **Entscheidung:** `analyse.ipynb` ist die eine Analyseseite (Ziel aus E-039): linear von den Parametern über Daten, Preistal, Backtest, Ergebnisse FS1–FS3, Tests, Fehleranalyse, Personalkosten und Wirtschaftlichkeit, C&E, Sensitivität, Spot gegen Festpreis bis zur Empfehlung, Owner je Abschnitt. Sie rechnet nichts neu, sondern liest die Ergebnisdateien; die Interpretationstexte setzen ihre Zahlen beim Ausführen selbst ein (Zellen mit Tag `remove_input`, auf der Seite nur als Text). `src/08_board.py` führt das Notebook als letzten Schritt von `run_all.py` aus und exportiert `ergebnisse/analyse.html` im JupyterLab-Stil. Neue Pakete in `requirements.txt` (nbformat, nbclient, nbconvert, mistune 3.0.2 wegen Unverträglichkeit mit nbconvert 7.16, ipykernel). Neue Grafik g7 (kumulierte Ersparnis im Test).
+- **Verworfen:** Zahlen fest in den Text schreiben (veralten beim nächsten Lauf); Berechnungen im Notebook wiederholen (zweite Rechnung neben der getesteten Pipeline); das R2-Board erweitern (anderes Design als der Prototyp).
+- **Beleg:** `analyse.ipynb`, `src/08_board.py`, `ergebnisse/analyse.html`; im Browser gerendert und Abschnitt für Abschnitt angesehen, keine Fehlerausgabe.
+
+### E-052 · Grafiken entstehen in Claude aus einer Datendatei; Repo liefert nur die Daten
+- **Person:** Max (R2), 11.11.2026
+- **Entscheidung:** Die Grafiken für Bericht und Folien baut das Team später in Claude. Das Repo liefert dafür **alle Daten in einer Datei**: `ergebnisse/daten_fuer_grafiken.md` (Kernaussagen und 13 Tabellen: Preistal, Ersparnis je Strategie, Netto und H0a, alle Tests, Kennzahl je Monat, Sensitivität, Break-even, Kipppunkte, Spot gegen Festpreis, C&E, Fehleranalyse, R2-Kennzahlen). Sie wird von `src/07_bericht.py` bei jedem `run_all.py` neu erzeugt, also nie von Hand gepflegt. Die sechs PNG aus K-018 bleiben nur als Entwurf.
+- **Verworfen:** Grafiken fertig im Repo per Skript (Folien entstehen ohnehin in Claude, E-039); Zahlen von Hand in ein Dokument kopieren (veraltet beim nächsten Lauf).
+- **Beleg:** `ergebnisse/daten_fuer_grafiken.md`, `src/07_bericht.py`
+
+### E-051 · Energie der Reinigung: 8 MWh pro Nacht (löst den offenen Punkt aus E-049)
+- **Person:** Max (R2), 11.11.2026
+- **Entscheidung:** Die Reinigung braucht 8 MWh pro Nacht (4 MW × 2 h), wie im Interview genannt (K-008 P6). Das „8 MW für 2 h“ im Teamdokument ist als 8 MWh zu lesen; das Teamdokument wird entsprechend korrigiert. Alle bisherigen Ergebnisse gelten unverändert, weil sie schon mit 8 MWh gerechnet sind.
+- **Verworfen:** 16 MWh (8 MW × 2 h): widerspricht dem Interview. Bleibt als Sensitivität V6c im Bericht (Euro-Beträge doppelt, Entscheidung gleich, M-005).
+- **Beleg:** `params.yaml` (`last.mwh_pro_tag`), `docs/annahmen.md` Nr. 6
+
+### K-018 · KI-Einsatz Phase 6 (R1), Zwischenstand: Grafiken und Spot gegen Festpreis
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** `src/07_bericht.py` (letzter Schritt in `run_all.py`): sechs Grafiken nach einem Standard in `ergebnisse/grafiken/` (Titel = Kernaussage, eine y-Achse, Quelle unten, Farben nach Rolle, farbenblind geprüft mit dem Palettenprüfer, direkte Beschriftung) und `ergebnisse/spot_festpreis.csv` (mittlerer Day-Ahead-Preis im Lastprofil des Werks je Jahr gegen 85 €/MWh: 2022 247, 2023 100, 2024 82, 2025 91, 2026 bis Okt. 111 €/MWh).
+- **Wie geprüft:** jede Grafik gerendert und angesehen; abgeschnittene Titel und überlappende Beschriftungen (g2, g3, g4, g5, g6) behoben; zwei Titel an die Daten angepasst (g6 behauptete zuerst „nahe am Festpreis“, 2026 liegt aber bei 111 €/MWh); `pytest tests/` grün.
+- **Offen:** Problem Statement, Process Map, Berichtsgliederung nach DMAIC, Text Spot gegen Festpreis, Tests für `07_bericht.py`, Erklärzettel Phase 6; Bestätigung durch Chiara (R1). Lastprofil für Spot gegen Festpreis ist eine Annahme (180 MWh/Tag, Reinigung 22–24 Uhr, Rest gleichmäßig 06–22 Uhr).
+
+### M-005 · Sensitivitätsrechnung gerechnet (Phase 5, K2 Stufe 5)
+- **Stand:** `src/06_sensitivitaet.py`, zwölf Varianten (V2, V3, V4, V6a–c, V7a–c, V8, V9, V10) gegen die Basis, Schwelle 5 % vorab festgelegt (E-044). Keine Testentscheidung kippt (H0a verworfen, H0b nicht verworfen in allen Varianten); Anteil am Oracle 92–95 %. Euro-Beträge stark abhängig von Menge (−50 % bis +100 %), Vertrag (−70 %), Produktionstagen (−36 %) und Blocklänge (+34 % bis −40 %). Ohne Nächte mit auffälligen Preisen −11 %, Anteil gleich.
+- **Neu:** V6c = 16 MWh aus dem Teamdokument (E-049).
+- **Abweichung vom Plan:** Varianten, die die Regeln nicht berühren, werden auf den gewählten Blöcken nachgerechnet statt `cleaning`/`02_synthetisch` neu laufen zu lassen; nur V7 rechnet R3s eingefrorene Regeln neu (als Funktion `backtest_periode`, damit ist die Absprache aus Planpunkt 5 erledigt).
+- **Beleg:** `r2/ergebnisse/sensitivitaet.csv`, Tabelle in `r2/docs/sensitivitaet_plan.md`, `tests/test_sensitivitaet.py`, Erklärzettel Phase 5
+
+### K-017 · KI-Einsatz Phase 5 (Sensitivität R2)
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** `src/06_sensitivitaet.py`, `tests/test_sensitivitaet.py`, Schritt in `src/run_all.py`, Ergebnis im Sensitivitätsplan, Erklärzettel Phase 5.
+- **Wie geprüft:** `pytest tests/`: 80 grün; Basis gleich R4 (1 199,05 €/Woche); V3 und V10 zunächst verdächtig (fast 0): von Hand nachvollzogen, Feiertags- und Wochenendzuschläge treffen A und D symmetrisch; jede Variante ändert nachweislich ihren Schalter (Test); V6 linear (Test).
+- **Offen:** Max geht Erklärzettel Phase 5 durch (eigenes Paket, Verteidigung).
+
+### M-004 · Bewertung R4 gerechnet (Phase 4): H0a verworfen, Kipppunkt ist das Personal
+- **Stand:** `src/05_bewertung.py`; `python src/run_all.py` läuft erstmals komplett durch. Test gesamt, D gegen A nach Personalkosten: netto 1 199 €/Woche (KI 1 061–1 337), 62 400 €/Jahr bei Faktor 1,0; 361 €/Woche, 18 800 €/Jahr bei Faktor 0,3. **H0a verworfen** (p < 0,001, Wilcoxon gleich). In keiner der 244 Wochen 2022–2026 war D teurer als 22–24 Uhr.
+- **Kipppunkte:** Zuschläge fast ohne Wirkung (Personal-Mehrkosten −2 €/Woche, weil 22–06 Uhr ganz Nacht ist). Die Verschiebung kippt, wenn jede Person je Nacht mehr als 1,3 h (Faktor 1,0) bzw. 0,4 h (Faktor 0,3) zusätzlich bezahlt werden muss, z. B. Warten von 22 bis 3 Uhr. Break-even bei 25 000 € Umstellungskosten: 4,8 bzw. 16 Monate.
+- **Empfehlung (Entwurf für R1):** fest 3 Uhr, ohne Prognose, nur mit eigener Reinigungsschicht ohne bezahlte Wartezeit; Kennzahl rollierende 13-Wochen-Netto-Ersparnis; Rücknahme auf 22 Uhr, wenn sie unter null fällt; jährlich die feste Uhrzeit neu bestimmen.
+- **Beleg:** `ergebnisse/netto_tests.csv`, `wirtschaftlichkeit.csv`, `kipppunkte.csv`, `kpi_rollierend.csv`, `ce_matrix.csv`, `docs/ishikawa.md`, `docs/erklaerzettel.md` Phase 4
+- **Rückstand:** Caro bestätigt Erklärzettel, C&E-Gewichte (E-044) und die Basisannahmen der Zuschläge beim Partner (A-017); Frage an den Partner: Würde die Reinigungsmannschaft bei 3 Uhr warten oder als eigene Schicht kommen?
+
+### E-050 · C&E-Gewichte (Vorschlag) und Process Map bei R1
+- **Person:** Claude als Vorschlag für Caro (R4); Max (R2) für die Zuordnung
+- **Entscheidung:** C&E-Matrix mit fünf Kriterien, alle so formuliert, dass hoch = gut: Steuerbarkeit im Wochenplan 5, kein Produktrisiko 5, personalgebunden 4, verschiebbare Leistung 3, Datenlage 2; Skala 0/1/3/9; Begründung je Gewicht und Zeile im Code (`CE_KRITERIEN`, `CE_BEWERTUNG`). Ergebnis Reinigung 153 (62 %), Produktion 51, Kälte 43. Die Process Map macht R1 (Teamdokument), nicht R4 wie im Prompt.
+- **Verworfen:** Leistung (MW) am höchsten gewichten (dann läge die Produktion vorn, obwohl sie wegen Rohmilch nicht verschiebbar ist); Kriterien mit „hoch = schlecht“ (Risiko, Personalbedarf) mischen (die gewichtete Summe wäre nicht mehr lesbar).
+- **Offen:** Caro bestätigt oder ändert die Gewichte.
+
+### K-016 · KI-Einsatz Phase 4 (R4) und Abgleich mit dem Teamdokument
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** `src/05_bewertung.py`, `tests/test_bewertung.py`, `docs/ishikawa.md`, Erklärzettel Phase 4, Schnittstellen; vorher `docs/annahmen.md`, B_16 und FS1–FS3 (E-049).
+- **Wie geprüft:** `pytest tests/`: 75 grün; eine Freitagnacht von Hand (A 262,50 €, D 315,00 €); Netto = Strom × Faktor − Personal an einem Zahlenbeispiel; unvollständige Wochen zählen nicht; `python src/run_all.py` komplett; bisherige Strategien nach B_16 bitgleich.
+- **Offen:** Caro bestätigt den Erklärzettel Phase 4.
+
+### E-049 · Abgleich mit dem Teamdokument: Annahmenliste, Wochenende, B_16, Fragestellungen FS1–FS3
+- **Person:** Max (R2), nach Abgleich mit dem Teamdokument „Analyse und Entscheidungsprojekt“ (Gruppe F)
+- **Entscheidung:** (1) `docs/annahmen.md` ist die eine Annahmenliste (Leitfrage, FS1–FS3, Rahmenbedingungen mit Quelle und `params.yaml`-Schlüssel, Nichtziele, Rollen). (2) Wochenendzuschlag 50 % gilt für Samstag **und** Sonntag (`kosten.wochenendzuschlag`, vorher nur Sonntag). (3) Die Team-Regel aus FS2 kommt als Strategie **B_16** dazu: je Wochentag das Mittel der letzten 16 gleichen Nächte. (4) FS1 (D gegen A), FS2 (B_16 gegen A) und FS3 (B_16 gegen A im letzten Jahr = Test 2) stehen in `ergebnisse/hypothesentests.csv`. (5) Process Map laut Teamdokument bei R1 (Phase 6), nicht bei R4.
+- **Offenlegung:** B_16 und FS1–FS3 kamen **nach** dem Einfrieren (`1d59427`) und nach Sicht der Testergebnisse dazu. Sie sind deshalb als „nicht konfirmatorisch“ markiert; die vorab festgelegten H0a–H0c bleiben unverändert. Die Regel B_16 stammt aus dem Teamdokument, wurde also nicht nach den Ergebnissen gewählt. Die bisherigen Strategien sind bitgleich (geprüft gegen den Stand von Phase 3).
+- **Ergebnis (Test gesamt, 89 Wochen, nur Strom):** FS1: D spart 1 197 €/Woche (KI 1 059–1 336). FS2: B_16 spart 1 207 €/Woche (KI 1 071–1 344, 93,8 % des Oracle). FS3 (letztes Jahr): B_16 spart 1 281 €/Woche (KI 1 062–1 499). Alle p < 0,001. B_16 gegen D: +10 €/Woche (KI 0,6–19, p = 0,019 > α/3; im Training −14): praktisch gleich gut.
+- **Nebenbei behoben:** Anteil am Oracle wurde bei Strategien mit fehlenden Wochen (B in 2022) gegen das Oracle aller Wochen gerechnet; jetzt auf denselben Wochen (B im Stresstest 90,8 % statt 94,8 %).
+- **Offen:** ~~Energie der Reinigung~~ erledigt am 11.11.2026: 8 MWh (E-051).
+- **Verworfen:** B (4 Wochen, Median) durch B_16 ersetzen (würde die eingefrorene Regel nachträglich ändern); FS1–FS3 als konfirmatorisch zählen (nachträglich, und es wären sechs statt drei Tests für Bonferroni).
+
+### M-003 · Backtest und Tests von R3 gerechnet (Phase 3)
+- **Stand:** Alle vier Zeiträume gerechnet mit den eingefrorenen Regeln (`1d59427`). Test 2025–2026 (89 Wochen, nur Strom, Faktor 1,0): D 1 197 €/Woche (95-%-KI 1 059–1 336, 93,0 % des Oracle), B 1 179 (91,6 %), C 1 288. Faktor 0,3: D rund 18 700 €/Jahr.
+- **H0b nicht verworfen** (B − D = −18 €/Woche, p_t = 0,99, Wilcoxon gleich): Eine wöchentliche Prognose bringt nichts gegenüber der festen Regel 3 Uhr. **H0c:** C − B = 109 €/Woche, Kipppunkt m\* = 91 €/Woche. **H0a** offen bis Phase 4 (Personalkosten R4).
+- **Gegenproben:** Test 1, Test 2 und Stresstest 2022 einzeln mit gleicher Richtung; Bootstrap-Intervalle rund 50 % breiter als die t-Intervalle, gleiche Entscheidung; Shapiro-Wilk lehnt Normalverteilung ab, Wilcoxon gleich.
+- **Beleg:** `ergebnisse/ki_strategien.csv`, `ergebnisse/hypothesentests.csv`, `ergebnisse/fehleranalyse_b.csv`, `docs/erklaerzettel.md` Phase 3
+- **Rückstand:** Bestätigung durch Susan (Phasen 1–3).
+
+### P-012 · Code-Fehler nach dem Einfrieren: leere Historie im Stresstest
+- **Problem:** Im ersten Lauf des Stresstests 2022 stürzte B ab: Die Historie der ersten Woche ist leer (Daten beginnen am 01.01.2022), `blockkosten` gab dann eine Tabelle ohne Spalten zurück. Laut E-044 soll B in diesen Wochen nicht planen.
+- **Angesprochen von:** Claude, 11.11.2026
+- **Lösung:** `src/03_merkmale.py` gibt auch ohne vollständige Nacht feste Spalten zurück; Test in `tests/test_merkmale.py`. Keine Regel geändert (die Regeln in `src/04_strategien.py` sind seit `1d59427` unverändert, Trainingszahlen bitgleich).
+- **Nebenbefund:** Für B entfallen 2022 fünf statt vier Wochen (E-044 nannte vier): Die vierte bekannte Freitagnacht gibt es erst am Planungsfreitag der sechsten Woche.
+
+### K-015 · KI-Einsatz Phase 3 (Statistik R3)
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** Statistik in `src/04_strategien.py` (t-Test, Wilcoxon, Shapiro-Wilk, Block-Bootstrap, Fehleranalyse), drei Ergebnisdateien, Erklärzettel Phase 3, Schnittstellen.
+- **Wie geprüft:** `pytest tests/`: 70 grün, darunter t-Wert, p-Wert und untere Schranke gegen Handformel, Bootstrap reproduzierbar mit Seed, Vertragsfaktor; Trainingszahlen bitgleich mit dem eingefrorenen Stand; `git diff 1d59427` zeigt keine Änderung an den Regelfunktionen; `python src/run_all.py` läuft bis Schritt 05.
+- **Offen:** Susan bestätigt den Erklärzettel Phase 3.
+
+### M-002 · Strategien eingefroren (Commit `1d59427`)
+- **Stand:** Regeln A, D (3 Uhr), D_saison (3 Uhr in jeder Saison), B (Median der letzten 4 gleichen Wochentage), B_ohne_wochentag (letzte 28 Nächte), C (Oracle) in `src/04_strategien.py`, entwickelt nur auf dem Training 2023–2024. Hash: `1d594271f1c9f2a2dfccecc3faf1b114baa3e8d4`.
+- **Regel ab jetzt:** Keine Änderung an den Regeln mehr. Test 1, Test 2 und Stresstest 2022 laufen erst in Phase 3. Ein Code-Fehler wird behoben und hier offen dokumentiert, die Regel selbst bleibt (`docs/hypothesen.md`).
+- **Rückstand:** Susan hat die Regeln noch nicht bestätigt (E-045, E-046); eingefroren auf Anweisung von Max („weiter“).
+
+### E-048 · Kalendermerkmale verbessern die Strategien im Training nicht (Befund, K3)
+- **Person:** Claude als Befund für Susan (R3)
+- **Befund (Training, 104 Wochen, nur Strom, Faktor 1,0):** Ersparnis gegenüber A: D 1 162 €/Woche (93,4 % des Oracle), D_saison 1 162 (93,4 %), B 1 132 (91,0 %), B_ohne_wochentag 1 139 (91,6 %), C 1 244. Saison bringt 0 €, gleicher Wochentag −7 €/Woche. B ist im Training schlechter als die feste Regel D, wobei D im Training gelernt und deshalb geschönt ist.
+- **Folge:** K3 Stufe 5 („Merkmal verbessert das Ergebnis messbar“) ist mit diesen beiden Merkmalen nicht belegt. Beide Ergebnisse werden als negative Ergebnisse berichtet. Eine weitere Merkmalssuche nach Sicht der Ergebnisse ist verworfen (p-Hacking). Ob ein anderer K3-Beleg kommt (z. B. „Nacht als Einheit über Mitternacht“ statt Kalendertag, R2), entscheidet das Team.
+- **Beleg:** `ergebnisse/backtest_wochen.csv` (Periode training), `docs/erklaerzettel.md` Phase 2
+
+### K-014 · KI-Einsatz Phase 2 (Strategien R3)
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** `src/04_strategien.py`, `tests/test_strategien.py`, Erklärzettel Phase 2, Schnittstellen `backtest_naechte.csv` und `backtest_wochen.csv`.
+- **Wie geprüft:** `pytest tests/`: 67 grün. Beim ersten Lauf schlug die Prüfung „Oracle nie teurer“ an: Der Montag war als „Freitag + 72 h“ berechnet und verschob in Wochen mit Zeitumstellung die Woche um eine Nacht; behoben mit Kalendertagen und Test. Woche ab 04.03.2024 von Hand aus den Stundenpreisen nachgerechnet (A 3 682,24 €, D 3 199,52 €, C 3 163,32 €, gleich). Look-ahead-Test: verfälschte Zukunftspreise ändern den Plan von B nicht.
+- **Offen:** Susan bestätigt den Erklärzettel Phase 2.
+
+### E-047 · Haupttest t-Test, keine Regression (ändert `docs/hypothesen.md` vom selben Tag)
+- **Person:** Max (R2) für das Team, 11.11.2026
+- **Entscheidung:** Über H0a–H0c entscheidet der gepaarte t-Test, einseitig, p < α/3. Shapiro-Wilk wird vorher berichtet, Wilcoxon läuft als Gegenprobe, ein Block-Bootstrap-Intervall nur als Grenze. Die Regression (Ersparnis je Nacht gegen die Nachtspreizung) und die Regressionsvariante B′ entfallen.
+- **Verworfen:** Block-Bootstrap als Haupttest (Fassung `7a63c15`): erklärt sich in der Verteidigung schwerer, und der t-Test steht im Kickoff und im Kursmaterial. Regression: kein Beitrag zu H0a–H0c.
+- **Testdaten gesehen?** Nein. Bisher sind nur Trainingsnächte ausgewertet (Phase 1).
+- **Grenze:** Wochen derselben Saison hängen zusammen; der t-Test kann die Unsicherheit dann unterschätzen. Das Bootstrap-Intervall zeigt, wie stark.
+
+### K-013 · KI-Einsatz Phase 0 und Phase 1 (R2-Ergänzung, Hypothesen, Merkmale R3)
+- **Werkzeug:** Claude Code, Sitzung von Max nach dem Prompt aus E-045
+- **Zweck:** Phase-0-Antworten umgesetzt (Commits `a73df08`, `49ac435`); `docs/hypothesen.md` (`7a63c15`); `src/03_merkmale.py`, `tests/test_merkmale.py`, `docs/erklaerzettel.md` (Phase 1).
+- **Wie geprüft:** `pytest tests/`: 60 grün; Blockkosten-Matrix gegen R2-Funktion `fenster_je_tag` über alle 1 764 Nächte (gleicher Status-quo-Preis und billigster Block, Abweichung < 10⁻⁹); Zeitumstellungsnächte mit 6 bzw. 8 Blöcken einzeln geprüft; `preise_clean.csv` nach der R2-Ergänzung in allen alten Spalten bitgleich; `python src/run_all.py` läuft bis Schritt 03.
+- **Offen:** Susan liest den Erklärzettel Phase 1, prüft eine Nacht von Hand nach und bestätigt hier (Datum, was geprüft).
+
+### E-046 · Saisonaler Block bringt im Training nichts; K3-Nachweis über B (Vorschlag)
+- **Person:** Claude als Befund für Susan (R3); Entscheidung offen
+- **Befund (Training 2023–2024, kein Testergebnis):** Der beste feste Start ist 3 Uhr in jeder Saison und an jedem Wochentag (`ergebnisse/saisonaler_block.csv`). D_saison ist damit identisch mit D, das Merkmal Saison verbessert die feste Regel um 0 €.
+- **Vorschlag:** D_saison bleibt im Backtest und wird als negatives Ergebnis berichtet. Der K3-Nachweis in € kommt stattdessen aus dem Kalendermerkmal „gleicher Wochentag“ in B: B (Median der letzten 4 gleichen Wochentage) gegen B ohne Wochentag (Median der letzten 28 Nächte), verglichen auf dem Training, bevor eingefroren wird.
+- **Verworfen (vorgeschlagen):** Den saisonalen Block weglassen (dann fehlt das negative Ergebnis, das H0b stützt); ein neues Merkmal nur suchen, bis eines wirkt (Gefahr des p-Hacking, deshalb nur dieser eine vorab benannte Vergleich).
+- **Offen:** Susan entscheidet vor Phase 2.
+
+### E-045 · Arbeitsweise: KI baut R1, R3, R4 in Phasen, Max committet, Owner prüfen und erklären
+- **Person:** Max (R2), nach Einwand von Susan (R3) gegen die Aufteilung „jeder baut sein Paket selbst“
+- **Entscheidung:** Die fehlenden Pakete entstehen mit Claude Code nach einem festen Prompt in Phasen (0: Bestand, 1–3: R3, 4: R4, 5: R2, 6: R1). Nach jeder Phase hält Claude an, schreibt einen Erklärzettel für den Owner (was, warum, verworfen, drei Prüferfragen) und wartet auf „weiter“. Git-Autor ist Max (er committet alles); jeder Commit trägt den Trailer `Owner: R<x>` und `AI-Assisted: Claude`, Dateiköpfe nennen den Owner.
+- **Verworfen:** (a) Jeder baut und committet sein Paket selbst unter eigenem Account (Kickoff, Risiko 1): von Susan abgelehnt. (b) Die Person der Rolle als Git-Autor eintragen, obwohl sie nicht an der Sitzung beteiligt war: wäre eine falsche Angabe zum Eigenanteil.
+- **Risiko und Maßnahme:** Im Git-Verlauf steht nur Max. Der Eigenanteil der anderen muss deshalb anders belegt werden: Jeder Owner bestätigt sein Paket im Tagebuch (Nachtrag am Phaseneintrag) oder per Kommentar am Pull Request und erklärt es im Probelauf mit Kreuzfragen. Ohne diese Bestätigung gilt das Paket als nicht verantwortet (Sperrkriterium Erklärbarkeit).
+- **Ändert:** Kickoff „Eigenanteil sichtbar machen“ und Risiko 1 (Verweis dort ergänzt).
+- **Offen:** Zustimmung von Chiara (R1) und Caro (R4) zu dieser Arbeitsweise.
+
+### E-044 · Offene Fragen aus A-007, A-010, E-035 und dem Sensitivitätsplan entschieden
+- **Person:** Max (R2), Phase 0 am 11.11.2026
+- **Entscheidung:** (1) Die Sonntagsnacht wird mitgewertet; ihre Stunden bis Montag 06:00 kommen aus der Blockkosten-Matrix (echte Preise, nur zur Bewertung). (2) Stresstest 2022 nur mit Regeln, die im Training gelernt wurden; für B entfallen die ersten 4 Wochen 2022 mangels Historie, im Bericht als Grenze genannt. (3) Umstellungskosten als Break-even-Kurve statt Punktwert (keine belastbare Quelle). (4) Schwelle der Sensitivität 5 % (`statistik.sensitivitaet_schwelle_pct`). (5) Gewichte der C&E-Matrix schlägt Claude begründet vor, Caro (R4) bestätigt in Phase 4.
+- **Verworfen:** (1) Sonntagsnacht weglassen: jede Woche fehlte eine Nacht, ausgerechnet die mit Sonntagszuschlag. (2) Preise ab 12/2021 nachladen: ändert den Datenstand und alle Prüfsummen für vier Wochen Stresstest. (3) Punktschätzung der Umstellungskosten ohne Quelle.
+- **Beleg:** `params.yaml`, `docs/schnittstellen.md`, `r2/docs/sensitivitaet_plan.md`
+
+### A-017 · Kosten: R3 rechnet Strom, R4 Personal; Basisannahmen der Zuschläge
+- **Von → an:** Max (R2) → R3 (Susan), R4 (Caro)
+- **Was:** R3 liefert in `ergebnisse/backtest_wochen.csv` nur Stromkosten. R4 rechnet Personalkosten mit Zuschlägen. Basisannahmen: 22–06 Uhr gilt komplett als Nacht (`kosten.nachtstunden` jetzt 22–05); für die Stunden 0–6 Uhr zählt der Kalendertag der Stunde (Sa 22 Uhr = Samstag, So 02 Uhr = Sonntag); trifft Nacht auf Sonntag oder Feiertag, gilt nur der höchste Zuschlag (`kosten.zuschlag_regel: hoechster`). Sensitivität: V9 Nacht erst ab 23 Uhr, V10 Zuschläge addiert.
+- **Kanal und Datum:** Chat Max mit Claude Code, 11.11.2026
+- **Offen:** Caro bestätigt die drei Basisannahmen beim Praxispartner, wenn möglich; Antwort hier nachtragen.
+- **Änderung, nachgezogen von:** `params.yaml`, `docs/schnittstellen.md`, `r2/docs/sensitivitaet_plan.md` (V9 umgedreht, V10 neu); E-035 „Offen“ damit erledigt.
+
+### A-016 · Schnittstelle R2 → R4: Spalten `sonntag` und `feiertag`
+- **Von → an:** R2 (Max) → R4 (Caro)
+- **Was (Datei, Spalten, Einheit):** `data/preise_clean.csv` hat zwei neue Spalten: `sonntag` und `feiertag` (gesetzlicher Feiertag Bayern), beide True/False und bezogen auf den Kalendertag der Stunde. Vorher gab es nur `werktag`, in dem Samstag, Sonntag und Feiertag zusammenfallen; R4 braucht sie getrennt, weil die Zuschläge verschieden sind (50 % / 100 %).
+- **Kanal und Datum:** Repo, 11.11.2026
+- **Beleg:** Commit `a73df08`; `src/gemeinsam.py` (`feiertage_bayern`), `src/cleaning.py`, Test `test_sonntag_und_feiertag_gelten_fuer_den_kalendertag_der_stunde`; alle bisherigen Spalten bitgleich, 52 Tests grün; `docs/codebook.md`.
+
+### E-043 · Gegenstand nur die Reinigung; Kälte gestrichen, Viertelstunde Nichtziel
+- **Person:** Max (R2)
+- **Entscheidung:** Untersucht wird nur die Reinigung (CIP). Kälte (Kontrastfall T), Produktion, Viertelstunden, Netzentgelte und Intraday sind Nichtziele und werden im Bericht im Kapitel „Abgrenzung“ begründet. Gelöscht: Block `kaelte` und `strategien.tagessteuerung` in `params.yaml`, T in `docs/schnittstellen.md` und `r2/docs/architektur.md`; der Kickoff bekommt nur einen Verweis. Test 2 (10/2025–09/2026) bleibt als zweiter Testzeitraum mit Stundenwerten, ohne eigene Hypothese. Der Tagesplanungsfall steckt im Oracle C: Die Preise einer Nacht sind am Vortag um 12:45 vollständig bekannt.
+- **Verworfen:** T als „nicht verwendet“ markiert stehen lassen (toter Ballast, verwirrt); Test 2 streichen (verschenkt den Strukturbruch als Gegenprobe, K6).
+- **Revidiert:** E-033 (Kälte als Kontrastfall T).
+
+### E-042 · Neue Nullhypothesen H0a–H0c (revidiert E-034 und Kickoff)
+- **Person:** Max (R2)
+- **Entscheidung:** H0a: Ersparnis D gegen A nach Kosten ≤ 0. H0b: Ersparnis B ≤ Ersparnis D. H0c: (Ersparnis C − Ersparnis B) − Mehrkosten Tagesplanung ≤ 0, berichtet als Kipppunkt des Aufpreises für kurzfristig gebuchtes Personal. Bonferroni α = 0,05/3. Testrichtung, Test und Entscheidungsregel stehen in `docs/hypothesen.md`, separat committet vor jeder Auswertung.
+- **Verworfen:** alte H0c (Stunden- gegen Viertelstundenregime): Viertelstunde ist Nichtziel (E-043); alte H0b (Prognose gegen „eine feste Zeitregel“) ohne Festlegung, welche.
+- **Begründung:** Fokus nur auf die Reinigung. Es ist noch nichts ausgewertet (kein Backtest), die Hypothesen werden also nicht an ein Ergebnis angepasst.
+
+### A-015 · Rollen R1 und R4 besetzt
+- **Von → an:** Max (R2) → Team
+- **Was:** R1 Projektleitung & Controlling: Chiara. R4 Produktion & Schichtplanung: Caro. Damit sind alle vier Rollen besetzt (R2 Max, R3 Susan, A-014). Review-Paare nach Kickoff: R2 ↔ R3, R1 ↔ R4.
+- **Kanal und Datum:** Chat Max mit Claude Code, 11.11.2026
+- **Beleg:** Rollentabelle in `docs/kickoff.md`
+
+### K-012 · Praxisrückkopplung: Reinigung läuft heute 22–24 Uhr
+- **Gesprächspartner:** Ansprechpartner beim Praxispartner, Interview am 10.11.2026 (weitergegeben von Max am 11.11.2026)
+- **Aussage:** Die Reinigung (CIP) läuft heute direkt nach Produktionsende von 22 bis 24 Uhr.
+- **Was wir geändert haben:** Der Status quo A ist keine Annahme mehr, sondern eine Tatsache. Geändert an sieben Stellen: E-031 (Nachtrag), K-008 (offene Frage erledigt), `params.yaml`, `docs/schnittstellen.md`, `README.md`, `src/fensteranalyse.py`, `src/build_board.py`. Die stärkste Kipp-Annahme des Falls (E-031) entfällt.
+- **Offen:** Die Aussage stand nicht in K-008; Max prüft, ob sie in den Notizen vom 10.11. steht, und ergänzt sie dort.
+
+### A-014 · Rolle R3: Susan
+- **Von → an:** Max (R2) → Team; weitergegeben im Chat mit Claude Code, 11.11.2026
+- **Was:** Susan übernimmt R3 Energieeinkauf (Merkmale inkl. saisonalem Block, Strategien A bis D im Backtest, Regression, gepaarter Test, Bootstrap; K3, K4). Damit ist sie Paarpartnerin von R2 für die Reviews nach P-003; der offene Punkt aus A-012 ist erledigt.
+- **Beleg:** Rollentabelle in `docs/kickoff.md`
+- **Offen:** Susan bestätigt die Rolle selbst (Commit oder Kommentar im Repo).
+
+### E-041 · Abgrenzung R2/R3: beschreibende Kennzahlen bei R2, schließende Statistik und Merkmale bei R3
+- **Person:** Max (R2), nach Rückfrage, ob Median, Quartile usw. Susans Teil sind
+- **Entscheidung:** Kennzahlen, die die Daten beschreiben (Mittel, Median, Quartile, Min/Max, Anteil negativer Preise je Monat, Saison und Uhrzeit; Rückblick-Kennzahl der Reinigungsnacht), gehören zur Datenexploration und zum Qualitätsbericht und bleiben bei R2 (Kickoff Schritt 2, K2). Alles, was eine Regel begründet oder prüft (Merkmale, saisonaler Block, Strategien, Tests, Konfidenzintervalle, Euro-Nachweis für K3/K4), macht R3. Grenzfall `r2/ergebnisse/tagesprofil_saison.csv`: bleibt rein beschreibend; R3 darf es als Startpunkt nutzen, leitet den saisonalen Block aber selbst her und bewertet ihn in Euro.
+- **Verworfen:** die beschreibenden Kennzahlen an R3 abgeben (Qualitätsbericht und Datenexploration sind laut Kickoff R2-Aufgabe; R3 hätte doppelte Arbeit ohne eigenen K3/K4-Beitrag).
+- **Beleg:** `src/cleaning.py` (Kennzahlen), `src/fensteranalyse.py` (Rückblick, keine Strategie, E-037), `docs/kickoff.md` (Rollentabelle, Schritt 2 und 3)
+
 ## 10.11.2026
 
 ### P-011 · PR #10 ohne Review gemergt (auf Anweisung von Max)
@@ -62,6 +311,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Kanal und Datum:** mündlich bzw. Chat Susan → Max, 10.11.2026
 - **Beleg:** bisher nur diese Angabe von Max. Damit das Review belegt ist (Kickoff: „Was nur im Chat steht, ist kein Beleg“), hinterlässt Susan auf dem Pull Request des Branches ein Approve bzw. einen Kommentar; Funde und Änderungen trägt sie hier nach.
 - **Offen:** Susans Rolle ist noch nicht in der Rollentabelle eingetragen (P-003 verlangt das Review des Paarpartners); Funde aus dem Review: keine genannt.
+- **Nachtrag 11.11.2026:** Susan ist R3 (A-014), Rollentabelle ergänzt.
 
 ### K-010 · KI-Einsatz: einfache Preisabfrage
 - **Werkzeug:** Claude Code
@@ -112,6 +362,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Entscheidung:** In `config/params.yaml`: Sonntagszuschlag 50 % (Bandbreite 30–50 %) und Feiertagszuschlag 100 % (geschätzt, P14, P15); Nachtzuschlag 25 % (P13, Bandbreite 25–30 %); Stundensatz 35 €/h (A7, 30–45 €/h, statt 30 €/h); 3 Personen (A6, 2–4); Festpreis 85 €/MWh (P4, statt `null`); neuer Block `vertrag` mit Spot-Anteil 30 % und Bewertung `band` (A3, Alternative `proportional` als Sensitivität V8); Planung Freitag 08:00 statt 12:00 (P11; die Datengrenze bleibt Freitag 23:00, weil die Samstagspreise erst gegen 12:45 kommen). E-021 bleibt: nur Stundenwerte; Zeile D1 der Praxistabelle („15-min ab 01.10.2025“) ist damit korrigiert. Der Standort des zentralen Einkaufs (P16) wird als „zentraler Einkauf des Konzerns“ anonymisiert.
 - **Verworfen:** 15-min-Preise für Blockstarts in Viertelstunden (E-021, Zeit); Ortsnamen im Repo (identifiziert den Praxispartner).
 - **Offen:** `kosten.nachtstunden` unverändert 23–06 Uhr. Gilt schon 22–23 Uhr als Nacht, hätte der Status quo zwei statt einer zuschlagspflichtigen Stunde (Sensitivität V9). Beim Kontakt klären.
+- **Nachtrag 11.11.2026:** Basisannahme jetzt 22–06 Uhr komplett Nacht (A-017); V9 prüft 23–06 Uhr.
 - **Beleg:** `config/params.yaml` (`kosten`, `vertrag`, `planung`), `docs/sensitivitaet_plan.md` (V8, V9)
 
 ### E-034 · Fragestellung: „verschiebbarer Last“ statt „verschiebbarer Produktionslast“
@@ -138,6 +389,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Entscheidung:** Status quo A ist die Reinigung direkt nach Produktionsende, 22–24 Uhr (`last.status_quo_start_h: 22`). **Annahme**, vom Praxiskontakt nicht bestätigt.
 - **Verworfen:** 08–14 Uhr (Status quo des alten Falls, E-030); ein Status quo später in der Nacht (ohne Beleg; je später, desto kleiner der Flexibilitätswert).
 - **Begründung:** Naheliegender Ablauf nach Produktionsende; Kipp-Annahme: Läuft die Reinigung heute schon um 2–4 Uhr, ist der Flexibilitätswert von S1 fast null. Beim Kontakt bestätigen lassen.
+- **Nachtrag 11.11.2026:** Vom Praxispartner im Interview am 10.11.2026 bestätigt (K-012); keine Annahme mehr.
 - **Beleg:** `config/params.yaml`, `src/02_synthetisch.py` (Prüfung Status quo im Fenster)
 
 ### P-009 · Widerspruch Tagesverbrauch: 50 MWh (K-005) gegen 180 MWh (K-008)
@@ -155,7 +407,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Annahmen des Teams (noch zu belegen):** Kälteverschiebung (Vorkühlung) 2 h, Bandbreite 0–4 h (A1); Festpreis als Forward mit Abnahmepflicht (A2); Festanteil als Band, verschobene MWh also zu 100 % am Spot bewertet, Alternative proportional × 30 % (A3, Kipp-Annahme, beide Fälle rechnen); Jahreshöchstlast darf nicht steigen (A4); §19 StromNEV als Nichtziel (A5); 3 Personen an der Reinigung, 2–4 (A6); Zeitarbeit 35 €/h, 30–45 €/h (A7).
 - **Szenarien:** S1 Basis: die Reinigung wandert innerhalb 22–06 Uhr. S2 Ausbau: der Produktionsblock verschiebt sich, z. B. in die Mittagsstunden (Grenze P9).
 - **Was sich ändert (Vorschlag, noch nicht umgesetzt):** verschiebbarer Prozess und Menge (Reinigung 8 MWh pro Tag, 2-h-Block in der Nacht statt 2 MWh im 6-h-Block am Tag); Status quo A muss neu festgelegt werden; Planung Freitagmorgen statt Freitagmittag (ändert die Datengrenze nicht, die Samstagspreise kommen erst gegen 12:45); Zuschläge für Sonntag und Feiertag neu; Stundensatz 35 statt 30 €/h; Festpreis 85 €/MWh statt `null`. Kipp-Annahme Vertrag (Kickoff) ist damit teilweise geklärt: Das Werk kauft zu 30 % spot.
-- **Offen:** Wann läuft die Reinigung heute (Status quo A)? Ist die Kälte personalgebunden oder automatisch (dann eher Tagessteuerung T)? Wie ist der Festpreisanteil vertraglich gestaltet (Band oder Profil, A3)? Bestätigung 50 gegen 180 MWh (P-009).
+- **Offen:** ~~Wann läuft die Reinigung heute (Status quo A)?~~ erledigt: 22–24 Uhr (K-012). Ist die Kälte personalgebunden oder automatisch (dann eher Tagessteuerung T)? Wie ist der Festpreisanteil vertraglich gestaltet (Band oder Profil, A3)? Bestätigung 50 gegen 180 MWh (P-009).
 - **Hinweis:** Der Standort des zentralen Einkaufs wird im Repo nicht genannt, weil er den Praxispartner identifiziert (CLAUDE.md, Kickoff).
 
 ## 09.11.2026

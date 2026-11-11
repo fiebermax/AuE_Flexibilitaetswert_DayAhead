@@ -88,6 +88,7 @@ Signifikanzniveau nach Bonferroni: α = 0,05 / 3 ≈ 0,017 je Test. Vor der Ausw
 pip install -r requirements.txt
 python src/run_all.py      # Rohdaten -> Ergebnisse, ein Befehl
 pytest tests/              # Prüfung der Datenannahmen
+# Ergebnis auf einer Seite: ergebnisse/analyse.html (aus analyse.ipynb, letzter Schritt von run_all.py)
 ```
 
 Für neue Daten nur `zeitraeume.datenstand` in `params.yaml` ändern.
@@ -95,5 +96,5 @@ Für neue Daten nur `zeitraeume.datenstand` in `params.yaml` ändern.
 ## Daten, Lizenzen, KI
 
 - Day-Ahead-Großhandelspreise DE-LU: **Bundesnetzagentur | SMARD.de**, Lizenz CC BY 4.0.
-- Verbrauch, Betriebszeit, Reinigung, Vertrag und Zuschläge: Angaben des Praxiskontakts (Interview 09.11.2026, Termin 10.11.2026; Zuschläge geschätzt); Status quo, Personal, Stundensatz und Umstellungskosten: **Annahmen des Teams** (alle in `params.yaml`). Keine internen Unternehmensdaten, keine personenbezogenen Daten.
+- Verbrauch, Betriebszeit, Reinigung, Vertrag und Zuschläge: Angaben des Praxiskontakts (Interview 09.11.2026, Termin 10.11.2026; Zuschläge geschätzt); Status quo 22–24 Uhr: vom Praxispartner bestätigt (10.11.2026); Personal, Stundensatz und Umstellungskosten: **Annahmen des Teams** (alle in `params.yaml`). Keine internen Unternehmensdaten, keine personenbezogenen Daten.
 - KI-Einsatz ist gekennzeichnet: Dateikopf, Commit-Trailer `AI-Assisted: Claude`, K-Einträge im [Projekttagebuch](docs/projekttagebuch.md).

@@ -246,7 +246,7 @@ Nichts wird gelöscht, gekappt oder erfunden; auffällige Preise werden nur mark
 </section>
 
 <section id="reinigung"><h2>Reinigungsfenster: wie viel Spielraum gibt es? <span class="badge">Rückblick, keine Strategie</span></h2>
-<p class="lead">Die Reinigung (4 MW, 2 h = 8 MWh) läuft heute laut Annahme {x['sq']}. Für jede Nacht vergleiche ich das mit dem billigsten 2-h-Block in {x['fenster_txt']},
+<p class="lead">Die Reinigung (4 MW, 2 h = 8 MWh) läuft heute {x['sq']} (vom Praxispartner bestätigt). Für jede Nacht vergleiche ich das mit dem billigsten 2-h-Block in {x['fenster_txt']},
 mit den echten Preisen dieser Nacht. Das ist die Obergrenze des Flexibilitätswerts; was eine Wochenplanung davon realisiert, zeigt erst der Backtest von R3.</p>
 <div class="card">{dg(2)}</div>
 <div class="grid2">

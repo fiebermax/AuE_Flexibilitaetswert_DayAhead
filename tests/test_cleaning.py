@@ -17,7 +17,7 @@ PARAMS = yaml.safe_load((ROOT / "params.yaml").read_text(encoding="utf-8"))
 TZ = PARAMS["markt"]["zeitzone"]
 CLEAN = ROOT / PARAMS["daten"]["pfade"]["processed"] / "preise_clean.csv"
 SPALTEN = ["ts_utc", "ts_lokal", "datum_lokal", "stunde_lokal", "wochentag", "saison", "preis_eur_mwh", "regime",
-           "werktag", "in_betriebszeit", "last_mwh_tag", "last_mwh_flexibel_tag", "imputed", "flag_outlier"]
+           "werktag", "sonntag", "feiertag", "in_betriebszeit", "last_mwh_tag", "last_mwh_flexibel_tag", "imputed", "flag_outlier"]
 
 spec = importlib.util.spec_from_file_location("cleaning", ROOT / "src" / "cleaning.py")
 cl = importlib.util.module_from_spec(spec)
@@ -106,7 +106,7 @@ def clean():
 def test_spalten_und_typen(clean):
     assert list(clean.columns) == SPALTEN
     assert str(clean["ts_utc"].dt.tz) == "UTC"
-    for spalte in ("werktag", "in_betriebszeit", "imputed", "flag_outlier"):
+    for spalte in ("werktag", "sonntag", "feiertag", "in_betriebszeit", "imputed", "flag_outlier"):
         assert clean[spalte].dtype == bool, spalte
     assert clean["preis_eur_mwh"].dtype == float and clean["stunde_lokal"].between(0, 23).all()
 
