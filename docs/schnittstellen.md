@@ -8,6 +8,7 @@ Jede Übergabe ist eine **CSV-Datei** mit festen Spalten und Einheiten (Details:
 | R2 → R3 | `data/preise_clean.csv` | eine Zeile je UTC-Stunde; Schlüssel `ts_utc`; Spalten und Einheiten in `docs/codebook.md` | `tests/test_cleaning.py` grün |
 | R2 → R3 | `data/last_synth.csv` | `datum`, `mwh_gesamt` (180 MWh/Tag, Praxiskontakt), `mwh_flexibel` (8 MWh Reinigung in der Nacht ab `datum` 22 Uhr) | `tests/test_pipeline.py` |
 | R2 → alle | `r2/ergebnisse/cleaning_log.md`, `r2/ergebnisse/data_quality.md`, `r2/ergebnisse/*.csv` | Bereinigungsschritte mit Zählung, Kennzahlen, Grafiken | Grundlage Bericht Kap. 3 (K2) |
+| R3 → R4 | `ergebnisse/blockkosten_nacht.csv` | je Nacht × 2-h-Block: `nacht`, `wochentag_nacht`, `saison`, `n_stunden_nacht`, `pos`, `start_lokal`, `start_utc`, `preis_eur_mwh` (€/MWh), `sonntag_h`, `feiertag_h` (Stunden des Blocks) | `tests/test_merkmale.py` (Abgleich mit R2) |
 | R3 → R4 | `ergebnisse/backtest_wochen.csv` | `woche`, `periode`, `kosten_A`, `kosten_D`, `kosten_D_saison`, `kosten_B`, `kosten_C` (EUR, nur Strom; C = Oracle) | Summen gegen Tageswerte geprüft |
 | R3 → R4 | `ergebnisse/ki_strategien.csv` | `strategie`, `periode`, `mittel_eur_woche`, `ki_unten`, `ki_oben`, `anteil_oracle` | Seed, Bootstrap-n |
 | R4 → R1 | `ergebnisse/wirtschaftlichkeit.csv` | `szenario`, `ersparnis_eur_jahr`, `umstellungskosten_eur`, `break_even` | Review R1 |

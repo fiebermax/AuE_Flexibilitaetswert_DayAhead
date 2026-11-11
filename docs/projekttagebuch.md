@@ -8,6 +8,19 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### K-013 · KI-Einsatz Phase 0 und Phase 1 (R2-Ergänzung, Hypothesen, Merkmale R3)
+- **Werkzeug:** Claude Code, Sitzung von Max nach dem Prompt aus E-045
+- **Zweck:** Phase-0-Antworten umgesetzt (Commits `a73df08`, `49ac435`); `docs/hypothesen.md` (`7a63c15`); `src/03_merkmale.py`, `tests/test_merkmale.py`, `docs/erklaerzettel.md` (Phase 1).
+- **Wie geprüft:** `pytest tests/`: 60 grün; Blockkosten-Matrix gegen R2-Funktion `fenster_je_tag` über alle 1 764 Nächte (gleicher Status-quo-Preis und billigster Block, Abweichung < 10⁻⁹); Zeitumstellungsnächte mit 6 bzw. 8 Blöcken einzeln geprüft; `preise_clean.csv` nach der R2-Ergänzung in allen alten Spalten bitgleich; `python src/run_all.py` läuft bis Schritt 03.
+- **Offen:** Susan liest den Erklärzettel Phase 1, prüft eine Nacht von Hand nach und bestätigt hier (Datum, was geprüft).
+
+### E-046 · Saisonaler Block bringt im Training nichts; K3-Nachweis über B (Vorschlag)
+- **Person:** Claude als Befund für Susan (R3); Entscheidung offen
+- **Befund (Training 2023–2024, kein Testergebnis):** Der beste feste Start ist 3 Uhr in jeder Saison und an jedem Wochentag (`ergebnisse/saisonaler_block.csv`). D_saison ist damit identisch mit D, das Merkmal Saison verbessert die feste Regel um 0 €.
+- **Vorschlag:** D_saison bleibt im Backtest und wird als negatives Ergebnis berichtet. Der K3-Nachweis in € kommt stattdessen aus dem Kalendermerkmal „gleicher Wochentag“ in B: B (Median der letzten 4 gleichen Wochentage) gegen B ohne Wochentag (Median der letzten 28 Nächte), verglichen auf dem Training, bevor eingefroren wird.
+- **Verworfen (vorgeschlagen):** Den saisonalen Block weglassen (dann fehlt das negative Ergebnis, das H0b stützt); ein neues Merkmal nur suchen, bis eines wirkt (Gefahr des p-Hacking, deshalb nur dieser eine vorab benannte Vergleich).
+- **Offen:** Susan entscheidet vor Phase 2.
+
 ### E-045 · Arbeitsweise: KI baut R1, R3, R4 in Phasen, Max committet, Owner prüfen und erklären
 - **Person:** Max (R2), nach Einwand von Susan (R3) gegen die Aufteilung „jeder baut sein Paket selbst“
 - **Entscheidung:** Die fehlenden Pakete entstehen mit Claude Code nach einem festen Prompt in Phasen (0: Bestand, 1–3: R3, 4: R4, 5: R2, 6: R1). Nach jeder Phase hält Claude an, schreibt einen Erklärzettel für den Owner (was, warum, verworfen, drei Prüferfragen) und wartet auf „weiter“. Git-Autor ist Max (er committet alles); jeder Commit trägt den Trailer `Owner: R<x>` und `AI-Assisted: Claude`, Dateiköpfe nennen den Owner.
