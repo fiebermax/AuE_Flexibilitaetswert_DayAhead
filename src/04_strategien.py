@@ -9,6 +9,8 @@ Owner: R3 (Susan). Rules (docs/hypothesen.md, E-042, E-046, E-047):
                     same weekday that are known on that Friday; per night the start with the lowest median
   B_ohne_wochentag  like B, but median over the last 28 known nights, one start for the whole week
                     (only to measure what the feature "same weekday" is worth, E-046)
+  B_16              the team's rule from its project paper (question FS2): per weekday the MEAN block price
+                    of the last 16 known nights with the same weekday; added after the freeze (diary E-049)
   C                 oracle: cheapest block with the real prices = flexibility value (upper bound);
                     equals daily planning, because a night's prices are known the day before at 12:45
 
@@ -40,11 +42,14 @@ _spec = importlib.util.spec_from_file_location("merkmale", SRC / "03_merkmale.py
 mk = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(mk)
 
-STRATEGIEN = ["A", "D", "D_saison", "B", "B_ohne_wochentag", "C"]
+STRATEGIEN = ["A", "D", "D_saison", "B", "B_ohne_wochentag", "B_16", "C"]
 PERIODEN = ["training", "test_1_stunde", "test_2_viertel", "stresstest"]
 TEST = ("test_1_stunde", "test_2_viertel")   # pooled = the one confirmatory sample (docs/hypothesen.md)
 B_NAECHTE_JE_WOCHENTAG = 4               # params strategien.historie_wochen
-B_HISTORIE_WOCHEN = 5                    # one extra week: the last Friday night ends on Saturday (unknown)
+B16_NAECHTE_JE_WOCHENTAG = 16           # team paper FS2: "Daten der letzten 16 Wochen" (E-049)
+# one extra week: the last Friday night ends on Saturday (unknown on Friday morning). 17 weeks serve B_16;
+# B and B_ohne_wochentag only take their last 4 / 28 nights from it, so they are unchanged.
+B_HISTORIE_WOCHEN = B16_NAECHTE_JE_WOCHENTAG + 1
 
 
 # ---------------------------------------------------------------------------------------------
@@ -60,11 +65,11 @@ def regel_saison(naechte: list[str], saison_je_nacht: dict[str, str], start_je_s
     return {n: start_je_saison[saison_je_nacht[n]] for n in naechte}
 
 
-def _median_je_start(hist: pd.DataFrame, fenster_start: int) -> pd.Series:
-    """Median block price per clock start hour over the given history nights.
+def _median_je_start(hist: pd.DataFrame, fenster_start: int, mass: str = "median") -> pd.Series:
+    """Median (B) or mean (B_16) block price per clock start hour over the given history nights.
     Uses block_fuer_start, so the clock-change rule is the same as when the plan is executed."""
     starts = sorted(hist["start_lokal"].unique(), key=lambda h: (h - fenster_start) % 24)
-    return pd.Series({h: mk.block_fuer_start(hist, h, fenster_start)["preis_eur_mwh"].median() for h in starts})
+    return pd.Series({h: mk.block_fuer_start(hist, h, fenster_start)["preis_eur_mwh"].agg(mass) for h in starts})
 
 
 def _bester(median: pd.Series, fenster_start: int) -> int:
@@ -73,7 +78,7 @@ def _bester(median: pd.Series, fenster_start: int) -> int:
 
 
 def regel_b(naechte: list[str], wochentag_je_nacht: dict[str, int], hist_matrix: pd.DataFrame,
-            fenster_start: int, n_je_wochentag: int) -> dict[str, int | None]:
+            fenster_start: int, n_je_wochentag: int, mass: str = "median") -> dict[str, int | None]:
     """B: per weekday the last n known nights with the same weekday; None if there are fewer than n
     (start of the data in 2022, E-044) -> that week is not counted for B."""
     plan = {}
@@ -83,7 +88,7 @@ def regel_b(naechte: list[str], wochentag_je_nacht: dict[str, int], hist_matrix:
         if len(gleiche) < n_je_wochentag:
             plan[n] = None
             continue
-        plan[n] = _bester(_median_je_start(hist_matrix[hist_matrix["nacht"].isin(gleiche)], fenster_start), fenster_start)
+        plan[n] = _bester(_median_je_start(hist_matrix[hist_matrix["nacht"].isin(gleiche)], fenster_start, mass), fenster_start)
     return plan
 
 
@@ -147,6 +152,7 @@ def backtest_periode(periode: str, preise: pd.DataFrame, last: pd.DataFrame, mat
             "D_saison": regel_saison(naechte, info["saison"].to_dict(), d_saison),
             "B": regel_b(naechte, info["wochentag_nacht"].to_dict(), hist, fs, B_NAECHTE_JE_WOCHENTAG),
             "B_ohne_wochentag": regel_b_ohne_wochentag(naechte, hist, fs, 7 * B_NAECHTE_JE_WOCHENTAG),
+            "B_16": regel_b(naechte, info["wochentag_nacht"].to_dict(), hist, fs, B16_NAECHTE_JE_WOCHENTAG, "mean"),
         }
         gewaehlt = {s: ausfuehren(mw, p, fs) for s, p in plaene.items()}
         gewaehlt["C"] = mk.billigster_block(mw)
@@ -236,9 +242,10 @@ def ersparnis_tabelle(wochen: pd.DataFrame, p: dict) -> pd.DataFrame:
     """Interface R3 -> R4 (ki_strategien.csv): saving of every strategy against A, per period and contract case."""
     zeilen = []
     for per, g in wochen.groupby("periode", sort=False):
-        oracle = (g["kosten_A"] - g["kosten_C"]).mean()
         for s in STRATEGIEN[1:]:
-            d = (g["kosten_A"] - g[f"kosten_{s}"]).dropna().to_numpy()
+            ok = g[f"kosten_{s}"].notna()                  # same weeks for strategy and oracle (B in 2022)
+            d = (g.loc[ok, "kosten_A"] - g.loc[ok, f"kosten_{s}"]).to_numpy()
+            oracle = (g.loc[ok, "kosten_A"] - g.loc[ok, "kosten_C"]).mean()
             b = beschreibe(d, p)
             for art in ("band", "proportional"):
                 f = faktor(p, art)
@@ -258,9 +265,21 @@ def hypothesentests(wochen: pd.DataFrame, p: dict) -> pd.DataFrame:
         ("H0c", "Kipppunkt m*: C spart mehr als B", "kosten_B", "kosten_C"),
         ("K3 explorativ", "D_saison spart mehr als D", "kosten_D", "kosten_D_saison"),
         ("K3 explorativ", "B spart mehr als B_ohne_wochentag", "kosten_B_ohne_wochentag", "kosten_B"),
+        ("explorativ", "B_16 spart mehr als D", "kosten_D", "kosten_B_16"),
     ]
+    # Questions of the team paper (E-049), each against the status quo A; FS3 = "a year ago" = test 2.
+    # Reported with the same t-test; NOT part of the pre-registered H0a-H0c (added after the freeze).
+    team = [("FS1", "D spart gegenüber A", "kosten_A", "kosten_D", None),
+            ("FS2", "B_16 spart gegenüber A", "kosten_A", "kosten_B_16", None),
+            ("FS3", "B_16 spart gegenüber A im letzten Jahr", "kosten_A", "kosten_B_16", "test_2_viertel")]
     zeilen = []
     for per, g in wochen.groupby("periode", sort=False):
+        for name, text, x, y, nur in team:
+            if nur and per != nur:
+                continue
+            d = (g[x] - g[y]).dropna().to_numpy()
+            zeilen.append({"hypothese": name, "vergleich": text, "periode": per, "konfirmatorisch": False,
+                           **beschreibe(d, p), **t_test_einseitig(d, alpha)})
         for name, text, x, y in vergleiche:
             d = (g[x] - g[y]).dropna().to_numpy()
             zeile = {"hypothese": name, "vergleich": text, "periode": per,
