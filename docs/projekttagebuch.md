@@ -8,6 +8,12 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### K-021 · KI-Einsatz: Bild des n8n-Flows
+- **Werkzeug:** Claude Code, Sitzung von Max
+- **Zweck:** `n8n/flow_diagramm.py` zeichnet `n8n/flow.png` mit beiden Workflows (Freitag: Plan; Montag: Soll-Ist, Control-Grafik, Rücknahmeregel). Die Knoten entsprechen den Workflow-JSONs, die Max mit dem n8n-Assistenten erzeugt hat (lokales n8n, weil n8n Cloud keinen Execute-Command-Knoten hat). Die Logik liegt in den Repo-Skripten (`plan_woche.py`, `soll_ist.py`, `control.py`), n8n ruft nur auf und verteilt.
+- **Wie geprüft:** Bild gerendert und angesehen (abgeschnittene Kästen und überlappende Legende behoben).
+- **Offen:** `src/plan_woche.py` und `src/soll_ist.py` gibt es noch nicht (Review Phase 4); die Workflow-JSONs legt Max unter `n8n/` ab.
+
 ### K-020 · Control-Grafik (R2, Review Punkt H)
 - **Werkzeug:** Claude Code, Sitzung von Max
 - **Zweck:** `src/control.py` (Schritt in `run_all.py`) zeichnet `ergebnisse/control.png`: Netto-Ersparnis je Woche, 13-Wochen-Mittel als Kennzahl, Null-Linie mit Rücknahmeregel, Status mit Zeichen und Text. Quelle: Rückblick aus `kpi_rollierend.csv`; echte Wochen aus `n8n/soll_ist_log.csv` ersetzen ihn, sobald es sie gibt (Wochenformat `2026-W47` oder `2026-47`).
