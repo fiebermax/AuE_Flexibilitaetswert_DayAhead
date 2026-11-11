@@ -8,6 +8,11 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### K-020 · Control-Grafik (R2, Review Punkt H)
+- **Werkzeug:** Claude Code, Sitzung von Max
+- **Zweck:** `src/control.py` (Schritt in `run_all.py`) zeichnet `ergebnisse/control.png`: Netto-Ersparnis je Woche, 13-Wochen-Mittel als Kennzahl, Null-Linie mit Rücknahmeregel, Status mit Zeichen und Text. Quelle: Rückblick aus `kpi_rollierend.csv`; echte Wochen aus `n8n/soll_ist_log.csv` ersetzen ihn, sobald es sie gibt (Wochenformat `2026-W47` oder `2026-47`).
+- **Wie geprüft:** Grafik gerendert und angesehen; `tests/test_control.py` (Rücknahme erst bei 13-Wochen-Mittel < 0, echte Wochen ersetzen den Rückblick); `pytest tests/` 82 grün.
+
 ### P-014 · Branch `claude/great-pasteur-p9emmq` ohne Review nach `main` gemergt (auf Anweisung von Max)
 - **Problem:** Laut P-003 Merge nach `main` nur nach Review des Paarpartners. Susan (R3) hat die Phasen 1–5, die Analyseseite und Review-Phase 1 nicht reviewt; ihre Bestätigungen (K-013 bis K-015, E-056) und die von Caro und Chiara (E-045) sind offen.
 - **Angesprochen von:** Claude, 11.11.2026
