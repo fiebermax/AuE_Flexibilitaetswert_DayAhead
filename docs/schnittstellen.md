@@ -14,7 +14,8 @@ Jede Übergabe ist eine **CSV-Datei** mit festen Spalten und Einheiten (Details:
 | R3 → R4 | `ergebnisse/ki_strategien.csv` | Ersparnis gegenüber A je `strategie`, `periode` (training, test_1_stunde, test_2_viertel, test_gesamt, stresstest), `vertrag` (band/proportional), `faktor`, `n_wochen`, `mittel_eur_woche`, `ki_unten`, `ki_oben` (95 % t), `boot_unten`, `boot_oben` (Block-Bootstrap), `eur_jahr`, `anteil_oracle` (EUR, nur Strom) | Seed 42, 5 000 Wiederholungen, Tests in `tests/test_strategien.py` |
 | R3 → R4, R1 | `ergebnisse/hypothesentests.csv` | H0b, H0c (Kipppunkt `untere_schranke` = m*), FS1–FS3 aus dem Teamdokument (E-049), K3-Vergleiche je Periode: `shapiro_p`, `t`, `p_t`, `p_wilcoxon`, `schwelle`, `h0_verworfen`, `robust`, `konfirmatorisch` | Entscheidung nur `test_gesamt` (`docs/hypothesen.md`) |
 | R3 → alle | `ergebnisse/fehleranalyse_b.csv` | Bedauern von B (B − C) und B − D in €/Nacht, Trefferquote, je Periode × Saison bzw. Wochentag | explorativ |
-| R4 → R1 | `ergebnisse/wirtschaftlichkeit.csv` | `szenario`, `ersparnis_eur_jahr`, `umstellungskosten_eur`, `break_even` | Review R1 |
+| R4 → R1 | `ergebnisse/wirtschaftlichkeit.csv` | `szenario`, `strategie`, `periode`, `vertrag`, `ersparnis_eur_jahr` (netto nach Personal), `umstellungskosten_eur` (einmalig), `break_even` (Monate), `break_even_vorsichtig_monate` (untere KI-Grenze) | `tests/test_bewertung.py` |
+| R4 → R1 | `ergebnisse/netto_tests.csv`, `kipppunkte.csv`, `kpi_rollierend.csv`, `ce_matrix.csv`; `docs/ishikawa.md` | H0a und Netto je Strategie; Kipppunkte je Vertragsfall; Kennzahl und Rücknahmeregel je Woche; C&E-Matrix | Review R1 |
 
 ## Schnellstart mit pandas
 

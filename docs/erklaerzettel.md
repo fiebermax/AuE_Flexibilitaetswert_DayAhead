@@ -101,3 +101,54 @@ Eine Phase = ein Abschnitt. Der Owner liest ihn, prüft ihn am Code nach und bes
 1. *„Sie haben 89 Wochen und einen t-Test. Sind die Wochen unabhängig?“* Nicht ganz, Wochen derselben Saison hängen zusammen. Deshalb zusätzlich das Block-Bootstrap-Intervall: rund 50 % breiter, gleiche Aussage.
 2. *„Warum testen Sie Test 1 und Test 2 nicht getrennt?“* Sonst wären es sechs statt drei Tests mit schärferer Bonferroni-Schwelle. Die getrennten Intervalle zeigen trotzdem, dass das Ergebnis nach 10/2025 nicht kippt.
 3. *„Die Daten sind nicht normalverteilt. Gilt der t-Test dann?“* Bei 89 Wochen trägt der zentrale Grenzwertsatz; der Wilcoxon, der keine Normalverteilung braucht, kommt zum selben Ergebnis.
+
+## Phase 4 · R4 (Caro): Personalkosten, H0a, Break-even, Kipppunkte, C&E, Ishikawa, Empfehlung
+
+**Was gebaut wurde**
+- `src/05_bewertung.py`: Personalkosten je Reinigung = 3 Personen × 35 €/h × Summe über die 2 Stunden von (1 + Zuschlag). Zuschlag je Stunde: Nacht 25 % (22–06 Uhr), Wochenende 50 % (Sa und So), Feiertag 100 %, nur der höchste; maßgeblich ist der Kalendertag der Stunde (`docs/annahmen.md` Nr. 11–15).
+- Ergebnisse: `netto_tests.csv` (H0a und Netto je Strategie), `wirtschaftlichkeit.csv` (Break-even-Kurve, Spalte `break_even` in Monaten), `kipppunkte.csv`, `kpi_rollierend.csv` (Kennzahl je Woche), `ce_matrix.csv`; dazu `docs/ishikawa.md`.
+- `tests/test_bewertung.py`: 5 Tests, u. a. eine Freitagnacht von Hand (A 262,50 €, D 315,00 €, weil 3 Uhr schon Samstag ist).
+
+**Warum so**
+- *Nur die Differenz zu A zählt:* Gereinigt wird sowieso, nachts, mit denselben Leuten. Kosten entstehen nur, wenn die verschobene Stunde einen anderen Zuschlag hat.
+- *Kalendertag der Stunde:* Die Freitagnacht wird ab Mitternacht zum Samstag (teurer), die Sonntagnacht zum Montag (billiger). Über die Woche gleicht sich das fast aus.
+- *Break-even als Kurve:* Für Umstellungskosten gibt es keine Quelle (E-044). Die Kurve zeigt für 0 bis 100 000 € einmalig, nach wie vielen Monaten sie wieder drin sind.
+
+**Ergebnisse (Test gesamt, 89 Wochen)**
+
+| | Faktor 1,0 (Band) | Faktor 0,3 (proportional) |
+| --- | --- | --- |
+| Stromersparnis D | 1 197 €/Woche | 359 €/Woche |
+| Personal-Mehrkosten D | −2 €/Woche | −2 €/Woche |
+| **Netto D** | **1 199 €/Woche, 62 400 €/Jahr** (KI 1 061–1 337) | **361 €/Woche, 18 800 €/Jahr** (KI 319–403) |
+| Break-even bei 25 000 € einmalig | 4,8 Monate (vorsichtig 5,4) | 16 Monate (vorsichtig 18) |
+
+- **H0a wird verworfen** (p < 0,001, Wilcoxon gleich, robust): Die feste Regel 3 Uhr spart auch nach Zuschlägen. Gleiches Bild in Test 1, Test 2 und 2022 (netto 2 940 €/Woche). In keiner einzigen der 244 Wochen 2022–2026 wäre D teurer gewesen als 22–24 Uhr.
+- **Die Zuschläge spielen kaum eine Rolle**, weil das ganze Fenster ohnehin Nacht ist.
+
+**Kipppunkte (D, Test gesamt)**
+
+| Annahme | kippt bei (Faktor 1,0) | kippt bei (Faktor 0,3) |
+| --- | --- | --- |
+| **Zusätzlich bezahlte Stunden je Person und Nacht** (Warten nach Produktionsende oder zweite Anfahrt) | **1,3 h** | **0,4 h** |
+| Aufpreis je Personalstunde für die Verschiebung | 28,50 € | 8,60 € |
+| Tagesplanung statt Wochenplan (H0c): Aufpreis kurzfristiges Personal | 2,16 € je h | 0,65 € je h |
+| Vertragsfaktor, Preisspreizung | kein Kipppunkt (Personal-Mehrkosten ≈ 0) | ebenso |
+
+Der eigentliche Hebel ist also **die Organisation des Personals**: Wartet die Reinigungsmannschaft nach 22 Uhr bis 3 Uhr und wird dafür bezahlt, frisst schon eine Stunde pro Person die Ersparnis. Mit einer Stunde Wartezeit wäre die Verschiebung in 43 von 196 rollierenden Quartalen ein Verlust gewesen.
+
+**C&E-Matrix (Gewichte: Vorschlag, Caro bestätigt)**
+Kriterien: Steuerbarkeit im Wochenplan (Gewicht 5), kein Produktrisiko (5), personalgebunden (4), verschiebbare Leistung in MW (3), Datenlage (2); Skala 0/1/3/9. Ergebnis: **Reinigung 153 Punkte (62 %)**, Produktion 51, Kälte 43. Die Reinigung ist der einzige Prozess, der im Wochenplan steuerbar ist, kein Produktrisiko trägt und vom Schichtplan abhängt; die Produktion hat zwar die meiste Leistung, scheidet aber an Rohmilch und fester Betriebszeit aus.
+
+**Empfehlung an die Werksleitung (Entwurf für R1)**
+1. **Was:** Reinigung fest um **3 Uhr** statt 22 Uhr einplanen (Regel D). Keine Preisprognose, keine wöchentliche Neuberechnung: Die bringt nichts Messbares (H0b, FS2).
+2. **Bedingung:** Nur ohne bezahlte Wartezeit, also eigene Reinigungsschicht (Zeitarbeit nur für 03–05 Uhr) statt Warten nach Produktionsende. Sonst kippt es ab 1,3 h (Band) bzw. 0,4 h (proportional) pro Person und Nacht.
+3. **Wer entscheidet:** Werksleitung (Schichtplan) mit dem zentralen Einkauf (Vertrag), K-008 P16.
+4. **Kennzahl:** Netto-Ersparnis gegenüber 22–24 Uhr je Woche, rollierend über 13 Wochen, aus Stromrechnung (Day-Ahead-Preise 22–24 gegen 3–5 Uhr × 8 MWh) minus tatsächliche Personal-Mehrkosten laut Abrechnung (`kpi_rollierend.csv`).
+5. **Nachsteuern:** einmal im Jahr die beste feste Uhrzeit mit den Preisen des Vorjahres neu bestimmen (wandert das Preistal, z. B. durch mehr Solar und Batterien).
+6. **Rücknahmeregel:** Fällt die rollierende 13-Wochen-Kennzahl unter null, zurück auf 22 Uhr und Ursache klären. Mit den Kosten aus `params.yaml` wäre das 2022–2026 nie passiert (Minimum +626 €/Woche).
+
+**Drei Prüferfragen**
+1. *„Warum kosten die Zuschläge fast nichts?“* Weil 22–06 Uhr komplett Nacht ist (A-017). Unterschiede entstehen nur am Wochenende und an Feiertagen, und die gleichen sich über die Woche aus (Freitagnacht teurer, Sonntagnacht billiger).
+2. *„Ihre Rücknahmeregel hat nie ausgelöst. Ist sie dann sinnlos?“* Mit unseren Kosten ja, weil die Ersparnis robust ist. Die Regel schützt gegen das, was wir nicht kennen: bezahlte Wartezeit, ein flacheres Preistal. Mit einer Stunde Wartezeit hätte sie in 43 von 196 Quartalen ausgelöst.
+3. *„Wie sicher ist die C&E-Bewertung?“* Es ist eine Teamannahme mit Begründung je Zelle. Selbst wenn man die Leistung (MW) am höchsten gewichtet, bleibt die Produktion wegen Rohmilch (P9) und fester Betriebszeit unverschiebbar.

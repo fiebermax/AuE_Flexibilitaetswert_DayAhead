@@ -1,0 +1,11 @@
+vertrag,annahme,basis,kipppunkt,einheit,lesart
+band,Vertragsfaktor (Anteil der verschobenen MWh am Spot),1.0,-0.001,Faktor,darunter frisst der Personal-Mehraufwand die Stromersparnis; <= 0 heißt: kein Kipppunkt
+band,Aufpreis je Personalstunde für die Verschiebung (zusätzlich zu Lohn und Zuschlägen),0.0,28.549,EUR je Personalstunde,so viel mehr pro Stunde dürfte das Personal für 3 statt 22 Uhr kosten
+band,"Zusätzlich bezahlte Stunden je Nacht (Warten oder zweite Anfahrt), mit Nachtzuschlag",0.0,1.305,Stunden je Person und Nacht,"muss jede Person länger bezahlt werden als das, kippt die Verschiebung"
+band,Preisunterschied 22-24 Uhr gegen gewählten Block,21.38,-0.032,EUR/MWh,"fällt die mittlere Spreizung darunter, lohnt die Verschiebung nicht mehr"
+band,Tagesplanung statt Wochenplanung (H0c): Mehrkosten kurzfristiges Personal,,2.156,EUR je Personalstunde,"nur wenn kurzfristiges Personal weniger Aufpreis kostet, lohnt die Tagesplanung gegenüber B"
+proportional,Vertragsfaktor (Anteil der verschobenen MWh am Spot),0.3,-0.001,Faktor,darunter frisst der Personal-Mehraufwand die Stromersparnis; <= 0 heißt: kein Kipppunkt
+proportional,Aufpreis je Personalstunde für die Verschiebung (zusätzlich zu Lohn und Zuschlägen),0.0,8.594,EUR je Personalstunde,so viel mehr pro Stunde dürfte das Personal für 3 statt 22 Uhr kosten
+proportional,"Zusätzlich bezahlte Stunden je Nacht (Warten oder zweite Anfahrt), mit Nachtzuschlag",0.0,0.393,Stunden je Person und Nacht,"muss jede Person länger bezahlt werden als das, kippt die Verschiebung"
+proportional,Preisunterschied 22-24 Uhr gegen gewählten Block,21.38,-0.105,EUR/MWh,"fällt die mittlere Spreizung darunter, lohnt die Verschiebung nicht mehr"
+proportional,Tagesplanung statt Wochenplanung (H0c): Mehrkosten kurzfristiges Personal,,0.647,EUR je Personalstunde,"nur wenn kurzfristiges Personal weniger Aufpreis kostet, lohnt die Tagesplanung gegenüber B"

@@ -8,6 +8,25 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### M-004 · Bewertung R4 gerechnet (Phase 4): H0a verworfen, Kipppunkt ist das Personal
+- **Stand:** `src/05_bewertung.py`; `python src/run_all.py` läuft erstmals komplett durch. Test gesamt, D gegen A nach Personalkosten: netto 1 199 €/Woche (KI 1 061–1 337), 62 400 €/Jahr bei Faktor 1,0; 361 €/Woche, 18 800 €/Jahr bei Faktor 0,3. **H0a verworfen** (p < 0,001, Wilcoxon gleich). In keiner der 244 Wochen 2022–2026 war D teurer als 22–24 Uhr.
+- **Kipppunkte:** Zuschläge fast ohne Wirkung (Personal-Mehrkosten −2 €/Woche, weil 22–06 Uhr ganz Nacht ist). Die Verschiebung kippt, wenn jede Person je Nacht mehr als 1,3 h (Faktor 1,0) bzw. 0,4 h (Faktor 0,3) zusätzlich bezahlt werden muss, z. B. Warten von 22 bis 3 Uhr. Break-even bei 25 000 € Umstellungskosten: 4,8 bzw. 16 Monate.
+- **Empfehlung (Entwurf für R1):** fest 3 Uhr, ohne Prognose, nur mit eigener Reinigungsschicht ohne bezahlte Wartezeit; Kennzahl rollierende 13-Wochen-Netto-Ersparnis; Rücknahme auf 22 Uhr, wenn sie unter null fällt; jährlich die feste Uhrzeit neu bestimmen.
+- **Beleg:** `ergebnisse/netto_tests.csv`, `wirtschaftlichkeit.csv`, `kipppunkte.csv`, `kpi_rollierend.csv`, `ce_matrix.csv`, `docs/ishikawa.md`, `docs/erklaerzettel.md` Phase 4
+- **Rückstand:** Caro bestätigt Erklärzettel, C&E-Gewichte (E-044) und die Basisannahmen der Zuschläge beim Partner (A-017); Frage an den Partner: Würde die Reinigungsmannschaft bei 3 Uhr warten oder als eigene Schicht kommen?
+
+### E-050 · C&E-Gewichte (Vorschlag) und Process Map bei R1
+- **Person:** Claude als Vorschlag für Caro (R4); Max (R2) für die Zuordnung
+- **Entscheidung:** C&E-Matrix mit fünf Kriterien, alle so formuliert, dass hoch = gut: Steuerbarkeit im Wochenplan 5, kein Produktrisiko 5, personalgebunden 4, verschiebbare Leistung 3, Datenlage 2; Skala 0/1/3/9; Begründung je Gewicht und Zeile im Code (`CE_KRITERIEN`, `CE_BEWERTUNG`). Ergebnis Reinigung 153 (62 %), Produktion 51, Kälte 43. Die Process Map macht R1 (Teamdokument), nicht R4 wie im Prompt.
+- **Verworfen:** Leistung (MW) am höchsten gewichten (dann läge die Produktion vorn, obwohl sie wegen Rohmilch nicht verschiebbar ist); Kriterien mit „hoch = schlecht“ (Risiko, Personalbedarf) mischen (die gewichtete Summe wäre nicht mehr lesbar).
+- **Offen:** Caro bestätigt oder ändert die Gewichte.
+
+### K-016 · KI-Einsatz Phase 4 (R4) und Abgleich mit dem Teamdokument
+- **Werkzeug:** Claude Code, Sitzung von Max (E-045)
+- **Zweck:** `src/05_bewertung.py`, `tests/test_bewertung.py`, `docs/ishikawa.md`, Erklärzettel Phase 4, Schnittstellen; vorher `docs/annahmen.md`, B_16 und FS1–FS3 (E-049).
+- **Wie geprüft:** `pytest tests/`: 75 grün; eine Freitagnacht von Hand (A 262,50 €, D 315,00 €); Netto = Strom × Faktor − Personal an einem Zahlenbeispiel; unvollständige Wochen zählen nicht; `python src/run_all.py` komplett; bisherige Strategien nach B_16 bitgleich.
+- **Offen:** Caro bestätigt den Erklärzettel Phase 4.
+
 ### E-049 · Abgleich mit dem Teamdokument: Annahmenliste, Wochenende, B_16, Fragestellungen FS1–FS3
 - **Person:** Max (R2), nach Abgleich mit dem Teamdokument „Analyse und Entscheidungsprojekt“ (Gruppe F)
 - **Entscheidung:** (1) `docs/annahmen.md` ist die eine Annahmenliste (Leitfrage, FS1–FS3, Rahmenbedingungen mit Quelle und `params.yaml`-Schlüssel, Nichtziele, Rollen). (2) Wochenendzuschlag 50 % gilt für Samstag **und** Sonntag (`kosten.wochenendzuschlag`, vorher nur Sonntag). (3) Die Team-Regel aus FS2 kommt als Strategie **B_16** dazu: je Wochentag das Mittel der letzten 16 gleichen Nächte. (4) FS1 (D gegen A), FS2 (B_16 gegen A) und FS3 (B_16 gegen A im letzten Jahr = Test 2) stehen in `ergebnisse/hypothesentests.csv`. (5) Process Map laut Teamdokument bei R1 (Phase 6), nicht bei R4.
