@@ -157,7 +157,6 @@ classDiagram
     class params_yaml {
         zeitraeume: training, test_1, test_2, stresstest
         last: 180 MWh, Reinigung 8 MWh, Fenster 22-06, Status quo 22
-        kaelte: 1 MW, 2 h (Kontrastfall T)
         kosten: Zuschläge, Stundensatz, Festpreis
         vertrag: Spot 30 %, Bewertung band
         planung: Freitag 08:00
@@ -165,7 +164,7 @@ classDiagram
     class preise_clean_csv {
         ts_utc : Schlüssel
         ts_lokal, datum_lokal, stunde_lokal
-        wochentag, saison, werktag, regime
+        wochentag, saison, werktag, sonntag, feiertag, regime
         preis_eur_mwh
         in_betriebszeit
         last_mwh_tag, last_mwh_flexibel_tag

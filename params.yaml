@@ -44,12 +44,8 @@ last:                            # Praxiskontakt: Interview 09.11.2026 (K-003, K
   blocklaenge_h: 2               # Dauer einer Reinigung
   fenster_start_h: 22            # Reinigung nur in der Nebenzeit 22-06 Uhr (K-008 B5); Fenster geht über Mitternacht
   fenster_ende_h: 6
-  status_quo_start_h: 22         # Status quo A: Reinigung 22-24 Uhr, direkt nach Produktionsende (Annahme, E-031)
+  status_quo_start_h: 22         # Status quo A: Reinigung 22-24 Uhr, direkt nach Produktionsende (Tatsache: Praxispartner, Interview 10.11.2026, K-012)
   feiertagsvariante_mariae_himmelfahrt: false   # wirkt nur auf die Spalte werktag der Preise
-
-kaelte:                          # Kontrastfall T (E-033): läuft automatisch, täglich mit bekannten Day-Ahead-Preisen steuerbar
-  leistung_mw: 1.0               # K-008 P7
-  verschiebung_h: 2              # Vorkühlung (Annahme Team A1, Bandbreite 0-4 h; Quelle offen)
 
 kosten:
   mitarbeiter: 3                 # Personal an der Reinigung (Annahme Team A6, Bandbreite 2-4)
@@ -57,7 +53,9 @@ kosten:
   nachtzuschlag: 0.25            # vom Kontakt geschätzt (K-008 P13), Bandbreite 0.25-0.30
   sonntagszuschlag: 0.50         # vom Kontakt geschätzt (K-008 P14), Bandbreite 0.30-0.50
   feiertagszuschlag: 1.00        # vom Kontakt geschätzt (K-008 P15), bis 1.00
-  nachtstunden: [23, 0, 1, 2, 3, 4, 5]   # unverändert; OFFEN: gilt 22-23 Uhr schon als Nacht? (E-035)
+  nachtstunden: [22, 23, 0, 1, 2, 3, 4, 5]   # 22-06 Uhr komplett Nacht (Basisannahme A-017; Caro bestätigt beim Partner); Sensitivität V9: 23-06
+  zuschlag_regel: "hoechster"    # Nacht/Sonntag/Feiertag: nur der höchste gilt (Basis A-017); Sensitivität V10: "addiert"
+                                 # Kalendertag der STUNDE zählt (Sa 22 Uhr = Samstag, So 02 Uhr = Sonntag), Spalten sonntag/feiertag
   umstellungskosten_eur_pro_jahr: null   # aus Recherche bzw. Kontakt, dann als Kurve
   festpreis_eur_mwh: 85.0        # Festpreis für rund 70 % der Menge, Einkauf im Januar für das Folgejahr (K-008 P4)
   festpreis_aufschlag: 0.10      # nur genutzt, wenn festpreis_eur_mwh null ist
@@ -69,8 +67,7 @@ vertrag:                         # K-008 P3, P4; E-035
 
 strategien:
   historie_wochen: 4             # B: Median der letzten 4 gleichen Werktage
-  saisonaler_block: true         # D je Saison (K3-Kandidat)
-  tagessteuerung: true           # T: Kontrastfall, Day-Ahead am Vortag bekannt
+  saisonaler_block: true         # D_saison: ein Block je Saison (K3-Nachweis in EUR gegen D)
 
 planung:                         # R2: Datenzugriff für den Backtest (src/datenzugriff.py)
   planungstag: "Friday"          # Schichtplan für die Folgewoche (Mo-So)
@@ -80,6 +77,7 @@ planung:                         # R2: Datenzugriff für den Backtest (src/daten
 
 statistik:
   alpha_gesamt: 0.05
-  anzahl_hypothesen: 3           # Bonferroni
+  anzahl_hypothesen: 3           # Bonferroni, H0a-H0c in docs/hypothesen.md (E-042)
+  sensitivitaet_schwelle_pct: 5  # Variante relevant ab 5 % Änderung der Ersparnis (E-044)
   bootstrap_n: 5000
   bootstrap_block_wochen: 4

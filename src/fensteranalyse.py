@@ -2,7 +2,7 @@
 """Descriptive look-back figure for R2's slide c (diary E-030, revised by E-037). NOT a strategy.
 
 Case S1 (diary E-033): the cleaning (CIP, 4 MW for 2 h = 8 MWh) may run anywhere in the night window
-22-06 Uhr. Status quo A is 22-24 Uhr, right after production ends (assumption, E-031).
+22-06 Uhr. Status quo A is 22-24 Uhr, right after production ends (fact, confirmed by the practice partner on 10.11.2026, K-012).
 
 For every window (here: every night, named after the day it starts, e.g. 2025-03-07 = Fri 22:00 to
 Sat 06:00): compare the status quo block with the cheapest block of the same length inside the window,

@@ -8,6 +8,57 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 
 ## 11.11.2026
 
+### E-045 · Arbeitsweise: KI baut R1, R3, R4 in Phasen, Max committet, Owner prüfen und erklären
+- **Person:** Max (R2), nach Einwand von Susan (R3) gegen die Aufteilung „jeder baut sein Paket selbst“
+- **Entscheidung:** Die fehlenden Pakete entstehen mit Claude Code nach einem festen Prompt in Phasen (0: Bestand, 1–3: R3, 4: R4, 5: R2, 6: R1). Nach jeder Phase hält Claude an, schreibt einen Erklärzettel für den Owner (was, warum, verworfen, drei Prüferfragen) und wartet auf „weiter“. Git-Autor ist Max (er committet alles); jeder Commit trägt den Trailer `Owner: R<x>` und `AI-Assisted: Claude`, Dateiköpfe nennen den Owner.
+- **Verworfen:** (a) Jeder baut und committet sein Paket selbst unter eigenem Account (Kickoff, Risiko 1): von Susan abgelehnt. (b) Die Person der Rolle als Git-Autor eintragen, obwohl sie nicht an der Sitzung beteiligt war: wäre eine falsche Angabe zum Eigenanteil.
+- **Risiko und Maßnahme:** Im Git-Verlauf steht nur Max. Der Eigenanteil der anderen muss deshalb anders belegt werden: Jeder Owner bestätigt sein Paket im Tagebuch (Nachtrag am Phaseneintrag) oder per Kommentar am Pull Request und erklärt es im Probelauf mit Kreuzfragen. Ohne diese Bestätigung gilt das Paket als nicht verantwortet (Sperrkriterium Erklärbarkeit).
+- **Ändert:** Kickoff „Eigenanteil sichtbar machen“ und Risiko 1 (Verweis dort ergänzt).
+- **Offen:** Zustimmung von Chiara (R1) und Caro (R4) zu dieser Arbeitsweise.
+
+### E-044 · Offene Fragen aus A-007, A-010, E-035 und dem Sensitivitätsplan entschieden
+- **Person:** Max (R2), Phase 0 am 11.11.2026
+- **Entscheidung:** (1) Die Sonntagsnacht wird mitgewertet; ihre Stunden bis Montag 06:00 kommen aus der Blockkosten-Matrix (echte Preise, nur zur Bewertung). (2) Stresstest 2022 nur mit Regeln, die im Training gelernt wurden; für B entfallen die ersten 4 Wochen 2022 mangels Historie, im Bericht als Grenze genannt. (3) Umstellungskosten als Break-even-Kurve statt Punktwert (keine belastbare Quelle). (4) Schwelle der Sensitivität 5 % (`statistik.sensitivitaet_schwelle_pct`). (5) Gewichte der C&E-Matrix schlägt Claude begründet vor, Caro (R4) bestätigt in Phase 4.
+- **Verworfen:** (1) Sonntagsnacht weglassen: jede Woche fehlte eine Nacht, ausgerechnet die mit Sonntagszuschlag. (2) Preise ab 12/2021 nachladen: ändert den Datenstand und alle Prüfsummen für vier Wochen Stresstest. (3) Punktschätzung der Umstellungskosten ohne Quelle.
+- **Beleg:** `params.yaml`, `docs/schnittstellen.md`, `r2/docs/sensitivitaet_plan.md`
+
+### A-017 · Kosten: R3 rechnet Strom, R4 Personal; Basisannahmen der Zuschläge
+- **Von → an:** Max (R2) → R3 (Susan), R4 (Caro)
+- **Was:** R3 liefert in `ergebnisse/backtest_wochen.csv` nur Stromkosten. R4 rechnet Personalkosten mit Zuschlägen. Basisannahmen: 22–06 Uhr gilt komplett als Nacht (`kosten.nachtstunden` jetzt 22–05); für die Stunden 0–6 Uhr zählt der Kalendertag der Stunde (Sa 22 Uhr = Samstag, So 02 Uhr = Sonntag); trifft Nacht auf Sonntag oder Feiertag, gilt nur der höchste Zuschlag (`kosten.zuschlag_regel: hoechster`). Sensitivität: V9 Nacht erst ab 23 Uhr, V10 Zuschläge addiert.
+- **Kanal und Datum:** Chat Max mit Claude Code, 11.11.2026
+- **Offen:** Caro bestätigt die drei Basisannahmen beim Praxispartner, wenn möglich; Antwort hier nachtragen.
+- **Änderung, nachgezogen von:** `params.yaml`, `docs/schnittstellen.md`, `r2/docs/sensitivitaet_plan.md` (V9 umgedreht, V10 neu); E-035 „Offen“ damit erledigt.
+
+### A-016 · Schnittstelle R2 → R4: Spalten `sonntag` und `feiertag`
+- **Von → an:** R2 (Max) → R4 (Caro)
+- **Was (Datei, Spalten, Einheit):** `data/preise_clean.csv` hat zwei neue Spalten: `sonntag` und `feiertag` (gesetzlicher Feiertag Bayern), beide True/False und bezogen auf den Kalendertag der Stunde. Vorher gab es nur `werktag`, in dem Samstag, Sonntag und Feiertag zusammenfallen; R4 braucht sie getrennt, weil die Zuschläge verschieden sind (50 % / 100 %).
+- **Kanal und Datum:** Repo, 11.11.2026
+- **Beleg:** Commit `a73df08`; `src/gemeinsam.py` (`feiertage_bayern`), `src/cleaning.py`, Test `test_sonntag_und_feiertag_gelten_fuer_den_kalendertag_der_stunde`; alle bisherigen Spalten bitgleich, 52 Tests grün; `docs/codebook.md`.
+
+### E-043 · Gegenstand nur die Reinigung; Kälte gestrichen, Viertelstunde Nichtziel
+- **Person:** Max (R2)
+- **Entscheidung:** Untersucht wird nur die Reinigung (CIP). Kälte (Kontrastfall T), Produktion, Viertelstunden, Netzentgelte und Intraday sind Nichtziele und werden im Bericht im Kapitel „Abgrenzung“ begründet. Gelöscht: Block `kaelte` und `strategien.tagessteuerung` in `params.yaml`, T in `docs/schnittstellen.md` und `r2/docs/architektur.md`; der Kickoff bekommt nur einen Verweis. Test 2 (10/2025–09/2026) bleibt als zweiter Testzeitraum mit Stundenwerten, ohne eigene Hypothese. Der Tagesplanungsfall steckt im Oracle C: Die Preise einer Nacht sind am Vortag um 12:45 vollständig bekannt.
+- **Verworfen:** T als „nicht verwendet“ markiert stehen lassen (toter Ballast, verwirrt); Test 2 streichen (verschenkt den Strukturbruch als Gegenprobe, K6).
+- **Revidiert:** E-033 (Kälte als Kontrastfall T).
+
+### E-042 · Neue Nullhypothesen H0a–H0c (revidiert E-034 und Kickoff)
+- **Person:** Max (R2)
+- **Entscheidung:** H0a: Ersparnis D gegen A nach Kosten ≤ 0. H0b: Ersparnis B ≤ Ersparnis D. H0c: (Ersparnis C − Ersparnis B) − Mehrkosten Tagesplanung ≤ 0, berichtet als Kipppunkt des Aufpreises für kurzfristig gebuchtes Personal. Bonferroni α = 0,05/3. Testrichtung, Test und Entscheidungsregel stehen in `docs/hypothesen.md`, separat committet vor jeder Auswertung.
+- **Verworfen:** alte H0c (Stunden- gegen Viertelstundenregime): Viertelstunde ist Nichtziel (E-043); alte H0b (Prognose gegen „eine feste Zeitregel“) ohne Festlegung, welche.
+- **Begründung:** Fokus nur auf die Reinigung. Es ist noch nichts ausgewertet (kein Backtest), die Hypothesen werden also nicht an ein Ergebnis angepasst.
+
+### A-015 · Rollen R1 und R4 besetzt
+- **Von → an:** Max (R2) → Team
+- **Was:** R1 Projektleitung & Controlling: Chiara. R4 Produktion & Schichtplanung: Caro. Damit sind alle vier Rollen besetzt (R2 Max, R3 Susan, A-014). Review-Paare nach Kickoff: R2 ↔ R3, R1 ↔ R4.
+- **Kanal und Datum:** Chat Max mit Claude Code, 11.11.2026
+- **Beleg:** Rollentabelle in `docs/kickoff.md`
+
+### K-012 · Praxisrückkopplung: Reinigung läuft heute 22–24 Uhr
+- **Gesprächspartner:** Ansprechpartner beim Praxispartner, Interview am 10.11.2026 (weitergegeben von Max am 11.11.2026)
+- **Aussage:** Die Reinigung (CIP) läuft heute direkt nach Produktionsende von 22 bis 24 Uhr.
+- **Was wir geändert haben:** Der Status quo A ist keine Annahme mehr, sondern eine Tatsache. Geändert an sieben Stellen: E-031 (Nachtrag), K-008 (offene Frage erledigt), `params.yaml`, `docs/schnittstellen.md`, `README.md`, `src/fensteranalyse.py`, `src/build_board.py`. Die stärkste Kipp-Annahme des Falls (E-031) entfällt.
+- **Offen:** Die Aussage stand nicht in K-008; Max prüft, ob sie in den Notizen vom 10.11. steht, und ergänzt sie dort.
+
 ### A-014 · Rolle R3: Susan
 - **Von → an:** Max (R2) → Team; weitergegeben im Chat mit Claude Code, 11.11.2026
 - **Was:** Susan übernimmt R3 Energieeinkauf (Merkmale inkl. saisonalem Block, Strategien A bis D im Backtest, Regression, gepaarter Test, Bootstrap; K3, K4). Damit ist sie Paarpartnerin von R2 für die Reviews nach P-003; der offene Punkt aus A-012 ist erledigt.
@@ -127,6 +178,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Entscheidung:** In `config/params.yaml`: Sonntagszuschlag 50 % (Bandbreite 30–50 %) und Feiertagszuschlag 100 % (geschätzt, P14, P15); Nachtzuschlag 25 % (P13, Bandbreite 25–30 %); Stundensatz 35 €/h (A7, 30–45 €/h, statt 30 €/h); 3 Personen (A6, 2–4); Festpreis 85 €/MWh (P4, statt `null`); neuer Block `vertrag` mit Spot-Anteil 30 % und Bewertung `band` (A3, Alternative `proportional` als Sensitivität V8); Planung Freitag 08:00 statt 12:00 (P11; die Datengrenze bleibt Freitag 23:00, weil die Samstagspreise erst gegen 12:45 kommen). E-021 bleibt: nur Stundenwerte; Zeile D1 der Praxistabelle („15-min ab 01.10.2025“) ist damit korrigiert. Der Standort des zentralen Einkaufs (P16) wird als „zentraler Einkauf des Konzerns“ anonymisiert.
 - **Verworfen:** 15-min-Preise für Blockstarts in Viertelstunden (E-021, Zeit); Ortsnamen im Repo (identifiziert den Praxispartner).
 - **Offen:** `kosten.nachtstunden` unverändert 23–06 Uhr. Gilt schon 22–23 Uhr als Nacht, hätte der Status quo zwei statt einer zuschlagspflichtigen Stunde (Sensitivität V9). Beim Kontakt klären.
+- **Nachtrag 11.11.2026:** Basisannahme jetzt 22–06 Uhr komplett Nacht (A-017); V9 prüft 23–06 Uhr.
 - **Beleg:** `config/params.yaml` (`kosten`, `vertrag`, `planung`), `docs/sensitivitaet_plan.md` (V8, V9)
 
 ### E-034 · Fragestellung: „verschiebbarer Last“ statt „verschiebbarer Produktionslast“
@@ -153,6 +205,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Entscheidung:** Status quo A ist die Reinigung direkt nach Produktionsende, 22–24 Uhr (`last.status_quo_start_h: 22`). **Annahme**, vom Praxiskontakt nicht bestätigt.
 - **Verworfen:** 08–14 Uhr (Status quo des alten Falls, E-030); ein Status quo später in der Nacht (ohne Beleg; je später, desto kleiner der Flexibilitätswert).
 - **Begründung:** Naheliegender Ablauf nach Produktionsende; Kipp-Annahme: Läuft die Reinigung heute schon um 2–4 Uhr, ist der Flexibilitätswert von S1 fast null. Beim Kontakt bestätigen lassen.
+- **Nachtrag 11.11.2026:** Vom Praxispartner im Interview am 10.11.2026 bestätigt (K-012); keine Annahme mehr.
 - **Beleg:** `config/params.yaml`, `src/02_synthetisch.py` (Prüfung Status quo im Fenster)
 
 ### P-009 · Widerspruch Tagesverbrauch: 50 MWh (K-005) gegen 180 MWh (K-008)
@@ -170,7 +223,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Annahmen des Teams (noch zu belegen):** Kälteverschiebung (Vorkühlung) 2 h, Bandbreite 0–4 h (A1); Festpreis als Forward mit Abnahmepflicht (A2); Festanteil als Band, verschobene MWh also zu 100 % am Spot bewertet, Alternative proportional × 30 % (A3, Kipp-Annahme, beide Fälle rechnen); Jahreshöchstlast darf nicht steigen (A4); §19 StromNEV als Nichtziel (A5); 3 Personen an der Reinigung, 2–4 (A6); Zeitarbeit 35 €/h, 30–45 €/h (A7).
 - **Szenarien:** S1 Basis: die Reinigung wandert innerhalb 22–06 Uhr. S2 Ausbau: der Produktionsblock verschiebt sich, z. B. in die Mittagsstunden (Grenze P9).
 - **Was sich ändert (Vorschlag, noch nicht umgesetzt):** verschiebbarer Prozess und Menge (Reinigung 8 MWh pro Tag, 2-h-Block in der Nacht statt 2 MWh im 6-h-Block am Tag); Status quo A muss neu festgelegt werden; Planung Freitagmorgen statt Freitagmittag (ändert die Datengrenze nicht, die Samstagspreise kommen erst gegen 12:45); Zuschläge für Sonntag und Feiertag neu; Stundensatz 35 statt 30 €/h; Festpreis 85 €/MWh statt `null`. Kipp-Annahme Vertrag (Kickoff) ist damit teilweise geklärt: Das Werk kauft zu 30 % spot.
-- **Offen:** Wann läuft die Reinigung heute (Status quo A)? Ist die Kälte personalgebunden oder automatisch (dann eher Tagessteuerung T)? Wie ist der Festpreisanteil vertraglich gestaltet (Band oder Profil, A3)? Bestätigung 50 gegen 180 MWh (P-009).
+- **Offen:** ~~Wann läuft die Reinigung heute (Status quo A)?~~ erledigt: 22–24 Uhr (K-012). Ist die Kälte personalgebunden oder automatisch (dann eher Tagessteuerung T)? Wie ist der Festpreisanteil vertraglich gestaltet (Band oder Profil, A3)? Bestätigung 50 gegen 180 MWh (P-009).
 - **Hinweis:** Der Standort des zentralen Einkaufs wird im Repo nicht genannt, weil er den Praxispartner identifiziert (CLAUDE.md, Kickoff).
 
 ## 09.11.2026

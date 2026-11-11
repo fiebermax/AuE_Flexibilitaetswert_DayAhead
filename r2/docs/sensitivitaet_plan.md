@@ -12,7 +12,7 @@ K2 Stufe 5 verlangt, die Datenqualität aktiv zu prüfen statt sie nur zu beschr
 
 1. **Basis** ist der Stand in `params.yaml` zum Zeitpunkt des Eintrags.
 2. **Kennzahl:** mittlere Netto-Ersparnis gegenüber A in €/Woche, je Strategie und Testperiode, dazu der Anteil am Oracle-Wert C.
-3. **Schwelle:** Eine Variante gilt als relevant, wenn sich die mittlere Ersparnis um mehr als 5 % ändert **oder** sich eine Testentscheidung zu H0a, H0b oder H0c umkehrt. *Die Schwelle ist ein Vorschlag, das Team muss sie festlegen.*
+3. **Schwelle:** Eine Variante gilt als relevant, wenn sich die mittlere Ersparnis um mehr als 5 % ändert **oder** sich eine Testentscheidung zu H0a, H0b oder H0c umkehrt. Festgelegt am 11.11.2026 (E-044): 5 %.
 4. Alle Varianten werden berichtet, auch die ohne Wirkung. Das schützt gegen den Vorwurf, nur passende Varianten gezeigt zu haben.
 
 Die Varianten sind keine neuen Hypothesentests. Es entstehen keine zusätzlichen p-Werte, die Bonferroni-Korrektur bleibt bei drei Tests.
@@ -28,7 +28,8 @@ Die Varianten sind keine neuen Hypothesentests. Es entstehen keine zusätzlichen
 | V6 | verschiebbare Menge (Reinigung) | 8,0 MWh/Tag (4 MW × 2 h) | 4,0 · 12,0 | `last.mwh_pro_tag` | `02_synthetisch` | €/Woche skaliert linear, Anteil am Oracle bleibt gleich (rechnerisch, als Kontrolle) |
 | V7 | Dauer der Reinigung | 2 h | 1 h · 3 h · 4 h (Energie bleibt 8 MWh) | `last.blocklaenge_h` | R3 (Blockkosten-Matrix) | nicht trivial: kurze Blöcke treffen das Preistal besser |
 | V8 | Bewertung der verschobenen Menge (Kipp-Annahme A3) | Band: 100 % zum Spotpreis | proportional: 30 % (`vertrag.spot_anteil`) | `vertrag.bewertung_verschiebung` | R3, R4 | Ersparnis in € sinkt auf 30 %; ob H0a kippt, hängt an den Personal- und Zuschlagskosten |
-| V9 | Nachtstunden des Zuschlags | 23–06 Uhr | 22–06 Uhr | `kosten.nachtstunden` | R3, R4 | Status quo 22–24 Uhr hätte dann zwei statt einer zuschlagspflichtigen Stunde (offen, E-035) |
+| V9 | Nachtstunden des Zuschlags | 22–06 Uhr (A-017) | 23–06 Uhr | `kosten.nachtstunden` | R4 | Status quo 22–24 Uhr hätte dann eine statt zwei zuschlagspflichtigen Stunden |
+| V10 | Zusammentreffen von Zuschlägen | nur der höchste (A-017) | addiert | `kosten.zuschlag_regel` | R4 | Verschiebung in die Sonntags- oder Feiertagsnacht wird teurer |
 
 V6 und V7 sind laut Kickoff Pflicht für K2 Stufe 5: Synthetische Daten lassen sich nicht gegen die Wirklichkeit prüfen, also prüfen wir, wie stark das Ergebnis von ihren Parametern abhängt.
 
@@ -47,7 +48,7 @@ Nur Stundenpreise (Tagebuch E-021). Bei Blöcken zur vollen Stunde wären 15-min
 2. **Variantenliste in `params.yaml`**, jede Variante überschreibt einzelne Schalter:
    ```yaml
    sensitivitaet:
-     schwelle_pct: 5
+     schwelle_pct: 5          # steht jetzt in statistik.sensitivitaet_schwelle_pct
      varianten:
        V2:  {auswertung.ohne_flag_outlier: true}
        V3:  {last.feiertagsvariante_mariae_himmelfahrt: true}
@@ -58,7 +59,8 @@ Nur Stundenpreise (Tagebuch E-021). Bei Blöcken zur vollen Stunde wären 15-min
        V7b: {last.blocklaenge_h: 3}
        V7c: {last.blocklaenge_h: 4}
        V8:  {vertrag.bewertung_verschiebung: "proportional"}
-       V9:  {kosten.nachtstunden: [22, 23, 0, 1, 2, 3, 4, 5]}
+       V9:  {kosten.nachtstunden: [23, 0, 1, 2, 3, 4, 5]}
+       V10: {kosten.zuschlag_regel: "addiert"}
    ```
 3. **Umbau der Schritte, damit Varianten nichts überschreiben:** `cleaning.main()` und `02_synthetisch.main()` bekommen die optionalen Argumente `params` und `ausgabe_ordner`. Ohne Argumente verhalten sie sich wie heute. Varianten schreiben nach `r2/ergebnisse/sensitivitaet/<ID>/` (nicht ins Repo).gitignore`).
 4. **Neues Skript `src/06_sensitivitaet.py` (R2):** je Variante Parameter kopieren, Schalter setzen, Schritte 02 und 02b ausführen, R3s Backtest aufrufen, Kennzahlen sammeln. Ausgabe `r2/ergebnisse/sensitivitaet.csv` mit den Spalten `variante`, `schalter`, `wert`, `strategie`, `periode`, `mittel_eur_woche`, `delta_eur`, `delta_pct`, `anteil_oracle`, `h0_entscheidung_gleich`, `relevant`. Der Bootstrap braucht denselben Seed wie die Basis, damit Unterschiede nicht vom Zufall kommen.

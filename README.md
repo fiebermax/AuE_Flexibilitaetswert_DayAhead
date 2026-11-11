@@ -95,5 +95,5 @@ Für neue Daten nur `zeitraeume.datenstand` in `params.yaml` ändern.
 ## Daten, Lizenzen, KI
 
 - Day-Ahead-Großhandelspreise DE-LU: **Bundesnetzagentur | SMARD.de**, Lizenz CC BY 4.0.
-- Verbrauch, Betriebszeit, Reinigung, Vertrag und Zuschläge: Angaben des Praxiskontakts (Interview 09.11.2026, Termin 10.11.2026; Zuschläge geschätzt); Status quo, Personal, Stundensatz und Umstellungskosten: **Annahmen des Teams** (alle in `params.yaml`). Keine internen Unternehmensdaten, keine personenbezogenen Daten.
+- Verbrauch, Betriebszeit, Reinigung, Vertrag und Zuschläge: Angaben des Praxiskontakts (Interview 09.11.2026, Termin 10.11.2026; Zuschläge geschätzt); Status quo 22–24 Uhr: vom Praxispartner bestätigt (10.11.2026); Personal, Stundensatz und Umstellungskosten: **Annahmen des Teams** (alle in `params.yaml`). Keine internen Unternehmensdaten, keine personenbezogenen Daten.
 - KI-Einsatz ist gekennzeichnet: Dateikopf, Commit-Trailer `AI-Assisted: Claude`, K-Einträge im [Projekttagebuch](docs/projekttagebuch.md).

@@ -46,6 +46,8 @@ Intraday kommt als Grenze und Ausblick in die Diskussion (K6, K7). Falls Zeit bl
 
 | Teilfrage | Prüfung | K |
 | --- | --- | --- |
+> **Stand 11.11.2026:** Teilfragen und Nullhypothesen sind durch E-042 ersetzt und in `docs/hypothesen.md` fixiert. Untersucht wird nur die Reinigung; Kälte (Kontrastfall T) und Viertelstunden sind Nichtziel (E-043). Der Rest dieses Dokuments ist der historische Plan.
+
 | TF1: Bleibt nach Zuschlägen und Umstellungskosten ein positiver Nettowert? | H0a | K1, K6 |
 | TF2: Realisiert eine Preisprognose mehr vom Wert als eine feste Zeitregel, und wie viel kostet der Planungsvorlauf gegenüber einer Tagessteuerung? | H0b; Kontrastfall Tagessteuerung | K4 Stufe 5 |
 | TF3: Verändert der Viertelstundenhandel den realisierbaren Anteil? | H0c; Stresstest 2022 | K6 Stufe 5 |
@@ -88,10 +90,10 @@ Vier fachliche Rollen nach dem Muster der Rheinlack-Fallstudie. Jede Rolle führ
 
 | Rolle | Person | Führt (zusammengelegte Teilpakete) | Wirkt mit | Kriterien | Vertretung |
 | --- | --- | --- | --- | --- | --- |
-| R1 Projektleitung & Controlling | offen | Fachlicher Rahmen (Frage, Hypothesen, Problem Statement); Aufbereitung & Übergabe (Bericht, Präsentation, Grafikstandard); Spot gegen Festpreis | Ergebnis & Verwertung | K1, K8, K9, K10 | R4 |
+| R1 Projektleitung & Controlling | Chiara | Fachlicher Rahmen (Frage, Hypothesen, Problem Statement); Aufbereitung & Übergabe (Bericht, Präsentation, Grafikstandard); Spot gegen Festpreis | Ergebnis & Verwertung | K1, K8, K9, K10 | R4 |
 | R2 Datenanalyse & IT | Max | Datenquellen & Qualität; Pipeline, Repo, Tests; Aggregation 15 → 60 min; Sensitivitätsrechnung; Empfehlung zur künftigen Datenerhebung; Repo-Onboarding fürs Team | Datenaufbereitung | K2, K5, Aggregation in K3 | R3 |
 | R3 Energieeinkauf | Susan | Merkmale inklusive saisonalem Block; Strategien A bis D im Backtest; Regression, gepaarter Test, Bootstrap; Methodenfrage „braucht es eine Prognose?“ | Datenquellen | K3, K4 | R2 |
-| R4 Produktion & Schichtplanung | offen | Ergebnis & Verwertung: Umstellungskosten, Stresstests, Kipppunkte, Break-even, Empfehlung mit Kennzahl und Rücknahmeregel | Fachlicher Rahmen | K6, K7 | R1 |
+| R4 Produktion & Schichtplanung | Caro | Ergebnis & Verwertung: Umstellungskosten, Stresstests, Kipppunkte, Break-even, Empfehlung mit Kennzahl und Rücknahmeregel | Fachlicher Rahmen | K6, K7 | R1 |
 
 Einzelleistung je Person: Verantwortungsnachweis auf 2 bis 3 Seiten nach a) Aufgabe, b) Problematik, c) Methode, d) Beitrag, dazu etwa 5 Minuten in der Präsentation.
 
@@ -119,7 +121,7 @@ Wir zeigen Case und Rollen, noch keine Ergebnisse. Fünf Folien, Aufbau wie bei 
 | Bezeichnung im Bericht | „Großmolkerei in Bayern“, angelehnt an den Praxispartner; Firmenname nur mit schriftlicher Freigabe |
 | Branche | Milchverarbeitung |
 | Flexible Last | Personalgebundener, stromintensiver Prozess, der sich zeitlich verschieben lässt; welcher (z. B. Reinigung, Trocknung, Abfüllung) klärt der Kontakt |
-| Kontrastfall | Kälteerzeugung mit Eiswasserspeicher: ohne Personal, täglich automatisch steuerbar |
+| Kontrastfall | ~~Kälteerzeugung~~ gestrichen, Nichtziel (E-043) |
 | Lastszenario | vorläufig 2 MWh pro Werktag im 6-Stunden-Block; Leistung und Verschiebbarkeit klärt der Kontakt |
 | Stromvertrag | Annahme spot-indexiert (Day-Ahead-Preis DE-LU plus Aufschlag); per Recherche oder über das Energiemanagement prüfen |
 | Status quo | Prozess läuft fest tagsüber; Schichtplan jeden Freitag für die Folgewoche (Annahme) |
@@ -162,9 +164,9 @@ Wir spielen die Vergangenheit nach: An jedem Freitag im Testzeitraum entscheidet
 
 **Ein Freitag als Beispiel**
 
-1. **Freitag, 07.03.2025:** Strategie B schaut auf die Preise der letzten vier Wochen, die sind bis Freitag bekannt, und wählt z. B. 11 bis 17 Uhr für Montag bis Freitag. D nimmt seinen festen Block aus dem Training, A wie immer 08 bis 14 Uhr.
-2. **Die Woche 10. bis 14.03. läuft ab.** Jetzt nehmen wir die echten Day-Ahead-Preise dieser Woche.
-3. **Kosten je Strategie:** 2 MWh pro Tag mal Preis in den gewählten Stunden plus Zuschläge.
+1. **Freitag, 07.03.2025, 08:00 Uhr:** Bekannt sind die Preise bis Freitag 24 Uhr. Strategie B nimmt je Wochentag den Median der letzten vier gleichen Nächte und wählt für jede Nacht der Folgewoche den billigsten 2-h-Block im Fenster 22–06 Uhr, z. B. Montagnacht 02–04 Uhr. D nimmt seinen festen Block aus dem Training, A wie immer 22–24 Uhr.
+2. **Die Woche 10. bis 16.03. läuft ab** (die Sonntagsnacht reicht bis Montag 17.03., 06:00). Jetzt nehmen wir die echten Day-Ahead-Preise dieser Nächte.
+3. **Stromkosten je Strategie:** 8 MWh pro Nacht mal mittlerer Preis des gewählten Blocks (R3); Personal und Zuschläge rechnet R4 dazu.
 4. **Ersparnis der Woche** = Kosten A minus Kosten der Strategie.
 5. **Wiederholen für jeden Freitag im Testzeitraum.** Aus allen Wochen entstehen Mittelwert und Konfidenzintervall.
 
@@ -283,7 +285,7 @@ K10 belegt der Katalog ausdrücklich mit Projekttagebuch, Versionsgeschichte, Me
 
 **Eigenanteil sichtbar machen**
 
-- Commits nur unter eigenem Account.
+- Commits nur unter eigenem Account. *Geändert am 11.11.2026 durch E-045: Max committet, Owner-Trailer je Paket, Bestätigung durch den Owner im Tagebuch.*
 - Im Bericht wird jeder Abschnitt mit Autor gekennzeichnet. Der Katalog verlangt „Versionsgeschichte oder gekennzeichnete Abschnitte“, beim Word-Bericht gibt es keine Versionsgeschichte.
 
 **Belegmatrix: den Bewertungsbogen selbst führen**

@@ -8,7 +8,7 @@ Jede Übergabe ist eine **CSV-Datei** mit festen Spalten und Einheiten (Details:
 | R2 → R3 | `data/preise_clean.csv` | eine Zeile je UTC-Stunde; Schlüssel `ts_utc`; Spalten und Einheiten in `docs/codebook.md` | `tests/test_cleaning.py` grün |
 | R2 → R3 | `data/last_synth.csv` | `datum`, `mwh_gesamt` (180 MWh/Tag, Praxiskontakt), `mwh_flexibel` (8 MWh Reinigung in der Nacht ab `datum` 22 Uhr) | `tests/test_pipeline.py` |
 | R2 → alle | `r2/ergebnisse/cleaning_log.md`, `r2/ergebnisse/data_quality.md`, `r2/ergebnisse/*.csv` | Bereinigungsschritte mit Zählung, Kennzahlen, Grafiken | Grundlage Bericht Kap. 3 (K2) |
-| R3 → R4 | `ergebnisse/backtest_wochen.csv` | `woche`, `periode`, `kosten_A` … `kosten_T` (EUR), `oracle` (EUR) | Summen gegen Tageswerte geprüft |
+| R3 → R4 | `ergebnisse/backtest_wochen.csv` | `woche`, `periode`, `kosten_A`, `kosten_D`, `kosten_D_saison`, `kosten_B`, `kosten_C` (EUR, nur Strom; C = Oracle) | Summen gegen Tageswerte geprüft |
 | R3 → R4 | `ergebnisse/ki_strategien.csv` | `strategie`, `periode`, `mittel_eur_woche`, `ki_unten`, `ki_oben`, `anteil_oracle` | Seed, Bootstrap-n |
 | R4 → R1 | `ergebnisse/wirtschaftlichkeit.csv` | `szenario`, `ersparnis_eur_jahr`, `umstellungskosten_eur`, `break_even` | Review R1 |
 
@@ -23,12 +23,13 @@ preise[preise["in_betriebszeit"]].groupby(["saison", "stunde_lokal"])["preis_eur
 
 ## Hinweise
 
-- **Begriffe:** **Status quo A** = Reinigung 22–24 Uhr Ortszeit, direkt nach Produktionsende (Annahme, E-031; `last.status_quo_start_h`). Die Reinigung (2 h, `last.blocklaenge_h`) darf nur im **Reinigungsfenster** 22–06 Uhr liegen (`last.fenster_start_h`, `last.fenster_ende_h`). Die Faustregel D (fester Block in der Nacht) legt R3 im Backtest fest; 22–24 Uhr heißt nie „Faustregel“. **Kontrastfall T** ist die Kälte (Block `kaelte`), täglich mit bekannten Preisen gesteuert.
-- **Nacht über die Wochengrenze (A-010):** Die Nacht von Sonntag auf Montag gehört zum Sonntag der Zielwoche, ihre Stunden 00–06 Uhr liegen aber schon in der Folgewoche und fehlen in `w.zielwoche` (Mo 00:00 bis So 24:00). R3 entscheidet, ob die Sonntagsnacht mitgewertet wird (dann Preise bis Montag 06:00 nachladen) oder entfällt.
+- **Begriffe:** **Status quo A** = Reinigung 22–24 Uhr Ortszeit, direkt nach Produktionsende (Tatsache, vom Praxispartner bestätigt am 10.11.2026, K-012; `last.status_quo_start_h`). Die Reinigung (2 h, `last.blocklaenge_h`) darf nur im **Reinigungsfenster** 22–06 Uhr liegen (`last.fenster_start_h`, `last.fenster_ende_h`). Die Faustregel D (fester Block in der Nacht) legt R3 im Backtest fest; 22–24 Uhr heißt nie „Faustregel“. Untersucht wird nur die Reinigung; Kälte und Kontrastfall T sind Nichtziel (E-043).
+- **Nacht über die Wochengrenze (A-010):** Die Nacht von Sonntag auf Montag gehört zum Sonntag der Zielwoche, ihre Stunden 00–06 Uhr liegen aber schon in der Folgewoche und fehlen in `w.zielwoche` (Mo 00:00 bis So 24:00). Entschieden (E-044): Die Sonntagsnacht wird mitgewertet; die Kosten der Nächte kommen aus der Blockkosten-Matrix von `src/03_merkmale.py`, die die Stunden bis Montag 06:00 enthält.
 - **Mehrkosten-Rückblick:** `src/fensteranalyse.py` bewertet Nächte als Folge echter Stunden; die Funktion `fenster_je_tag(df, 22, 6, 2, 22)` kann R3 für die Bewertung je Nacht wiederverwenden.
 - **Schlüssel ist `ts_utc`.** In UTC gibt es keine doppelten oder fehlenden Stunden. Die lokale Zeit (`ts_lokal`, `stunde_lokal`) ist Zusatz: Am Oktober-Umstellungssonntag kommt 02:00 Uhr zweimal vor (zwei UTC-Stunden, zwei Preise), im März fehlt 02:00. Beides liegt außerhalb der Betriebszeit 06–22 Uhr, aber **im Reinigungsfenster 22–06 Uhr**: Diese Nächte haben 7 bzw. 9 echte Stunden (E-036).
 - **Nur Stundenpreise**; ab 01.10.2025 der SMARD-Stundenwert (Mittel der vier Viertelstunden).
 - **`flag_outlier` nie für die Planung nutzen** (Look-ahead, siehe Codebook).
+- **Kosten:** R3 rechnet nur Stromkosten, R4 die Personalkosten mit Zuschlägen (A-017). Für die Zuschläge zählt der Kalendertag der Stunde (Spalten `sonntag`, `feiertag`, A-016).
 - **Last:** 180 MWh pro Tag an jedem Tag (Praxiskontakt, K-008); verschiebbar ist die Reinigung mit 8 MWh pro Nacht (4 MW × 2 h).
 
 ## Einfache Abfrage einzelner Tage: `src/preisabfrage.py` (für alle, A-011)
