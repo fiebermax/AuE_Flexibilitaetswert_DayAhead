@@ -1,0 +1,31 @@
+%% KI: Claude, Zweck: n8n-Flow als Mermaid (Formen wie in der n8n-Vorlage "Workflow dashboard with mermaid.js"), geprüft von Max (R2)
+flowchart TB
+  subgraph W1["Workflow 1 · Reinigungsplan Freitag"]
+    direction LR
+    A1[Jeden Freitag 08:00] --> A2[Konfiguration und Datum]
+    A2 --> A3["Plan aus Repo berechnen<br/>plan_woche.py · fest 3–5 Uhr"]
+    A3 --> A4{Skript erfolgreich?}
+    A4 -->|ja| A5[[Plan-JSON parsen]]
+    A4 -->|nein| A9[Mail IT Fehler]
+    A5 --> A6[Mail Schichtleitung: Plan der Woche]
+    A5 --> A7[[Nächte aufteilen, Logzeile]]
+    A7 --> A8[plan_log.csv anhängen]
+  end
+  subgraph W2["Workflow 2 · Soll-Ist Montag"]
+    direction LR
+    B1[Jeden Montag 09:00] --> B2[Konfiguration und Woche]
+    B2 --> B3["Soll-Ist aus Repo berechnen<br/>soll_ist.py · echte Preise"]
+    B3 --> B4{Skript erfolgreich?}
+    B4 -->|ja| B5[[Soll-Ist-JSON parsen]]
+    B4 -->|nein| B11[Mail IT Fehler]
+    B5 --> B6[[Logzeile]] --> B7[soll_ist_log.csv anhängen]
+    B5 --> B8["Control-Grafik<br/>control.py · 13 Wochen"]
+    B8 --> B9{"Rücknahme?<br/>Kennzahl unter 0"}
+    B9 -->|ja| B10[Mail Werksleitung: zurück auf 22 Uhr]
+    B9 -->|nein| B12[Wochenmeldung Schichtleitung mit Grafik]
+  end
+  W1 ~~~ W2
+  classDef repo fill:#cde2fb,stroke:#2a78d6,stroke-width:2px
+  classDef mail fill:#ffffff,stroke:#eb6834,stroke-width:2px
+  class A3,B3,B8 repo
+  class A6,A9,B10,B11,B12 mail

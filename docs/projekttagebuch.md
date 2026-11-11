@@ -12,6 +12,7 @@ Eintragsarten: **E** Entscheidung · **P** Problem/Konflikt · **M** Meilenstein
 - **Werkzeug:** Claude Code, Sitzung von Max
 - **Zweck:** `n8n/flow_diagramm.py` zeichnet `n8n/flow.png` mit beiden Workflows (Freitag: Plan; Montag: Soll-Ist, Control-Grafik, Rücknahmeregel). Die Knoten entsprechen den Workflow-JSONs, die Max mit dem n8n-Assistenten erzeugt hat (lokales n8n, weil n8n Cloud keinen Execute-Command-Knoten hat). Die Logik liegt in den Repo-Skripten (`plan_woche.py`, `soll_ist.py`, `control.py`), n8n ruft nur auf und verteilt.
 - **Wie geprüft:** Bild gerendert und angesehen (abgeschnittene Kästen und überlappende Legende behoben).
+- **Nachtrag:** Derselbe Flow als Mermaid (`n8n/flow.mmd`) und als Seite `n8n/flow.html` (mermaid.js 10.9.1 vom CDN), Formen wie in der n8n-Vorlage „Workflow dashboard with mermaid.js“ (Raute = IF, doppelter Rahmen = Code); im Browser gerendert und angesehen.
 - **Offen:** `src/plan_woche.py` und `src/soll_ist.py` gibt es noch nicht (Review Phase 4); die Workflow-JSONs legt Max unter `n8n/` ab.
 
 ### K-020 · Control-Grafik (R2, Review Punkt H)
