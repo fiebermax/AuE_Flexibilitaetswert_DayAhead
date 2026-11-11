@@ -15,6 +15,8 @@ Alle Spalten der bereinigten Dateien. Erzeugt von `src/cleaning.py` bzw. `src/02
 | `preis_eur_mwh` | Day-Ahead-Großhandelspreis DE-LU | €/MWh, 2 Nachkommastellen | Bundesnetzagentur \| SMARD.de, Filter 4169, CC BY 4.0 | Kommazahl | geprüft −500 bis +5 000; tatsächlich −500 bis 936,28; negative Werte gültig |
 | `regime` | Handelsregime der Day-Ahead-Auktion | `stunde` bis 30.09.2025, `viertel` ab 01.10.2025 | SDAC 15-min-MTU, Lieferung ab 01.10.2025 | Text | 2 Werte |
 | `werktag` | Mo–Fr und kein gesetzlicher Feiertag in Bayern | True/False | Paket `holidays` (BY); Mariä Himmelfahrt schaltbar | bool | — |
+| `sonntag` | Stunde liegt an einem Sonntag (Kalendertag der Stunde, Ortszeit) | True/False | abgeleitet aus `ts_utc` (A-016, A-017) | bool | Sa 22:00 = Samstag, die folgende 02:00 = Sonntag |
+| `feiertag` | Stunde liegt an einem gesetzlichen Feiertag in Bayern (Kalendertag der Stunde) | True/False | Paket `holidays` (BY); Mariä Himmelfahrt schaltbar (A-016) | bool | rund 12 Tage je Jahr |
 | `in_betriebszeit` | Stunde liegt in der Betriebszeit (Produktion) des Werks | True/False | Praxiskontakt: 06–22 Uhr (K-005, K-008) | bool | 16 von 24 Stunden je Tag; die übrigen 8 Stunden (22–06 Uhr) sind das Reinigungsfenster |
 | `last_mwh_tag` | Stromverbrauch des Werks an diesem Tag | MWh pro Tag | **Praxiskontakt, Termin 10.11.2026** (K-008, E-032): 180 MWh an jedem Tag inkl. Feiertage | Kommazahl | 180,0 |
 | `last_mwh_flexibel_tag` | davon zeitlich verschiebbar: Reinigung (CIP) **nach** der Produktion dieses Tages, also in der Nacht von 22 Uhr bis 06 Uhr des Folgetags | MWh pro Tag | Praxiskontakt (K-008): 4 MW × 2 h (E-033) | Kommazahl | 8,0 |

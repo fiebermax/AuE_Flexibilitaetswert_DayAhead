@@ -41,6 +41,19 @@ def test_werktage_bayern_und_variante():
     tage = pd.DatetimeIndex(pd.to_datetime(["2025-01-06", "2025-06-19", "2025-08-15", "2025-10-04", "2025-10-06"])).tz_localize(TZ)
     assert list(gem.werktage(tage, mariae_himmelfahrt=False)) == [False, False, True, False, True]
     assert list(gem.werktage(tage, mariae_himmelfahrt=True)) == [False, False, False, False, True]
+    # holiday flag alone (A-016): 06.01. and 19.06. (Fronleichnam) yes, Saturday 04.10. no
+    assert list(gem.feiertage_bayern(tage, mariae_himmelfahrt=False)) == [True, True, False, False, False]
+
+
+def test_sonntag_und_feiertag_gelten_fuer_den_kalendertag_der_stunde():
+    """Night Sat 21.06. -> Sun 22.06.2025: 22:00 is Saturday, 02:00 is Sunday (A-017).
+    Night Wed 18.06. -> Thu 19.06.2025 (Fronleichnam): only the hours after midnight are a holiday."""
+    cl = _lade_modul("cleaning")
+    utc = pd.to_datetime(["2025-06-21 20:00", "2025-06-22 00:00", "2025-06-18 20:00", "2025-06-19 00:00"], utc=True)
+    df = cl.zeitspalten(pd.DataFrame({"ts_utc": utc, "preis_eur_mwh": 1.0}), TZ, pd.Timestamp("2025-10-01", tz=TZ), False)
+    assert list(df["stunde_lokal"]) == [22, 2, 22, 2]
+    assert list(df["sonntag"]) == [False, True, False, False]
+    assert list(df["feiertag"]) == [False, False, False, True]
 
 
 def test_last_taeglich_inklusive_feiertage_und_variante():

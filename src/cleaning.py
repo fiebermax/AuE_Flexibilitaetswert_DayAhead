@@ -33,10 +33,10 @@ import numpy as np                       # noqa: E402
 import pandas as pd                      # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))     # make the other files in src/ importable
-from gemeinsam import ROOT, lade_params, pfad, werktage  # noqa: E402
+from gemeinsam import ROOT, feiertage_bayern, lade_params, pfad, werktage  # noqa: E402
 
 SPALTEN = ["ts_utc", "ts_lokal", "datum_lokal", "stunde_lokal", "wochentag", "saison",
-           "preis_eur_mwh", "regime", "werktag", "in_betriebszeit", "last_mwh_tag", "last_mwh_flexibel_tag",
+           "preis_eur_mwh", "regime", "werktag", "sonntag", "feiertag", "in_betriebszeit", "last_mwh_tag", "last_mwh_flexibel_tag",
            "imputed", "flag_outlier"]
 SAISON = {12: "Winter", 1: "Winter", 2: "Winter", 3: "Fruehling", 4: "Fruehling", 5: "Fruehling",
           6: "Sommer", 7: "Sommer", 8: "Sommer", 9: "Herbst", 10: "Herbst", 11: "Herbst"}
@@ -142,6 +142,10 @@ def zeitspalten(df: pd.DataFrame, tz: str, wechsel: pd.Timestamp, mariae: bool) 
     # Market regime: hourly auction until 30.09.2025, quarter-hour auction from 01.10.2025 (needed for H0c).
     out["regime"] = np.where(out["ts_utc"] >= wechsel.tz_convert("UTC"), "viertel", "stunde")
     out["werktag"] = werktage(pd.DatetimeIndex(lokal), mariae)
+    # Sunday and holiday separately: R4 applies different surcharges (diary A-016). Both refer to the
+    # calendar day of the HOUR itself, so Sat 22:00 is Saturday and the following 02:00 is Sunday (A-017).
+    out["sonntag"] = out["wochentag"] == 6
+    out["feiertag"] = feiertage_bayern(pd.DatetimeIndex(lokal), mariae)
     return out
 
 

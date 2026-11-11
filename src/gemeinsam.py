@@ -31,21 +31,28 @@ def pfad(params: dict, name: str) -> Path:
     return ROOT / params["daten"]["pfade"][name]
 
 
-def werktage(daten: pd.DatetimeIndex, mariae_himmelfahrt: bool) -> np.ndarray:
-    """True = Monday to Friday and no public holiday in Bavaria.
+def feiertage_bayern(daten: pd.DatetimeIndex, mariae_himmelfahrt: bool) -> np.ndarray:
+    """True = public holiday in Bavaria on that local calendar day.
 
     Holidays come from the package `holidays` (subdiv="BY" = Bavaria), not from a hand-written list.
     Mariä Himmelfahrt (15.08.) is a holiday only in mainly catholic municipalities; the package files
     it under the category "catholic", so we add that category only if the switch in params.yaml is on.
-    The result is a True/False array with one entry per timestamp.
-    Lives here because prices (cleaning) and load (02_synthetisch variant Mo-Fr) must use the SAME rule.
+    Separate from werktage() because R4 needs Sunday and holiday apart: the surcharges differ
+    (Sunday 50 %, holiday 100 %, params.yaml `kosten`; diary A-016).
     """
     kategorien = ("public", "catholic") if mariae_himmelfahrt else ("public",)
     jahre = range(daten.min().year, daten.max().year + 1)
     feiertage = holidays.Germany(subdiv="BY", years=jahre, categories=kategorien)
     tage = daten.tz_localize(None).normalize()
-    ist_feiertag = np.array([t.date() in feiertage for t in tage])
-    return (tage.weekday < 5) & ~ist_feiertag      # weekday < 5 = Mon..Fri; "&" = and; "~" = not
+    return np.array([t.date() in feiertage for t in tage], dtype=bool)
+
+
+def werktage(daten: pd.DatetimeIndex, mariae_himmelfahrt: bool) -> np.ndarray:
+    """True = Monday to Friday and no public holiday in Bavaria (one entry per timestamp).
+    Lives here because prices (cleaning) and load (02_synthetisch variant Mo-Fr) must use the SAME rule.
+    """
+    tage = daten.tz_localize(None).normalize()
+    return (tage.weekday < 5) & ~feiertage_bayern(daten, mariae_himmelfahrt)   # Mon..Fri and not a holiday
 
 
 def fensterstunden(start_h: int, ende_h: int) -> list[int]:
