@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+# Partnerdaten nie ins Repo
+partner/
+.pytest_cache/
